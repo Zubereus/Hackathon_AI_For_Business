@@ -20,12 +20,19 @@ build/
 data/*
 !data/.gitkeep
 !data/README.md
+!data/raw/
+data/raw/*
+!data/raw/.gitkeep
 *.sqlite
 *.sqlite3
 *.db
+*.duckdb
 
 # Editor and operating-system files
 .vscode/
 .idea/
 .DS_Store
 Thumbs.db
+
+# Local Copilot instructions
+.github/copilot-instructions.md
