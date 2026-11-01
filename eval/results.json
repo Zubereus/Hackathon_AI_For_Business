@@ -1,0 +1,281 @@
+[
+  {
+    "world": "seller_driven",
+    "policies": [
+      {
+        "policy": "do nothing",
+        "engine": 0.0,
+        "truth": 0.0,
+        "difference": 0.0,
+        "tolerance": 500.0,
+        "passed": true,
+        "relative_error": 0.0
+      },
+      {
+        "policy": "probation: worst 10 sellers",
+        "engine": 70454.29212966406,
+        "truth": 70569.26274785332,
+        "difference": 114.97061818926886,
+        "tolerance": 3528.4631373926663,
+        "passed": true,
+        "relative_error": 0.0016291883138989745
+      },
+      {
+        "policy": "promise +3d, MA/CE/PA",
+        "engine": 25031.010069422093,
+        "truth": 25056.738370180996,
+        "difference": 25.72830075890306,
+        "tolerance": 1252.8369185090498,
+        "passed": true,
+        "relative_error": 0.0010268016682299427
+      },
+      {
+        "policy": "promise +7d, MA/CE/PA",
+        "engine": 41472.51006942209,
+        "truth": 41499.738370180996,
+        "difference": 27.2283007589067,
+        "tolerance": 2074.9869185090497,
+        "passed": true,
+        "relative_error": 0.0006561077690665919
+      }
+    ],
+    "engine_winner": "probation: worst 10 sellers",
+    "true_winner": "probation: worst 10 sellers",
+    "ranking_passed": true,
+    "all_policy_deltas_passed": true,
+    "planted_seller_recall": 1.0,
+    "probation_breakeven_engine": 5.712155074027022,
+    "probation_breakeven_truth": 5.684900084888433,
+    "probation_breakeven_passed": true,
+    "max_relative_error": 0.0016291883138989745,
+    "overall_passed": true,
+    "engine_table": [
+      {
+        "scenario": "probation: worst 10 sellers",
+        "expected": 70454.29212966406,
+        "p10": 70454.29212966406,
+        "p50": 70454.29212966406,
+        "p90": 70454.29212966406,
+        "p_loss": 0.0,
+        "p_best": 1.0,
+        "breakeven": "late cost R$6"
+      },
+      {
+        "scenario": "promise +7d, MA/CE/PA",
+        "expected": 41472.51006942209,
+        "p10": 41472.510069422104,
+        "p50": 41472.510069422104,
+        "p90": 41472.510069422104,
+        "p_loss": 0.0,
+        "p_best": 0.0,
+        "breakeven": "conv. loss 21%"
+      },
+      {
+        "scenario": "promise +3d, MA/CE/PA",
+        "expected": 25031.010069422093,
+        "p10": 25031.0100694221,
+        "p50": 25031.0100694221,
+        "p90": 25031.0100694221,
+        "p_loss": 0.0,
+        "p_best": 0.0,
+        "breakeven": "conv. loss 15%"
+      },
+      {
+        "scenario": "do nothing",
+        "expected": 0.0,
+        "p10": 0.0,
+        "p50": 0.0,
+        "p90": 0.0,
+        "p_loss": 0.0,
+        "p_best": 0.0,
+        "breakeven": "-"
+      }
+    ]
+  },
+  {
+    "world": "carrier_driven",
+    "policies": [
+      {
+        "policy": "do nothing",
+        "engine": 0.0,
+        "truth": 0.0,
+        "difference": 0.0,
+        "tolerance": 500.0,
+        "passed": true,
+        "relative_error": 0.0
+      },
+      {
+        "policy": "probation: worst 10 sellers",
+        "engine": -3737.1032202611987,
+        "truth": -3664.837046929729,
+        "difference": 72.26617333146987,
+        "tolerance": 500.0,
+        "passed": true,
+        "relative_error": 0.019718795789846078
+      },
+      {
+        "policy": "promise +3d, MA/CE/PA",
+        "engine": 68050.5100694221,
+        "truth": 68036.738370181,
+        "difference": 13.771699241100578,
+        "tolerance": 3401.8369185090505,
+        "passed": true,
+        "relative_error": 0.0002024156297171413
+      },
+      {
+        "policy": "promise +7d, MA/CE/PA",
+        "engine": 118248.01006942213,
+        "truth": 118211.238370181,
+        "difference": 36.77169924112968,
+        "tolerance": 5910.561918509051,
+        "passed": true,
+        "relative_error": 0.00031106771021193705
+      }
+    ],
+    "engine_winner": "promise +7d, MA/CE/PA",
+    "true_winner": "promise +7d, MA/CE/PA",
+    "ranking_passed": true,
+    "all_policy_deltas_passed": true,
+    "planted_seller_recall": null,
+    "probation_breakeven_engine": 38.188682264792696,
+    "probation_breakeven_truth": 37.78728906814281,
+    "probation_breakeven_passed": true,
+    "max_relative_error": 0.019718795789846078,
+    "overall_passed": true,
+    "engine_table": [
+      {
+        "scenario": "promise +7d, MA/CE/PA",
+        "expected": 118248.01006942213,
+        "p10": 118248.0100694221,
+        "p50": 118248.0100694221,
+        "p90": 118248.0100694221,
+        "p_loss": 0.0,
+        "p_best": 1.0,
+        "breakeven": "conv. loss 41%"
+      },
+      {
+        "scenario": "promise +3d, MA/CE/PA",
+        "expected": 68050.5100694221,
+        "p10": 68050.5100694221,
+        "p50": 68050.5100694221,
+        "p90": 68050.5100694221,
+        "p_loss": 0.0,
+        "p_best": 0.0,
+        "breakeven": "conv. loss 30%"
+      },
+      {
+        "scenario": "do nothing",
+        "expected": 0.0,
+        "p10": 0.0,
+        "p50": 0.0,
+        "p90": 0.0,
+        "p_loss": 0.0,
+        "p_best": 0.0,
+        "breakeven": "-"
+      },
+      {
+        "scenario": "probation: worst 10 sellers",
+        "expected": -3737.1032202611987,
+        "p10": -3737.1032202611987,
+        "p50": -3737.1032202611987,
+        "p90": -3737.1032202611987,
+        "p_loss": 1.0,
+        "p_best": 0.0,
+        "breakeven": "late cost R$38"
+      }
+    ]
+  },
+  {
+    "world": "neutral",
+    "policies": [
+      {
+        "policy": "do nothing",
+        "engine": 0.0,
+        "truth": 0.0,
+        "difference": 0.0,
+        "tolerance": 500.0,
+        "passed": true,
+        "relative_error": 0.0
+      },
+      {
+        "policy": "probation: worst 10 sellers",
+        "engine": -10006.17925054605,
+        "truth": -10105.7235034852,
+        "difference": 99.54425293914937,
+        "tolerance": 505.28617517426005,
+        "passed": true,
+        "relative_error": 0.009850284633734453
+      },
+      {
+        "policy": "promise +3d, MA/CE/PA",
+        "engine": -5208.739930577897,
+        "truth": -5207.261629819002,
+        "difference": 1.4783007588948749,
+        "tolerance": 500.0,
+        "passed": true,
+        "relative_error": 0.00028389216136740544
+      },
+      {
+        "policy": "promise +7d, MA/CE/PA",
+        "engine": -5184.489930577897,
+        "truth": -5183.261629819002,
+        "difference": 1.2283007588948749,
+        "tolerance": 500.0,
+        "passed": true,
+        "relative_error": 0.0002369744856845605
+      }
+    ],
+    "engine_winner": "do nothing",
+    "true_winner": "do nothing",
+    "ranking_passed": true,
+    "all_policy_deltas_passed": true,
+    "planted_seller_recall": null,
+    "probation_breakeven_engine": 796.1017554817902,
+    "probation_breakeven_truth": 796.4292750752062,
+    "probation_breakeven_passed": true,
+    "max_relative_error": 0.009850284633734453,
+    "overall_passed": true,
+    "engine_table": [
+      {
+        "scenario": "do nothing",
+        "expected": 0.0,
+        "p10": 0.0,
+        "p50": 0.0,
+        "p90": 0.0,
+        "p_loss": 0.0,
+        "p_best": 1.0,
+        "breakeven": "-"
+      },
+      {
+        "scenario": "promise +7d, MA/CE/PA",
+        "expected": -5184.489930577897,
+        "p10": -5184.489930577896,
+        "p50": -5184.489930577896,
+        "p90": -5184.489930577896,
+        "p_loss": 1.0,
+        "p_best": 0.0,
+        "breakeven": "conv. loss 0%"
+      },
+      {
+        "scenario": "promise +3d, MA/CE/PA",
+        "expected": -5208.739930577897,
+        "p10": -5208.739930577896,
+        "p50": -5208.739930577896,
+        "p90": -5208.739930577896,
+        "p_loss": 1.0,
+        "p_best": 0.0,
+        "breakeven": "conv. loss 0%"
+      },
+      {
+        "scenario": "probation: worst 10 sellers",
+        "expected": -10006.17925054605,
+        "p10": -10006.179250546053,
+        "p50": -10006.179250546053,
+        "p90": -10006.179250546053,
+        "p_loss": 1.0,
+        "p_best": 0.0,
+        "breakeven": "late cost R$796"
+      }
+    ]
+  }
+]

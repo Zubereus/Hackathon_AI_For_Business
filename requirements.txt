@@ -1,1 +1,2 @@
-# Add only the Python packages selected for this project.
+duckdb
+pandas
