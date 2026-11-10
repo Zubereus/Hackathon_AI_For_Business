@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"os"
 	"path/filepath"
 	"testing"
@@ -75,6 +76,62 @@ func TestSimulateValidationReturns422(t *testing.T) {
 
 	if w.Code != http.StatusUnprocessableEntity {
 		t.Fatalf("expected 422 Unprocessable Entity, got %d", w.Code)
+	}
+}
+
+type roundTripFunc func(*http.Request) (*http.Response, error)
+
+func (f roundTripFunc) RoundTrip(req *http.Request) (*http.Response, error) {
+	return f(req)
+}
+
+func TestReverseProxyDoesNotDuplicateCORSHeaders(t *testing.T) {
+	upstreamHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/nlq/parse" {
+			t.Fatalf("expected stripped prefix path /nlq/parse, got %s", r.URL.Path)
+		}
+		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:5173")
+		w.Header().Set("Access-Control-Allow-Credentials", "true")
+		writeJSON(w, http.StatusOK, map[string]string{"ok": "1"})
+	})
+
+	targetURL, err := url.Parse("http://ml-py.local")
+	if err != nil {
+		t.Fatalf("invalid upstream url: %v", err)
+	}
+	mlProxy := createReverseProxy(targetURL)
+	mlProxy.Transport = roundTripFunc(func(r *http.Request) (*http.Response, error) {
+		rec := httptest.NewRecorder()
+		upstreamHandler.ServeHTTP(rec, r)
+		return rec.Result(), nil
+	})
+	mux := http.NewServeMux()
+	mux.HandleFunc("/api/nlq/", func(w http.ResponseWriter, r *http.Request) {
+		mlProxy.ServeHTTP(w, r)
+	})
+	handler := corsMiddleware(mux)
+
+	// 1. Proxied POST with browser Origin must return exactly ONE Access-Control-Allow-Origin header
+	req := httptest.NewRequest(http.MethodPost, "/api/nlq/parse", bytes.NewReader([]byte(`{}`)))
+	req.Header.Set("Origin", "http://localhost:5173")
+	w := httptest.NewRecorder()
+	handler.ServeHTTP(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Fatalf("expected 200 OK, got %d", w.Code)
+	}
+	origins := w.Result().Header.Values("Access-Control-Allow-Origin")
+	if len(origins) != 1 || origins[0] != "http://localhost:5173" {
+		t.Fatalf("expected single Access-Control-Allow-Origin header, got %v", origins)
+	}
+
+	// 2. Preflight OPTIONS must succeed cleanly with 204 No Content
+	preReq := httptest.NewRequest(http.MethodOptions, "/api/nlq/parse", nil)
+	preReq.Header.Set("Origin", "http://localhost:5173")
+	preW := httptest.NewRecorder()
+	handler.ServeHTTP(preW, preReq)
+	if preW.Code != http.StatusNoContent {
+		t.Fatalf("expected 204 No Content for OPTIONS preflight, got %d", preW.Code)
 	}
 }
 

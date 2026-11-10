@@ -9,5 +9,16 @@
     "quantity": "SL bán",
     "stock": "Tồn kho",
     "promo": "KM"
+  },
+  "34265cdeee7a13f31691920372e7a6ed": {
+    "date": "date",
+    "product_id": "product_id",
+    "product_name": "product_name",
+    "category": "category",
+    "unit_cost": "unit_cost_vnd",
+    "quantity": "quantity_sold",
+    "promo": "promo_flag",
+    "price": "holiday_flag",
+    "stock": "stock_on_hand"
   }
 }

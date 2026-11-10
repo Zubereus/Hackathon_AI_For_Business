@@ -81,11 +81,20 @@ func createReverseProxy(targetURL *url.URL) *httputil.ReverseProxy {
 		}
 		req.Host = targetURL.Host
 	}
+	// Strip upstream CORS headers from ml-py so Go corsMiddleware emits a single canonical header.
+	proxy.ModifyResponse = func(resp *http.Response) error {
+		resp.Header.Del("Access-Control-Allow-Origin")
+		resp.Header.Del("Access-Control-Allow-Credentials")
+		resp.Header.Del("Access-Control-Allow-Methods")
+		resp.Header.Del("Access-Control-Allow-Headers")
+		return nil
+	}
 	return proxy
 }
 
 func corsMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Vary", "Origin")
 		origin := r.Header.Get("Origin")
 		if origin == "" || origin == "http://localhost:5173" || origin == "http://127.0.0.1:5173" {
 			allowOrigin := "http://localhost:5173"

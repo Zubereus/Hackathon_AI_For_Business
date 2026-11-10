@@ -147,6 +147,23 @@ def main() -> None:
         wait_for_health(f"{GO_URL}/api/health")
         print("[e2e] Both services healthy.")
 
+        # 0. Browser CORS check across Go gateway -> ml-py reverse proxy
+        cors_req = urllib.request.Request(
+            f"{GO_URL}/api/ingest/map",
+            data=json.dumps({"upload_id": "nonexistent"}).encode("utf-8"),
+            headers={"Content-Type": "application/json", "Origin": "http://localhost:5173"},
+            method="POST",
+        )
+        try:
+            with urllib.request.urlopen(cors_req, timeout=5) as _:
+                pass
+        except urllib.error.HTTPError as err:
+            acao_vals = err.headers.get_all("Access-Control-Allow-Origin") or []
+            assert acao_vals == ["http://localhost:5173"], (
+                f"Expected single CORS origin header on proxied route, got: {acao_vals}"
+            )
+        print("[e2e] 0/7 Browser CORS proxy header check OK (single Access-Control-Allow-Origin).")
+
         # 1. Profile messy Vietnamese CSV THROUGH Go gateway (:18080/api/ingest/profile)
         prof = http_post_multipart_csv(f"{GO_URL}/api/ingest/profile", CSV_PATH)
         upload_id = prof["upload_id"]

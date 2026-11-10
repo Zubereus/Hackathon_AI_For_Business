@@ -48,8 +48,10 @@ Fix only bugs that the e2e finds, and list each in the status log. Paste real te
     4. `ml-py/app/llm/explain.py` (`build_template_explanation`): Read Go's `"qty"` JSON field before falling back to `"quantity"` after E2E caught `"expected volume of 0 units"` when Go simulated `2,100.8` units (`-> 2.101 units`).
     5. `web/src/screens/ValidationScreen.tsx`: Aligned benchmark figures verbatim with `docs/VALIDATION.md` (including Spearman rank correlation column header).
     6. `web/src/App.tsx`: Lazily enable `useFixtures` when `?demo=1` or `?fixtures=1` is present in query string so headless screenshot capture & offline demo deep-links render populated What-If charts and Reverse What-If curves even after flipping the live-API default; re-captured all 6 PNGs in `slides/screens/`.
+    7. `engine-go/cmd/engine/main.go` (`createReverseProxy` + `corsMiddleware`): Added `ModifyResponse` to strip upstream `Access-Control-Allow-*` headers from `ml-py` before merging with Go CORS headers, preventing duplicate `Access-Control-Allow-Origin: http://localhost:5173` values from blocking Chrome/Edge `fetch` requests on proxied `/api/ingest/*`, `/api/elasticity/*`, `/api/nlq/*`, and `/api/backtest` routes (verified in `TestReverseProxyDoesNotDuplicateCORSHeaders` and `e2e/demo_path.py` step `0/7`).
   - **Real Acceptance Test Outputs**:
-    - `python -u e2e/demo_path.py`: **PASSED (7/7 steps)**:
+    - `python -u e2e/demo_path.py`: **PASSED (0/7 CORS proxy header check + 7/7 steps)**:
+      - `0/7 Browser CORS proxy header check OK (single Access-Control-Allow-Origin)`
       - `P01 price=97,500 VND, cost=60,000 VND, qty30d=2,370, median e=-1.265`
       - `Simulate: exp_qty=2,100.8, opt=100,496,859 >= exp=99,261,340 >= pess=97,868,106 VND, e*=-2.425`
       - `Optimize: best=126,750 VND (+30.0%), prob_hit=1.00`
@@ -60,6 +62,6 @@ Fix only bugs that the e2e finds, and list each in the status log. Paste real te
       - `P03`: Go P50=`128,974,963`, Py P50=`128,989,715` (`rel diff=0.0114%`)
     - Full test suite:
       - `ml-py` (`python -m pytest -q -rs`): `20 passed, 1 skipped` (raw Kaggle M5 CSVs not present locally as expected) in `28.47s`.
-      - `engine-go` (`go test ./...`): `ok` across `cmd/engine` (`1.326s`), `internal/optimize` (`0.638s`), `internal/sim` (`0.789s`).
+      - `engine-go` (`go vet ./... && go test -v ./...`): `ok` across `cmd/engine` (`2.465s`, including `TestReverseProxyDoesNotDuplicateCORSHeaders`), `internal/optimize`, `internal/sim`.
       - `web` (`npm run build && npm test`): `tsc && vite build` clean (`5.87s`), Vitest `4 / 4 passed` (`381ms`, zero console errors).
   - **Next human step**: Commit changes on `main` and create annotated release tag `git tag v0.1-submission`.

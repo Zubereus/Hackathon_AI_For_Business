@@ -1,216 +1,227 @@
-# What-If AI: Nền Tảng Mô Phỏng & Tối Ưu Hóa Quyết Định Kinh Doanh Bằng AI
+# What-If AI — Nền Tảng Mô Phỏng & Tối Ưu Hóa Quyết Định Kinh Doanh Bán Lẻ
 
 > *"Mô phỏng trước khi quyết định — Hiểu rõ trước khi hành động."*
 
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.110%2B-009688.svg)](https://fastapi.tiangolo.com/)
 [![Go](https://img.shields.io/badge/Go-1.22%2B-00ADD8.svg)](https://go.dev/)
-[![React](https://img.shields.io/badge/React-18%2B-61DAFB.svg)](https://react.dev/)
+[![React](https://img.shields.io/badge/React-18%2B%20%7C%20TypeScript-61DAFB.svg)](https://react.dev/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Hackathon](https://img.shields.io/badge/Hackathon-AI%20for%20Business-orange.svg)]()
-[![Status](https://img.shields.io/badge/Status-Phase%201%20In%20Progress-brightgreen.svg)]()
+[![Hackathon](https://img.shields.io/badge/Hackathon-AI%20for%20Business%202026-orange.svg)]()
+[![Status](https://img.shields.io/badge/Status-Demo%20Freeze%20Ready%20(P0--P8)-success.svg)]()
 
 ---
 
-## 1. Tổng quan & Tuyên ngôn giá trị (Executive Summary)
+## 1. Tổng quan & Giá trị Cốt lõi
 
-Trong vận hành kinh doanh bán lẻ và thương mại điện tử, các nhà quản lý đối mặt hàng ngày với các quyết định mang tính sống còn:
-* *Có nên tăng hoặc giảm giá sản phẩm để cải thiện biên lợi nhuận?*
-* *Nếu nhu cầu thị trường co giãn mạnh hơn dự kiến, kịch bản xấu nhất là gì?*
-* *Mức giá hoặc chương trình khuyến mãi nào giúp đạt tăng trưởng mục tiêu trong khi không bị vỡ ngân sách nhập hàng và vượt quá sức chứa tồn kho?*
+Trong vận hành bán lẻ SME tại Việt Nam, nhà quản lý thường phải ra quyết định giá và khuyến mãi dựa vào cảm tính hoặc bảng tính nhìn lại quá khứ:
+* *Nếu tăng giá bán SKU chủ lực thêm 10% trong 30 ngày tới, lợi nhuận và sản lượng sẽ thay đổi trong khoảng nào?*
+* *Nếu khách hàng nhạy giá hơn dự kiến, đâu là ngưỡng độ co giãn hòa vốn (break-even elasticity)?*
+* *Mức giá nào giúp đạt mục tiêu lợi nhuận mà vẫn giữ biên lãi tối thiểu và không vượt quá tồn kho?*
 
-Hầu hết các giải pháp hiện nay (báo cáo BI truyền thống, bảng tính Excel hoặc Dashboard) chỉ đóng vai trò **"gương chiếu hậu" (Hindsight)** — phản ánh những gì đã xảy ra trong quá khứ. Ngược lại, các công cụ Chatbot AI thông thường thường tự tạo ra (hallucinate) các con số tài chính mà không có cơ sở kinh tế lượng.
+**What-If AI** trả lời trực tiếp các câu hỏi phản thực (*counterfactual what-if*) bằng kiến trúc 3 tầng tách bạch tuyệt đối giữa **ngôn ngữ** và **toán học**:
 
-**What-If AI** giải quyết bài toán này bằng kiến trúc 3 tầng phân tách trách nhiệm chặt chẽ:
-1. **Phân tích dữ liệu & Kinh tế lượng (Econometrics - `ml-py`)**: Ước lượng phân phối độ co giãn của cầu theo giá (Price Elasticity of Demand) kèm khoảng tin cậy bootstrap và kiểm soát lịch lễ Tết/sự kiện Việt Nam (`vn_calendar`).
-2. **Mô phỏng xác suất & Tối ưu hóa song song (Monte Carlo & Optimization - `engine-go`)**: Động cơ Go hiệu năng cao chạy 10.000 lượt mô phỏng kịch bản và thuật toán quét lưới tối ưu hóa ngược (**Reverse What-If**).
-3. **Trợ lý AI & Giao diện tương tác (`web`)**: Giao diện React hiển thị trực quan dải phân phối xác suất ($p_5, p_{50}, p_{95}$), độ co giãn hòa vốn, và bắt buộc **gán nhãn nguồn dữ liệu** (`SYNTHETIC | PUBLIC_M5 | YOUR DATA`).
-
----
-
-## 2. Điểm khác biệt & Lợi thế cạnh tranh
-
-| Tiêu chí | Báo cáo BI / Excel truyền thống | Chatbot AI thông thường | What-If AI |
-| :--- | :--- | :--- | :--- |
-| **Góc nhìn phân tích** | Quá khứ (*Đã bán được bao nhiêu?*) | Tóm tắt văn bản tổng quát | Tương lai & Kịch bản phản thực (*Nếu đổi giá thì sao?*) |
-| **Bản chất tính toán** | Thống kê mô tả (Descriptive) | Tự sinh văn bản (Dễ bịa số liệu) | **Toán học & Kinh tế lượng xác định (Zero LLM Math)** |
-| **Đánh giá rủi ro** | Dự báo 1 con số đơn lẻ (Point estimate) | Định tính, chung chung | **Phân phối xác suất Monte Carlo (p5 - p50 - p95)** |
-| **Độ nhạy giá** | Giả định cứng nhắc | Không phân tích được | **Ước lượng độ co giãn kèm phân phối bootstrap & Lịch VN** |
-| **Chiều ra quyết định** | Thủ công thử từng kịch bản | Chỉ trả lời câu hỏi trực tiếp | **Reverse What-If**: Đi từ mục tiêu tìm hành động tối ưu |
-| **Kiểm soát giả định** | Bị ẩn trong công thức phức tạp | "Hộp đen" hoàn toàn | **Bảng giả định tương tác (Glass-box AI)** |
-| **Minh bạch dữ liệu** | Không phân định | Dễ ngộ nhận | **Bắt buộc dán nhãn nguồn dữ liệu (`SYNTHETIC`, `PUBLIC_M5`, `USER`)** |
+1. **Tầng Kinh tế lượng & NLP (`ml-py`, FastAPI `:8000`)**: Nạp CSV bán hàng lộn xộn (`vi_VN`/`en_US`, đơn vị nghìn đồng, gộp hóa đơn), ánh xạ cột tự động bằng Hungarian assignment, ước lượng **độ co giãn cầu theo giá (Spec-C Poisson GLM + week-block bootstrap)** kiểm soát lịch Tết/ngày đôi Việt Nam, và kiểm định quá khứ (out-of-time backtest).
+2. **Tầng Mô phỏng & Tối ưu hóa Tốc độ cao (`engine-go`, Go `:8080`)**: Engine Go stateless sử dụng RNG `splitmix64` tất định để chạy hàng nghìn lượt **Monte Carlo** và quét lưới **Reverse What-If** đa ràng buộc trong ~39 ms, đồng thời làm API Gateway chuyển tiếp an toàn đến `ml-py`.
+3. **Tầng Giao diện Tương tác (`web`, React + Vite + Tailwind + Recharts `:5173`)**: Luồng 4 bước trực quan (**Upload → Confirm Columns → Review Assumptions → What-If Simulation**) kèm tab **Reverse What-If** và **Validation**, bắt buộc gắn nhãn nguồn dữ liệu (`SYNTHETIC` | `PUBLIC (M5/DUNNHUMBY)` | `YOUR DATA`) và hiển thị tiền tệ `VNĐ` tách dấu chấm (`1.234.567 ₫`).
 
 ---
 
-## 3. Kiến trúc hệ thống 3 Tầng (3-Tier Architecture)
+## 2. Nguyên tắc Kỹ thuật Bất khả xâm phạm (Golden Rules)
 
-Hệ thống tuân thủ hợp đồng API nghiêm ngặt được định nghĩa trong `docs/ARCHITECTURE.md` và các schema trong `contracts/`:
+* **Zero LLM Math**: LLM *không bao giờ* thực hiện phép tính. LLM chỉ dùng để (a) parse câu hỏi tự nhiên sang JSON chuẩn [`DecisionSpec`](contracts/decision_spec.schema.json), (b) phân giải tên cột mơ hồ, và (c) diễn giải số liệu đã tính — mọi câu trả lời đều đi qua [`verify_explanation_numbers`](ml-py/app/llm/explain.py) để loại bỏ hoàn toàn số bịa (*hallucination*), nếu vi phạm sẽ tự động fallback về template tất định.
+* **Khả năng Tái lập Tất định (Determinism)**: Cùng payload + `seed`, kết quả Go trả về giống hệt nhau bất kể `GOMAXPROCS=1` hay `GOMAXPROCS=8+`, đồng nhất với công thức tham chiếu Python trong sai số `< 0.03%` (ngưỡng cho phép `0.5%`).
+* **Trung thực Khoa học (Honest Claims)**: Độ co giãn được công bố rõ là **ước lượng quan sát có kiểm soát (controlled observational estimate)**, không phải nhân quả tuyệt đối; mọi cảnh báo `low_price_variation`, `not_significant`, `few_observations`, `positive_elasticity` và danh sách giới hạn ([`docs/LIMITS.md`](docs/LIMITS.md)) đều hiện diện công khai.
+* **Bảo mật Dữ liệu**: Dữ liệu upload chỉ lưu trong bộ nhớ phiên làm việc, **không** ghi vào `localStorage` trình duyệt và **không** gửi raw rows ra LLM (tối đa chỉ gửi tiêu đề cột + 5 mẫu đã che số `####`).
+* **Minh bạch Nguồn Dữ liệu**: Dữ liệu ngoại tệ như Walmart M5 được quy đổi minh họa theo [`config/fx.json`](config/fx.json) (`25.000 ₫/$`) kèm tooltip ghi chú *"illustrative conversion, not a market rate"*.
+
+---
+
+## 3. Kiến trúc Hệ thống 3 Tầng (3-Tier Architecture)
+
+Chi tiết schema hợp đồng nằm tại [`contracts/`](contracts/) và [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md):
 
 ```mermaid
 flowchart LR
-    Client([👤 Trình duyệt / Quản lý]) 
-    -->|HTTP :5173| Web[React Frontend\nweb]
+    User([👤 Quản lý bán lẻ]) -->|HTTP :5173| Web[React + TS + Recharts\nweb — Định dạng hiển thị]
     Web -->|HTTP :8080| Gateway[Go Engine & Gateway\nengine-go]
-    
-    subgraph Gateway_Tier [Go Engine :8080]
-        Gateway -->|/api/simulate| SimEngine[Monte Carlo Simulation\nGoroutines parallel]
-        Gateway -->|/api/optimize| OptEngine[Reverse What-If Grid Search\nConstrained Optimization]
+
+    subgraph Go_Tier [Go Engine :8080 — Stateless & Zero LLM]
+        Gateway -->|/api/simulate| Sim[Monte Carlo Simulator\nsplitmix64 tất định]
+        Gateway -->|/api/optimize| Opt[Reverse What-If Optimizer\n38.8 ms / 101x5k]
     end
 
-    Gateway_Tier -->|Reverse Proxy /api/*| MLPy[Python ML Service\nml-py :8000]
+    Gateway -->|Reverse Proxy /api/*\nStripped upstream CORS| MLPy[Python ML Service\nml-py :8000]
 
-    subgraph Python_ML_Tier [Python ML Service :8000]
-        MLPy --> Ingest[CSV Ingestion &\nNLP Column Mapping]
-        MLPy --> Elasticity[Price Elasticity Engine\nPoisson IRLS / OLS + Bootstrap]
-        MLPy --> CalendarVN[VN Retail Calendar\nTet, 11.11, Payday windows]
-        MLPy --> Backtest[Backtesting Engine\nHistorical Holdout Verification]
-        MLPy --> LLMParser[LLM Decision Parser &\nNarrative Explainer]
+    subgraph Py_Tier [Python ML :8000 — Econometrics & Guardrails]
+        MLPy --> Ingest[CSV Profiler & Transform\nvi_VN / Receipt Aggregation]
+        MLPy --> Map[Hungarian Column Mapper\n+ Masked Samples]
+        MLPy --> Fit[Spec-C Poisson GLM\nVN Calendar + Bootstrap]
+        MLPy --> Backtest[Holdout Backtest\nt < change_date]
+        MLPy --> NLQ[NLQ Parse & Explainer\nRegex Post-Check]
     end
 ```
 
 ---
 
-## 4. Các tính năng cốt lõi (Core Features)
+## 4. Kết quả Kiểm định Thực tế (Verified Benchmarks)
 
-### 4.1. Tự động ánh xạ cột thông minh (NLP Column Mapping)
-* Doanh nghiệp tải lên bất kỳ file CSV bán hàng nào mà không cần sửa đổi định dạng thủ công.
-* Tự động nhận diện và ánh xạ các cột: ngày bán, mã sản phẩm, giá bán, giá vốn, sản lượng, cờ khuyến mãi, tồn kho bằng quy tắc kết hợp mô hình NLP semantic embedding.
-* Luôn hiển thị giao diện xác nhận (Mapping Screen) để người dùng kiểm tra trước khi cam kết.
+Toàn bộ số liệu dưới đây được trích nguyên văn từ các lần chạy test thực tế trong [`docs/VALIDATION.md`](docs/VALIDATION.md), [`docs/ENGINE.md`](docs/ENGINE.md), và Status Log của các phase:
 
-### 4.2. Ước lượng độ co giãn kèm khoảng tin cậy & Lịch Việt Nam
-* Mô hình hóa hàm cầu kinh tế lượng:
-  $$\ln(Q) = \beta_0 + \beta_1 \ln(P) + \beta_2 \cdot \text{Promo} + \beta_3 \cdot \text{Weekend} + \sum \gamma_k \cdot \text{Event\_Window}_k + \varepsilon$$
-* Tích hợp bộ lịch bán lẻ Việt Nam (`vn_calendar`): kiểm soát độ biến động giá vào các dịp Tết Nguyên Đán, siêu sale 9.9, 10.10, 11.11, 12.12, Black Friday, và kỳ nhận lương.
-* Sử dụng kỹ thuật **Bootstrap Resampling** ($N \ge 300$) để ước lượng toàn bộ phân phối của hệ số co giãn $\beta_1$, loại bỏ rủi ro khi chỉ dựa vào một con số ước lượng điểm.
+| Hạng mục Kiểm định | Phạm vi & Bộ dữ liệu | Kết quả Thực tế Đạt được |
+|---|---|---|
+| **NLP Column Mapping** | 5 biến thể CSV lộn xộn (`vn_headers_vn_numbers`, `erp_abbrev`, thiếu cost/stock, giá nghìn đồng, cấp hóa đơn) | **33 / 33 (100%)** chính xác offline, **0** gán sai với confidence `>= 0.55` |
+| **Thu hồi Độ co giãn (Synthetic Spec-C)** | 5 bộ dữ liệu tổng hợp (`starter_4_products`, `fashion_shop_12`, `grocery_fmcg_15`, `electronics_home_10`, `marketplace_large_40`) | MAE **`0.048 – 0.118`** (`<= 0.15`), 90% CI Coverage **`80.0% – 100.0%`**, Spearman `r` lên tới **`0.960 – 1.000`** |
+| **Stress Guardrails (Biến động giá thấp / Nhiễu sự kiện)** | `hard_low_price_variation_8` (`sd=0.013`) & `hard_event_confounded_12` (`11.11` / `12.12`) | **8 / 8 (100%)** SKU gắn cờ `low_price_variation`; khử nhiễu `11.11` từ `-5.9` (naive) về `-1.8` (thực `-1.5`) |
+| **Historical Out-of-Time Backtest** | 19 sự kiện đổi giá (`t < change_date` -> dự báo 14 ngày holdout) | **18 / 19 (94.7%)** vượt naive baseline, trung bình **88.7%** 80%-interval coverage *(1 ca miss công khai: `grocery_fmcg_15 P04` ngày `11.11`)* |
+| **Go Engine & Python Cross-Check** | `BenchmarkOptimizeGrid_100x5000` (101 mức giá × 5.000 sims) & đối chiếu 3 SKU với Python | **`38.8 ms`** / lần tối ưu (505.000 draws); sai lệch P50 Go vs Python **`0.0057% – 0.0219%`** (`<< 0.5%`) |
+| **NLQ Parser & Explainer Post-Check** | 45 câu hỏi VN/EN trong [`data/samples/nlq_questions.json`](data/samples/nlq_questions.json) | **30 / 30 (100%)** câu hợp lệ, **15 / 15 (100%)** câu ngoài ngưỡng bị chặn về form nhập tay |
 
-### 4.3. Mô phỏng 4 Kịch bản định lượng & Monte Carlo (10.000 lượt)
-* **Cơ sở (Baseline)**: Chuẩn hóa theo mức giá hiện tại.
-* **Lạc quan (Optimistic)**: Khách hàng ít nhạy giá nhất (Phân vị 10% về độ nhạy cảm giá $|\varepsilon|$).
-* **Kỳ vọng (Expected)**: Trung vị của phân phối độ co giãn.
-* **Bi quan (Pessimistic)**: Khách hàng rất nhạy giá (Phân vị 90% về độ nhạy cảm giá $|\varepsilon|$).
-* Chạy 10.000 lượt mô phỏng lấy mẫu đồng thời biến thiên độ co giãn và nhiễu nhu cầu thị trường ngẫu nhiên để xuất biểu đồ phân vị lợi nhuận ($p_5, p_{50}, p_{95}$) và xác suất vượt cơ sở $P(\text{Profit} > \text{Baseline})$.
-* **Độ co giãn hòa vốn (Break-even Elasticity)**:
-  $$\varepsilon^* = \frac{\ln\left(\frac{P_0 - C}{P_1 - C}\right)}{\ln\left(\frac{P_1}{P_0}\right)}$$
-  Xác định chính xác ngưỡng phản ứng của khách hàng mà vượt qua đó, việc tăng giá sẽ gây suy giảm lợi nhuận.
+### Minh họa Golden Case (từ [`contracts/golden/golden_proposal.json`](contracts/golden/golden_proposal.json))
+Với SKU cơ sở $P_0 = 100.000\text{ ₫}$, Giá vốn $C = 60.000\text{ ₫}$, $Q_0 = 10.000$ sản phẩm/kỳ (Lợi nhuận gộp cơ sở = **400.000.000 ₫**). Khi đề xuất **tăng giá +10%** ($P_1 = 110.000\text{ ₫}$):
 
-### 4.4. Tối ưu hóa ngược — Reverse What-If (Core USP)
-Thay vì thử mò mẫm từng mức giá, nhà quản trị chỉ cần đưa ra bài toán mục tiêu:
-> *"Tìm phương án giúp tăng lợi nhuận tháng tới 15%, nhưng chi phí vốn lưu động không vượt quá 500 triệu VNĐ và kho còn 1.200 sản phẩm."*
-
-Hệ thống tự động:
-1. Quét lưới toàn bộ các mức điều chỉnh giá khả thi trong phạm vi an toàn.
-2. Kiểm tra ràng buộc trần ngân sách ($Spend \le Budget$) và trần tồn kho khả dụng ($Q \le Stock$).
-3. Xếp hạng Top các phương án có xác suất thành công cao nhất $P(Success)$.
+| Kịch bản | Độ co giãn ($\varepsilon$) | Sản lượng ($Q_1$) | Lợi nhuận gộp | Độ co giãn hòa vốn ($\varepsilon^*$) |
+| :--- | :---: | :---: | :---: | :---: |
+| **Cơ sở (Base)** | — | `10.000` | `400.000.000 ₫` | — |
+| **Lạc quan** | `-0.5` | `9.534,6` | `476.731.295 ₫` | `-2.3412` |
+| **Kỳ vọng** | `-1.0` | `9.090,9` | `454.545.455 ₫` | `-2.3412` |
+| **Bi quan** | `-2.0` | `8.264,5` | `413.223.141 ₫` | `-2.3412` |
 
 ---
 
-## 5. Ví dụ minh họa tính toán (Concrete Case Study)
+## 5. Hướng dẫn Cài đặt & Khởi chạy (How to Run)
 
-Xét sản phẩm thời trang mẫu **P01**:
-* Giá bán hiện tại ($P_0$): **100.000 VNĐ** | Giá vốn ($C$): **60.000 VNĐ**
-* Sản lượng cơ sở ($Q_0$): **10.000 sản phẩm/tháng**
-* Doanh thu cơ sở: **1.000.000.000 VNĐ** | Lợi nhuận gộp cơ sở: **400.000.000 VNĐ**
+### Cách 1 — Chạy đầy đủ 3 tầng Live (Khuyên dùng khi Demo)
 
-Nhà quản lý đề xuất **tăng giá 10%** (lên **110.000 VNĐ**). Giả sử độ co giãn ước lượng trung tâm là $\varepsilon = -1.0$, dải bootstrap từ $-0.5$ đến $-2.0$:
+Mở **3 cửa sổ terminal / PowerShell** tại thư mục gốc của repository:
 
-| Kịch bản | Độ co giãn ($\varepsilon$) | Biến động SL ($\Delta Q$) | Sản lượng mới ($Q_1$) | Doanh thu mới | Lợi nhuận gộp mới | Biến động Lợi nhuận |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Cơ sở (Baseline)** | — | 0.0% | 10.000 | 1,000 tỷ VNĐ | 400 triệu VNĐ | 0% |
-| **Lạc quan (p10 nhạy giá)** | $-0.5$ | $-4.7\%$ | 9.535 | 1,049 tỷ VNĐ | 477 triệu VNĐ | **+19.3%** |
-| **Kỳ vọng (Trung vị)** | $-1.0$ | $-9.1\%$ | 9.091 | 1,000 tỷ VNĐ | 455 triệu VNĐ | **+13.8%** |
-| **Bi quan (p90 nhạy giá)** | $-2.0$ | $-17.4\%$ | 8.264 | 909 triệu VNĐ | 413 triệu VNĐ | **+3.3%** |
+```powershell
+# Terminal 1 — Python ML Service (:8000)
+cd ml-py
+python -m uvicorn app.main:app --host 127.0.0.1 --port 8000
+```
+*(Hệ thống chạy mặc định không cần API key. Nếu muốn dùng LLM ngoài, thiết lập `LLM_PROVIDER="openai"` hoặc `"gemini"` và `LLM_API_KEY` trước khi chạy `uvicorn`.)*
 
-> [!NOTE]
-> Độ co giãn hòa vốn tính toán: $\varepsilon^* = -2.341$. Chỉ khi người tiêu dùng phản ứng nhạy giá hơn ngưỡng $-2.341$ (tương đương sản lượng sụt giảm hơn 20%), quyết định tăng giá mới bắt đầu gây thiệt hại cho lợi nhuận.
+```powershell
+# Terminal 2 — Go Simulation Engine & Gateway (:8080)
+cd engine-go
+go run ./cmd/engine
+```
+
+```powershell
+# Terminal 3 — React Web Frontend (:5173)
+cd web
+npm run dev
+```
+
+Mở trình duyệt tại **`http://localhost:5173`** (kiểm tra `/health` tại `http://127.0.0.1:8000/health` và `http://localhost:8080/api/health`). Kịch bản demo 3 phút và file mẫu xem tại [`docs/DEMO.md`](docs/DEMO.md).
+
+### Cách 2 — Chạy nhanh 1 Terminal không cần Backend / Wi-Fi (Offline Fixtures)
+
+```powershell
+# Windows PowerShell
+cd web
+$env:VITE_USE_FIXTURES="1"
+npm run dev
+```
+Hoặc chạy `npm run dev` thông thường rồi mở trực tiếp **`http://localhost:5173/?demo=1`**, hoặc bật nút chuyển **Offline Fixtures** ở góc trên bên phải ứng dụng.
 
 ---
 
-## 6. Cấu trúc mã nguồn chuẩn (Repository Layout)
+## 6. Kiểm thử & Xác minh (Verification Commands)
+
+```powershell
+# 1. Python ML unit, mapping, elasticity, backtest & NLQ tests (20 passed, 1 skipped do thiếu raw M5)
+cd ml-py; python -m pytest -q -rs
+
+# 2. Go static check, race detector & golden simulation tests
+cd engine-go; go vet ./...; go test -v -race ./...
+
+# 3. Frontend TypeScript strict build & Vitest component/flow tests (4 passed)
+cd web; npm run build; npm test
+
+# 4. E2E Live Full Flow: Upload VN CSV -> Map -> Commit -> Fit -> Simulate -> Optimize -> NLQ + CORS check
+python -u e2e/demo_path.py
+
+# 5. Cross-check Go /api/simulate vs công thức tham chiếu Python (ngưỡng <= 0.5%)
+python e2e/cross_check_py_go.py
+```
+
+---
+
+## 7. Cấu trúc Repository
 
 ```
 Hackathon_AI_For_Business/
-├── AGENTS.md                  # Quy tắc tối thượng cho AI Coding Agents (bắt buộc đọc đầu tiên)
-├── Makefile                   # Điều phối toàn bộ hệ thống (make data, make test, make dev)
-├── config/
-│   └── fx.json                # Tỷ giá quy đổi ngoại tệ sang integer VND (USD: 25.000 VND)
-├── contracts/                 # Hợp đồng chung (Shared Truth)
-│   ├── fixtures/
-│   │   └── elasticity_fixture.json   # Fixture kiểm thử chuẩn cho cả 3 tầng
-│   ├── elasticity_fixture.schema.json
-│   ├── simulate_request.schema.json
-│   └── decision_spec.schema.json
+├── AGENTS.md                        # Quy tắc phát triển cho mọi AI Agent & thành viên
+├── Makefile                         # Điều phối make data / make test / make dev (Unix)
+├── config/fx.json                   # Tỷ giá quy đổi minh họa (USD = 25.000 VND)
+├── contracts/                       # JSON schemas & fixtures dùng chung cho 3 tầng
+│   ├── fixtures/elasticity_fixture.json
+│   └── golden/                      # 4 golden tests (proposal + edge cases)
 ├── data/
-│   ├── synthetic/             # Bộ sinh dữ liệu v2 + các bộ dữ liệu kiểm định đã sinh
-│   │   ├── make_synthetic_data_v2.py # Bộ sinh dữ liệu tích hợp Lịch Việt Nam
-│   │   ├── check_elasticity_v2.py    # Kiểm tra độ thu hồi độ co giãn
-│   │   ├── vn_calendar.py            # Lịch lễ Tết và sự kiện thương mại điện tử VN
-│   │   └── out/                      # 8 bộ dữ liệu: fashion_shop_12, grocery_fmcg_15...
-│   ├── public/                # Bộ nạp dữ liệu công khai (M5 Walmart, Dunnhumby)
-│   │   └── README.md          # Hướng dẫn tải dữ liệu M5
-│   └── raw/                   # Dữ liệu kinh doanh nội bộ (git-ignored)
+│   ├── synthetic/                   # Bộ sinh dữ liệu v2, lịch VN (vn_calendar.py) & 8 bộ out/
+│   ├── public/README.md             # Hướng dẫn tải Kaggle M5 / Dunnhumby (không commit file raw)
+│   └── samples/nlq_questions.json   # 45 câu hỏi mẫu gắn nhãn VN/EN cho Phase 6
 ├── docs/
-│   ├── ARCHITECTURE.md        # Hợp đồng API chi tiết giữa Python, Go và React
-│   ├── ROADMAP.md             # Lộ trình 9 Phase (P0 -> P8) cho 2 thành viên A & B
-│   └── NLP_COLUMN_MAPPING.md  # Thiết kế tự động ánh xạ cột dữ liệu bằng NLP
-├── phases/                    # Hướng dẫn chi tiết từng Phase (P0 -> P8)
-│   ├── PHASE_0_foundation.md  # [Xong] Repo skeleton & frozen contracts
-│   ├── PHASE_1_data_layer.md  # [Đang chạy] Synthetic v2 + M5 Loader + Lịch VN
-│   └── ...
-├── ml-py/                     # 🐍 Python ML Service (FastAPI :8000)
-│   ├── pyproject.toml
+│   ├── ARCHITECTURE.md              # Đặc tả API & công thức toán học chuẩn
+│   ├── DEMO.md                      # Kịch bản bấm demo 3 phút & fallback offline
+│   ├── ENGINE.md                    # Kiến trúc Go engine & benchmark
+│   ├── LIMITS.md                    # Giới hạn phương pháp luận & phạm vi mô hình
+│   ├── NLP_COLUMN_MAPPING.md        # Thiết kế tầng ánh xạ cột tự động
+│   ├── ROADMAP.md                   # Kế hoạch thực thi 9 phase cho 2 thành viên
+│   └── VALIDATION.md                # Báo cáo thu hồi độ co giãn & backtest thực nghiệm
+├── ml-py/                           # 🐍 Python ML Service (:8000)
 │   ├── app/
-│   │   ├── main.py            # FastAPI service liveness & routing
-│   │   ├── data/              # calendar_vn.py, m5_loader.py, dunnhumby_loader.py
-│   │   └── schemas/           # Pydantic v2 models
-│   ├── scripts/               # export_schemas.py
-│   └── tests/                 # Unit & integration tests
-├── engine-go/                 # 🐹 Go Engine & API Gateway (:8080)
-│   ├── go.mod
-│   └── cmd/
-│       └── engine/
-│           └── main.go        # Reverse proxy & Monte Carlo simulation skeleton
-└── web/                       # ⚛️ React + TypeScript + Vite (:5173)
-    ├── package.json
-    └── src/
-        ├── App.tsx            # Dashboard chính
-        └── components/
-            └── DataSourceBadge.tsx # Badge nguồn dữ liệu bắt buộc
+│   │   ├── data/                    # calendar_vn.py, m5_loader.py, dunnhumby_loader.py
+│   │   ├── ingest/                  # profile.py, transform.py
+│   │   ├── mapping/                 # dictionary.py, scoring.py, assign.py, llm_adjudicator.py
+│   │   ├── features/build.py        # Ma trận đặc trưng Spec-C & loại ngày hết hàng
+│   │   ├── elasticity/fit.py        # Poisson GLM + HC1 SE + week-block bootstrap
+│   │   ├── backtest/run.py          # Holdout backtest lịch sử 14 ngày
+│   │   ├── llm/                     # client.py, parse.py, explain.py (post-check zero hallucination)
+│   │   ├── schemas/contracts.py     # Pydantic v2 models
+│   │   └── main.py                  # FastAPI server
+│   └── tests/                       # 6 test suites (contracts, data, mapping, elasticity, backtest, llm)
+├── engine-go/                       # 🐹 Go Simulation Engine & Gateway (:8080)
+│   ├── cmd/engine/main.go           # HTTP handlers, CORS dedup, reverse proxy -> ml-py
+│   └── internal/
+│       ├── sim/                     # simulate.go (splitmix64 Monte Carlo, scenarios, break-even)
+│       └── optimize/                # grid.go (Reverse What-If có ràng buộc)
+├── web/                             # ⚛️ React + TypeScript + Tailwind + Recharts (:5173)
+│   └── src/
+│       ├── api.ts                   # Client kết nối Go (:8080) & chế độ Offline Fixtures
+│       ├── i18n.ts                  # Copy giao diện & hàm formatVND (1.234.567 ₫)
+│       ├── components/DataSourceBadge.tsx
+│       └── screens/                 # 6 màn hình: Upload, Mapping, Assumptions, WhatIf, Reverse, Validation
+├── e2e/                             # Kiểm thử tích hợp 3 tầng (demo_path.py, cross_check_py_go.py)
+├── phases/                          # Đặc tả & Status Log chi tiết P0 -> P8
+└── slides/                          # Tài liệu thuyết trình & 6 ảnh chụp 1440x1080
+    ├── DECK_OUTLINE.md              # Dàn ý 13 slide (<= 25 từ/slide) + 90s speaker notes
+    ├── QA_PREP.md                   # 10 câu hỏi phản biện khó (3 câu/ý)
+    ├── NOTES.md                     # Checklist nộp bài & storyboard video 2 phút
+    └── screens/                     # 01_upload.png .. 06_validation.png
 ```
 
 ---
 
-## 7. Lộ trình phát triển 9 Phase (Hackathon Roadmap)
+## 8. Tiến độ 9 Phase (Hackathon Roadmap)
 
-| Phase | Tên Phase | Thành viên phụ trách | Trạng thái |
-| :---: | :--- | :---: | :---: |
-| **P0** | **Foundation & Contracts** (Repo skeleton, API health, contracts frozen) | **A + B** | ✅ **Hoàn thành** |
-| **P1** | **Data Layer** (Synthetic v2, VN calendar, M5 loader, quy đổi VND) | **A** | 🚀 **Đang triển khai** |
-| **P2** | **Ingestion & NLP Column Mapping** (Ánh xạ cột tự động) | **A** | ⏳ Tiếp theo |
-| **P3** | **Elasticity Engine & Backtest** (Hồi quy Poisson/OLS + kiểm định quá khứ) | **A** | ⏳ Kế tiếp |
-| **P4** | **Go Engine** (Mô phỏng Monte Carlo song song + Reverse What-If) | **B** | ⏳ Song song |
-| **P5** | **React Frontend** (Giao diện người dùng Vite + Tailwind + Recharts) | **B** | ⏳ Song song |
-| **P6** | **LLM Layer** (Phân tích câu hỏi tự nhiên & giải thích kết quả) | **A** | ⏳ Tiếp theo |
-| **P7** | **Integration & Demo Freeze** (Tích hợp toàn diện & đóng băng demo) | **B leads, A** | ⏳ Trước 14:00 13/11 |
-| **P8** | **Slides & Pitch Material** (Slide thuyết trình $\le 15$ trang + Video Demo 2 phút) | **A + B** | ⏳ Hạn nộp 23:59 13/11 |
-
----
-
-## 8. Hướng dẫn khởi chạy (Commands)
-
-```bash
-# 1. Sinh dữ liệu bán lẻ tổng hợp có tích hợp Lịch Việt Nam
-make data
-
-# 2. Chạy toàn bộ kiểm thử kiểm định 3 tầng (Python, Go, Web)
-make test
-
-# 3. Khởi động môi trường phát triển đồng thời (Python :8000, Go :8080, Web :5173)
-make dev
-```
+| Phase | Nội dung | Phụ trách | Trạng thái | Tài liệu |
+| :---: | :--- | :---: | :---: | :--- |
+| **P0** | Foundation & Contracts (Repo skeleton, schemas frozen) | A + B | ✅ Hoàn thành | [`PHASE_0_foundation.md`](phases/PHASE_0_foundation.md) |
+| **P1** | Data Layer (Synthetic v2, VN calendar, M5/Dunnhumby loaders) | A | ✅ Hoàn thành | [`PHASE_1_data_layer.md`](phases/PHASE_1_data_layer.md) |
+| **P2** | Ingestion & NLP Column Mapping (33/33 offline accuracy) | A | ✅ Hoàn thành | [`PHASE_2_ingestion_mapping.md`](phases/PHASE_2_ingestion_mapping.md) |
+| **P3** | Elasticity Engine (Spec-C GLM, bootstrap) & Backtest | A | ✅ Hoàn thành | [`PHASE_3_elasticity_backtest.md`](phases/PHASE_3_elasticity_backtest.md) |
+| **P4** | Go Engine (Stateless Monte Carlo + Reverse What-If Grid) | B | ✅ Hoàn thành | [`PHASE_4_go_engine.md`](phases/PHASE_4_go_engine.md) |
+| **P5** | React Frontend (6 màn hình, VND edge format, Badges) | B | ✅ Hoàn thành | [`PHASE_5_react_frontend.md`](phases/PHASE_5_react_frontend.md) |
+| **P6** | LLM Layer (NLQ Parser + Zero-Hallucination Explainer) | A | ✅ Hoàn thành | [`PHASE_6_llm_layer.md`](phases/PHASE_6_llm_layer.md) |
+| **P7** | Integration, Live Wiring, CORS/VN Fix, Demo Freeze | B + A | ✅ Hoàn thành | [`PHASE_7_integration.md`](phases/PHASE_7_integration.md) |
+| **P8** | Slides, Q&A Prep & 2-Minute Video Storyboard | A + B | 📝 Draft xong *(chờ nhóm edit & xuất PDF)* | [`PHASE_8_slides_pitch.md`](phases/PHASE_8_slides_pitch.md) |
 
 ---
 
-## 9. Đội ngũ & Giấy phép (Team & License)
+## 9. Giấy phép & Thông tin Nộp bài
 
-Dự án được xây dựng trong khuôn khổ cuộc thi **Hackathon AI for Business** (Hạn nộp bài: 23:59 13/11/2026; Chung kết Pitch: 19/11/2026).
-Phát hành theo giấy phép [MIT License](LICENSE).
+* Phát hành theo giấy phép [MIT License](LICENSE).
+* **Hackathon AI for Business Innovation 2026**: Nộp PDF (`<= 15` slide tiếng Anh) trước **23:59 ngày 13/11/2026**; Chung kết Pitch ngày **19/11/2026**.
