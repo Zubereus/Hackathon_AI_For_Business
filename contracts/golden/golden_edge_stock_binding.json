@@ -1,0 +1,19 @@
+{
+  "name": "edge_stock_binding",
+  "description": "Demand surge after price cut exceeds stock_available=10500, capping sold units and profit.",
+  "request": {
+    "product": {
+      "current_price_vnd": 100000,
+      "unit_cost_vnd": 50000,
+      "baseline_qty_per_period": 10000,
+      "stock_available": 10500,
+      "elasticity_samples": [-1.5]
+    },
+    "price_change_pct": -20.0,
+    "n_sims": 500,
+    "seed": 42
+  },
+  "expected_qty": 10500.0,
+  "expected_profit": 315000000.0
+}
+

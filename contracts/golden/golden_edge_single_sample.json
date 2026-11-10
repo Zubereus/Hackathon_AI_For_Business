@@ -1,0 +1,19 @@
+{
+  "name": "edge_single_sample_with_fixed_cost",
+  "description": "Single elasticity sample [-1.5] with fixed cost 10M VND; tests p5=p50=p95 equality when noise=0.",
+  "request": {
+    "product": {
+      "current_price_vnd": 200000,
+      "unit_cost_vnd": 120000,
+      "baseline_qty_per_period": 1000,
+      "fixed_cost_vnd": 10000000,
+      "elasticity_samples": [-1.5]
+    },
+    "price_change_pct": 10.0,
+    "n_sims": 500,
+    "seed": 123
+  },
+  "expected_qty": 866.7848,
+  "expected_profit": 76678483.75,
+  "expected_break_even_elasticity": -2.3412
+}

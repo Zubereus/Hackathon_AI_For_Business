@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SimulateRequest",
+  "type": "object",
+  "properties": {
+    "product": {
+      "type": "object",
+      "properties": {
+        "current_price_vnd": { "type": "integer" },
+        "unit_cost_vnd": { "type": "integer" },
+        "baseline_qty_per_period": { "type": "integer" },
+        "stock_available": { "type": ["integer", "null"] },
+        "fixed_cost_vnd": { "type": ["integer", "null"] },
+        "elasticity_samples": {
+          "type": "array",
+          "items": { "type": "number" }
+        }
+      },
+      "required": [
+        "current_price_vnd",
+        "unit_cost_vnd",
+        "baseline_qty_per_period",
+        "elasticity_samples"
+      ]
+    },
+    "price_change_pct": { "type": "number" },
+    "n_sims": { "type": "integer", "default": 10000 },
+    "seed": { "type": "integer", "default": 42 }
+  },
+  "required": ["product", "price_change_pct"]
+}
+

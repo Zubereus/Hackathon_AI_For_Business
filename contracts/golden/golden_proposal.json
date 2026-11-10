@@ -1,0 +1,58 @@
+{
+  "name": "proposal_golden_case",
+  "description": "Exact formula validation from docs/ARCHITECTURE.md (P0=100k, cost=60k, Q0=10k, P1=110k)",
+  "cases": [
+    {
+      "label": "e_minus_0_5",
+      "request": {
+        "product": {
+          "current_price_vnd": 100000,
+          "unit_cost_vnd": 60000,
+          "baseline_qty_per_period": 10000,
+          "elasticity_samples": [-0.5]
+        },
+        "price_change_pct": 10.0,
+        "n_sims": 100,
+        "seed": 42
+      },
+      "expected_qty": 9534.6259,
+      "expected_profit": 476731294.6,
+      "expected_break_even_elasticity": -2.3412
+    },
+    {
+      "label": "e_minus_1_0",
+      "request": {
+        "product": {
+          "current_price_vnd": 100000,
+          "unit_cost_vnd": 60000,
+          "baseline_qty_per_period": 10000,
+          "elasticity_samples": [-1.0]
+        },
+        "price_change_pct": 10.0,
+        "n_sims": 100,
+        "seed": 42
+      },
+      "expected_qty": 9090.9091,
+      "expected_profit": 454545454.5,
+      "expected_break_even_elasticity": -2.3412
+    },
+    {
+      "label": "e_minus_2_0",
+      "request": {
+        "product": {
+          "current_price_vnd": 100000,
+          "unit_cost_vnd": 60000,
+          "baseline_qty_per_period": 10000,
+          "elasticity_samples": [-2.0]
+        },
+        "price_change_pct": 10.0,
+        "n_sims": 100,
+        "seed": 42
+      },
+      "expected_qty": 8264.4628,
+      "expected_profit": 413223140.5,
+      "expected_break_even_elasticity": -2.3412
+    }
+  ]
+}
+

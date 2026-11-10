@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ElasticityFixturePayload",
+  "type": "object",
+  "properties": {
+    "period_days": {
+      "type": "integer",
+      "description": "Simulation or observation period in days"
+    },
+    "data_label": {
+      "type": "string",
+      "enum": ["SYNTHETIC", "PUBLIC_M5", "PUBLIC_DUNNHUMBY", "USER"],
+      "description": "Data provenance badge"
+    },
+    "products": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/ElasticityFixtureProduct"
+      }
+    }
+  },
+  "required": ["period_days", "data_label", "products"],
+  "$defs": {
+    "ElasticityFixtureProduct": {
+      "type": "object",
+      "properties": {
+        "product_id": { "type": "string" },
+        "product_name": { "type": "string" },
+        "current_price_vnd": { "type": "integer" },
+        "unit_cost_vnd": { "type": "integer" },
+        "baseline_qty_per_period": { "type": "integer" },
+        "stock_available": { "type": ["integer", "null"] },
+        "elasticity_median": { "type": "number" },
+        "elasticity_se": { "type": "number" },
+        "elasticity_samples": {
+          "type": "array",
+          "items": { "type": "number" }
+        }
+      },
+      "required": [
+        "product_id",
+        "product_name",
+        "current_price_vnd",
+        "unit_cost_vnd",
+        "baseline_qty_per_period",
+        "elasticity_median",
+        "elasticity_se",
+        "elasticity_samples"
+      ]
+    }
+  }
+}
+

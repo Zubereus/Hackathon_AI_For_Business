@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "DecisionSpec",
+  "type": "object",
+  "properties": {
+    "product_id": { "type": "string" },
+    "change_type": { "type": "string", "enum": ["price_pct"] },
+    "change_value": { "type": "number", "minimum": -50.0, "maximum": 100.0 },
+    "horizon_days": { "type": "integer", "minimum": 7, "maximum": 90, "default": 30 },
+    "start_date": { "type": ["string", "null"] }
+  },
+  "required": ["product_id", "change_type", "change_value"]
+}
+

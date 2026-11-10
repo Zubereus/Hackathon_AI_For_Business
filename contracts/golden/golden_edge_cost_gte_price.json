@@ -1,0 +1,19 @@
+{
+  "name": "edge_cost_gte_price",
+  "description": "Selling price P1=80000 drops below unit cost=85000; profit is negative and break_even_elasticity is null (no NaN/Inf).",
+  "request": {
+    "product": {
+      "current_price_vnd": 100000,
+      "unit_cost_vnd": 85000,
+      "baseline_qty_per_period": 5000,
+      "elasticity_samples": [-1.5]
+    },
+    "price_change_pct": -20.0,
+    "n_sims": 500,
+    "seed": 42
+  },
+  "expected_qty": 6987.7124,
+  "expected_profit": -34938562.14,
+  "expect_nil_break_even": true
+}
+

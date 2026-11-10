@@ -1,0 +1,13 @@
+{
+  "f6feba1c0bcd606ee6d3d761d5d17d29": {
+    "date": "Ngày bán",
+    "product_id": "Mã SP",
+    "product_name": "Tên sản phẩm",
+    "category": "Ngành hàng",
+    "price": "Giá bán (VNĐ)",
+    "unit_cost": "Giá vốn",
+    "quantity": "SL bán",
+    "stock": "Tồn kho",
+    "promo": "KM"
+  }
+}
