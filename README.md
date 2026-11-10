@@ -114,6 +114,7 @@ go run ./cmd/engine
 ```powershell
 # Terminal 3 — React Web Frontend (:5173)
 cd web
+npm install
 npm run dev
 ```
 
