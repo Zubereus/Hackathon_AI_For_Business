@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { ApiClient, DEFAULT_USE_FIXTURES } from './api';
 import { DataSourceBadge } from './components/DataSourceBadge';
+import { MoonIcon, SunIcon } from './components/Icons';
 import { STRINGS } from './i18n';
 import { AssumptionsScreen } from './screens/AssumptionsScreen';
 import { MappingScreen } from './screens/MappingScreen';
@@ -28,6 +29,28 @@ export const App: React.FC<AppProps> = ({
   initialScreen = 'upload',
   initialUseFixtures = DEFAULT_USE_FIXTURES,
 }) => {
+  const [isDark, setIsDark] = useState<boolean>(() => {
+    try {
+      return window.localStorage.getItem('whatif_theme') !== 'light';
+    } catch (error) {
+      console.warn('Unable to read saved theme preference.', error);
+      return true;
+    }
+  });
+
+  useEffect(() => {
+    if (isDark) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    try {
+      window.localStorage.setItem('whatif_theme', isDark ? 'dark' : 'light');
+    } catch (error) {
+      console.warn('Unable to save theme preference.', error);
+    }
+  }, [isDark]);
+
   const [useFixtures, setUseFixtures] = useState<boolean>(() => {
     if (typeof window !== 'undefined' && window.location.search) {
       const params = new URLSearchParams(window.location.search);
@@ -379,41 +402,59 @@ export const App: React.FC<AppProps> = ({
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900">
-      {/* Top Bar */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-20">
+    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-[#090D16] text-slate-900 dark:text-slate-100 transition-colors">
+      {/* Top Bar with Glassmorphic Header */}
+      <header className="bg-white/90 dark:bg-[#0E1526]/90 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/80 sticky top-0 z-30 transition-all shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-slate-900 text-white font-black flex items-center justify-center text-sm">
+          <div className="flex items-center gap-3.5">
+            <div className="w-10 h-10 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-950 font-extrabold flex items-center justify-center text-sm shadow-sm ring-1 ring-slate-900/10 dark:ring-white/20 tracking-tight">
               W?
             </div>
             <div>
-              <h1 className="text-base font-extrabold text-slate-900 leading-tight">
-                {STRINGS.appTitle}
-              </h1>
-              <p className="text-xs text-slate-500">{STRINGS.appSubtitle}</p>
+              <div className="flex items-center gap-2">
+                <h1 className="text-base font-bold text-slate-900 dark:text-white tracking-tight leading-tight">
+                  {STRINGS.appTitle}
+                </h1>
+                <span className="text-[10px] font-semibold tracking-wider uppercase px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">
+                  Decision Sim
+                </span>
+              </div>
+              <p className="text-xs text-slate-500 dark:text-slate-400 font-normal">{STRINGS.appSubtitle}</p>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
             <DataSourceBadge label={activeLabel} />
-            <label className="inline-flex items-center gap-2 text-xs font-medium text-slate-700 bg-slate-100 border border-slate-300 rounded-full px-3 py-1 cursor-pointer">
+            <label className="inline-flex items-center gap-2 text-xs font-medium text-slate-600 dark:text-slate-300 bg-slate-100/90 dark:bg-slate-800/90 hover:bg-slate-200/70 dark:hover:bg-slate-700/70 transition-colors border border-slate-200 dark:border-slate-700 rounded-full px-3 py-1 cursor-pointer select-none">
               <input
                 type="checkbox"
                 checked={useFixtures}
                 onChange={(e) => setUseFixtures(e.target.checked)}
+                className="w-3.5 h-3.5 text-indigo-600 rounded border-slate-300 dark:border-slate-600 focus:ring-indigo-500 cursor-pointer"
               />
-              {useFixtures ? 'Offline Fixtures' : 'Live Go API (:8080)'}
+              <span className="tabular-nums font-mono text-[11px]">
+                {useFixtures ? 'Offline Fixtures' : 'Live Go API (:8080)'}
+              </span>
             </label>
+
+            {/* Dark / Light Mode Toggle for Instant Eye Comfort */}
+            <button
+              type="button"
+              onClick={() => setIsDark(!isDark)}
+              title={isDark ? 'Switch to Light Theme' : 'Switch to Eye-Comfort Dark Theme'}
+              className="p-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-slate-700 transition-colors"
+            >
+              {isDark ? <SunIcon className="w-4 h-4 text-amber-400" /> : <MoonIcon className="w-4 h-4 text-slate-700" />}
+            </button>
           </div>
         </div>
 
-        {/* Step Navigation */}
+        {/* Executive Stepper Navigation */}
         <nav
           aria-label="Workflow steps"
-          className="max-w-7xl mx-auto px-4 sm:px-6 pb-2.5 flex items-center gap-2 overflow-x-auto"
+          className="max-w-7xl mx-auto px-4 sm:px-6 py-1.5 flex items-center gap-1.5 overflow-x-auto border-t border-slate-100 dark:border-slate-800/60"
         >
-          {STRINGS.nav.map((item) => {
+          {STRINGS.nav.map((item, idx) => {
             const isActive = activeScreen === item.id;
             const needsProducts =
               item.id === 'assumptions' || item.id === 'whatif' || item.id === 'reverse';
@@ -426,16 +467,31 @@ export const App: React.FC<AppProps> = ({
                 type="button"
                 disabled={isDisabled}
                 onClick={() => setActiveScreen(item.id)}
-                className={`whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-semibold ${
+                className={`group flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all duration-150 whitespace-nowrap ${
                   isActive
-                    ? 'bg-slate-900 text-white'
+                    ? 'bg-slate-900 dark:bg-indigo-600 text-white shadow-sm ring-1 ring-slate-900/10 dark:ring-indigo-500/20'
                     : isDisabled
-                    ? 'text-slate-400 cursor-not-allowed bg-slate-100'
-                    : 'text-slate-700 hover:bg-slate-100 border border-slate-200 bg-white'
+                    ? 'text-slate-400 dark:text-slate-600 cursor-not-allowed opacity-50'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-slate-800/60 active:bg-slate-200/60'
                 }`}
               >
-                <span className="opacity-70 mr-1">{item.step}.</span>
-                {item.label}
+                <span
+                  className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold transition-colors ${
+                    isActive
+                      ? 'bg-white/20 text-white'
+                      : isDisabled
+                      ? 'bg-slate-200/60 dark:bg-slate-800 text-slate-400 dark:text-slate-600'
+                      : 'bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 group-hover:bg-slate-300 dark:group-hover:bg-slate-700'
+                  }`}
+                >
+                  {item.step}.
+                </span>
+                <span className="tracking-tight">{item.label}</span>
+                {idx < STRINGS.nav.length - 1 && (
+                  <span className="hidden md:inline-block ml-1 text-slate-300 dark:text-slate-700 pointer-events-none select-none">
+                    /
+                  </span>
+                )}
               </button>
             );
           })}
@@ -527,8 +583,11 @@ export const App: React.FC<AppProps> = ({
         {activeScreen === 'validation' && <ValidationScreen activeLabel={activeLabel} />}
       </main>
 
-      <footer className="border-t border-slate-200 bg-white py-3 text-center text-xs text-slate-500">
-        {STRINGS.disclaimers.zeroBrowserMath} · Every dataset & forecast displays its provenance badge.
+      <footer className="border-t border-slate-200/80 dark:border-slate-800/80 bg-white/70 dark:bg-[#0E1526]/70 backdrop-blur-sm py-4 text-xs text-slate-500 dark:text-slate-400">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-wrap items-center justify-between gap-3 text-slate-500 dark:text-slate-400">
+          <p>{STRINGS.disclaimers.zeroBrowserMath}</p>
+          <p className="text-slate-400 dark:text-slate-500">Honest Econometrics · Every screen carries a provenance badge</p>
+        </div>
       </footer>
     </div>
   );

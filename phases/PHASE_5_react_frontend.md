@@ -49,3 +49,19 @@ Write component tests for the cases in the phase file, run build + tests, save s
     - `npm run build` (`tsc && vite build`): exit code 0 (`✓ 636 modules transformed`, built in `6.42s`).
     - `npm test` (`vitest run`): **4 / 4 passed in `450ms`** (`formatVND`, `DataSourceBadge`, `MappingScreen` required-field Confirm blocker, offline fixture flow with zero `console.error` calls).
   - New dependencies added to `web/package.json` (per `AGENTS.md` allowance): `recharts@^2.12.7` (charting library), `tailwindcss@^3.4.14`, `postcss`, `autoprefixer` (utility styling), and dev/test runners `vitest@^2.1.5`, `@testing-library/react`, `@testing-library/jest-dom`, `@testing-library/user-event`, `jsdom` (required for headless component tests under `make test`).
+- **2026-11-10 (Frontend Craft & UX Polish — Impeccable Skill)**:
+  - Addressed user feedback regarding eye strain, harsh visual contrast, and cramped ergonomics across all screens.
+  - Implemented authored SVG icon system (`web/src/components/Icons.tsx`) replacing unicode text glyphs (`⚠`, `↑`, `ℹ`, `■`, `▲`, `●`, `▼`) in strict compliance with the Impeccable craft floor guidelines.
+  - Softened overall UI color palette and depth hierarchy in `web/src/index.css` (ambient mesh background, smooth custom scrollbars, tactile range sliders, and tabular numerals).
+  - Modernized `web/src/App.tsx` with a glassmorphic top header and an executive workflow stepper with progress feedback.
+  - Revamped `UploadScreen.tsx` with welcoming drag-and-drop states and clean benchmark demo cards.
+  - Refined `MappingScreen.tsx` with comfortable table padding, accessible dropdowns, and clean confidence meters.
+  - Elevated `AssumptionsScreen.tsx` by adding intuitive horizontal confidence interval (CI) visual meter bars for each SKU's bootstrap elasticity uncertainty.
+  - Polished `WhatIfScreen.tsx` with restructured scenario cards, quick NLQ suggestion chips, and sleek dark tooltips on the Recharts Monte Carlo distribution.
+  - Streamlined `ReverseWhatIfScreen.tsx` and `ValidationScreen.tsx` with clean tabular alignments.
+  - Verified with `impeccable detect --json` (0 antipattern findings), `npm test` (4/4 passed), and `npm run build` (clean production build in 6.80s).
+- **2026-11-10 (Eye-Care Dark Theme & Balanced Upload Grid Redesign)**:
+  - Added native Dark Mode (`dark:`) support across all 6 screens with a sun/moon quick-toggle in the top header (defaults to dark mode to immediately eliminate ocular glare and eye-cramping).
+  - Completely redesigned `UploadScreen.tsx` from the stacked blank dashed box layout into a balanced, side-by-side 2-column layout (7-col interactive dropzone with format badges, 5-col featured benchmark scenario cards visible above the fold without scrolling).
+  - Cleaned palette to remove AI gradient cliches flagged by Impeccable detector.
+  - Verified: `impeccable detect --json` (0 findings), `npm test` (4/4 passed in 1.2s), `npm run build` (production build clean in 12.2s).

@@ -1,5 +1,6 @@
 import React from 'react';
 import { DataSourceBadge } from '../components/DataSourceBadge';
+import { CheckIcon, InfoIcon, ShieldCheckIcon } from '../components/Icons';
 import { DataLabel } from '../types';
 
 interface ValidationScreenProps {
@@ -73,12 +74,13 @@ const BACKTEST_EVENTS = [
 export const ValidationScreen: React.FC<ValidationScreenProps> = ({ activeLabel }) => {
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-4 bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+      {/* Header */}
+      <div className="flex flex-wrap items-center justify-between gap-4 bg-white/80 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/80 dark:border-slate-800/80 rounded-2xl p-6 shadow-sm">
         <div>
-          <h2 className="text-xl font-bold text-slate-900">
+          <h2 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">
             Step 6: Econometric Validation & Backtest Evidence
           </h2>
-          <p className="text-sm text-slate-600 mt-1">
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 max-w-2xl">
             Read-only benchmark record mirrored directly from docs/VALIDATION.md. Zero fabricated accuracy or savings claims.
           </p>
         </div>
@@ -86,108 +88,122 @@ export const ValidationScreen: React.FC<ValidationScreenProps> = ({ activeLabel 
       </div>
 
       {/* Spec-C Recovery Benchmark */}
-      <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-4">
+      <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/80 dark:border-slate-800/80 rounded-2xl p-5 shadow-sm space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
-            <h3 className="text-base font-bold text-slate-900">
+            <h3 className="text-base font-bold text-slate-900 dark:text-white tracking-tight">
               Synthetic Ground-Truth Elasticity Recovery (Spec-C GLM + Week-Block Bootstrap)
             </h3>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
               Trained cleanly with Tet lunar distance, double-day peaks (9.9, 11.11, 12.12), payday, weekday, and promotional controls.
             </p>
           </div>
           <DataSourceBadge label="SYNTHETIC" />
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-slate-200 text-sm">
-            <thead className="bg-slate-50">
-              <tr>
-                <th className="px-4 py-2.5 text-left font-semibold text-slate-700">Dataset Scenario</th>
-                <th className="px-4 py-2.5 text-right font-semibold text-slate-700">SKUs</th>
-                <th className="px-4 py-2.5 text-right font-semibold text-slate-700">MAE |ê - e|</th>
-                <th className="px-4 py-2.5 text-right font-semibold text-slate-700">90% CI Coverage</th>
-                <th className="px-4 py-2.5 text-right font-semibold text-slate-700">Spearman r</th>
-                <th className="px-4 py-2.5 text-left font-semibold text-slate-700">Diagnostic Notes</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {SYNTHETIC_RECOVERY_ROWS.map((row) => (
-                <tr key={row.scenario}>
-                  <td className="px-4 py-2.5 font-mono text-xs font-semibold text-slate-900">
-                    {row.scenario}
-                  </td>
-                  <td className="px-4 py-2.5 text-right font-mono">{row.skus}</td>
-                  <td className="px-4 py-2.5 text-right font-mono">{row.mae}</td>
-                  <td className="px-4 py-2.5 text-right font-mono">{row.ci90}</td>
-                  <td className="px-4 py-2.5 text-right font-mono">{row.corr}</td>
-                  <td className="px-4 py-2.5 text-xs text-slate-600">{row.notes}</td>
+        <div className="overflow-hidden rounded-xl border border-slate-200/70 dark:border-slate-800">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-slate-200/80 dark:divide-slate-800 text-sm">
+              <thead className="bg-slate-50/75 dark:bg-slate-950/70">
+                <tr>
+                  <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Dataset Scenario</th>
+                  <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">SKUs</th>
+                  <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">MAE |ê - e|</th>
+                  <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">90% CI Coverage</th>
+                  <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Spearman r</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Diagnostic Notes</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800/70">
+                {SYNTHETIC_RECOVERY_ROWS.map((row) => (
+                  <tr key={row.scenario} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition-colors">
+                    <td className="px-4 py-2.5 font-mono text-xs font-semibold text-slate-900 dark:text-white">
+                      {row.scenario}
+                    </td>
+                    <td className="px-4 py-2.5 text-right font-mono tabular-nums text-slate-700 dark:text-slate-300">{row.skus}</td>
+                    <td className="px-4 py-2.5 text-right font-mono tabular-nums text-slate-700 dark:text-slate-300">{row.mae}</td>
+                    <td className="px-4 py-2.5 text-right font-mono tabular-nums font-semibold text-emerald-600 dark:text-emerald-400">{row.ci90}</td>
+                    <td className="px-4 py-2.5 text-right font-mono tabular-nums font-semibold text-indigo-600 dark:text-indigo-400">{row.corr}</td>
+                    <td className="px-4 py-2.5 text-xs text-slate-600 dark:text-slate-400">{row.notes}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
       {/* Out-of-time Backtest Summary */}
-      <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-4">
+      <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/80 dark:border-slate-800/80 rounded-2xl p-5 shadow-sm space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
-            <h3 className="text-base font-bold text-slate-900">
+            <h3 className="text-base font-bold text-slate-900 dark:text-white tracking-tight">
               Out-of-Time Historical Price-Change Backtest (19 Events)
             </h3>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
               Model trained strictly prior to price-change date (<code>t &lt; change_date</code>), evaluated on 14-day post-change holdout vs trailing 14-day naive baseline.
             </p>
           </div>
-          <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-300">
-            18 / 19 Events (94.7%) Beat Naive Baseline
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/50">
+            <CheckIcon className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+            <span>18 / 19 Events (94.7%) Beat Naive Baseline</span>
           </span>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-slate-200 text-sm">
-            <thead className="bg-slate-50">
-              <tr>
-                <th className="px-4 py-2.5 text-left font-semibold text-slate-700">Dataset</th>
-                <th className="px-4 py-2.5 text-right font-semibold text-slate-700">Beats Naive</th>
-                <th className="px-4 py-2.5 text-right font-semibold text-slate-700">Mean Holdout WAPE</th>
-                <th className="px-4 py-2.5 text-right font-semibold text-slate-700">80% Interval Coverage</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {BACKTEST_EVENTS.map((row) => (
-                <tr key={row.scenario}>
-                  <td className="px-4 py-2.5 font-mono text-xs font-semibold text-slate-900">
-                    {row.scenario}
-                  </td>
-                  <td className="px-4 py-2.5 text-right font-mono">{row.events}</td>
-                  <td className="px-4 py-2.5 text-right font-mono">{row.meanWape}</td>
-                  <td className="px-4 py-2.5 text-right font-mono">{row.coverage80}</td>
+        <div className="overflow-hidden rounded-xl border border-slate-200/70 dark:border-slate-800">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-slate-200/80 dark:divide-slate-800 text-sm">
+              <thead className="bg-slate-50/75 dark:bg-slate-950/70">
+                <tr>
+                  <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Dataset</th>
+                  <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Beats Naive</th>
+                  <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Mean Holdout WAPE</th>
+                  <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">80% Interval Coverage</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800/70">
+                {BACKTEST_EVENTS.map((row) => (
+                  <tr key={row.scenario} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition-colors">
+                    <td className="px-4 py-2.5 font-mono text-xs font-semibold text-slate-900 dark:text-white">
+                      {row.scenario}
+                    </td>
+                    <td className="px-4 py-2.5 text-right font-mono tabular-nums font-semibold text-slate-800 dark:text-slate-200">{row.events}</td>
+                    <td className="px-4 py-2.5 text-right font-mono tabular-nums text-slate-700 dark:text-slate-300">{row.meanWape}</td>
+                    <td className="px-4 py-2.5 text-right font-mono tabular-nums font-semibold text-emerald-600 dark:text-emerald-400">{row.coverage80}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
 
-        <p className="text-xs text-slate-600 bg-slate-50 border border-slate-200 rounded-lg p-3">
-          <strong>Honest failure log:</strong> 1 event (grocery_fmcg_15 SKU P04 on 2025-11-11) lost to trailing naive (WAPE 20.6% vs 17.5%) because a multiplicative promo x double-day peak saturated demand variance (80% interval coverage remained 100.0%).
-        </p>
+        <div className="text-xs text-slate-600 dark:text-slate-400 bg-slate-50/80 dark:bg-slate-950/60 border border-slate-200/70 dark:border-slate-800 rounded-xl p-3 flex items-start gap-2.5">
+          <InfoIcon className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
+          <div>
+            <strong className="text-slate-800 dark:text-slate-200">Honest failure log:</strong> 1 event (grocery_fmcg_15 SKU P04 on 2025-11-11) lost to trailing naive (WAPE 20.6% vs 17.5%) because a multiplicative promo x double-day peak saturated demand variance (80% interval coverage remained 100.0%).
+          </div>
+        </div>
       </div>
 
       {/* Column Mapping & NLQ Guardrails */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-          <h4 className="text-sm font-bold text-slate-900 mb-1">NLP Column Mapping Accuracy</h4>
-          <p className="text-2xl font-bold font-mono text-slate-900">33 / 33 (100%)</p>
-          <p className="text-xs text-slate-600 mt-1">
+        <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/80 dark:border-slate-800/80 rounded-2xl p-5 shadow-sm">
+          <div className="flex items-center gap-2 mb-1">
+            <ShieldCheckIcon className="w-4 h-4 text-indigo-500" />
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">NLP Column Mapping Accuracy</h4>
+          </div>
+          <p className="text-2xl font-extrabold font-mono text-slate-900 dark:text-white tracking-tight mt-1">33 / 33 (100%)</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
             Verified across 5 chaotic variant schemas (Vietnamese headers, accented strings, shuffled columns, English receipt-level transactions, missing cost/stock). Zero false high-confidence assignments.
           </p>
         </div>
-        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-          <h4 className="text-sm font-bold text-slate-900 mb-1">NLQ Guardrails & Go Engine Speed</h4>
-          <p className="text-2xl font-bold font-mono text-slate-900">38.8 ms / 505k draws</p>
-          <p className="text-xs text-slate-600 mt-1">
+        <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/80 dark:border-slate-800/80 rounded-2xl p-5 shadow-sm">
+          <div className="flex items-center gap-2 mb-1">
+            <ShieldCheckIcon className="w-4 h-4 text-emerald-500" />
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">NLQ Guardrails & Go Engine Speed</h4>
+          </div>
+          <p className="text-2xl font-extrabold font-mono text-slate-900 dark:text-white tracking-tight mt-1">38.8 ms / 505k draws</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
             NLQ test suite: 30/30 valid questions parsed cleanly, 15/15 out-of-range/unknown SKUs rejected to manual form. Go optimizer executes 101 grid candidates x 5,000 sims in ~38.8 ms (byte-identical on 1 vs 8+ cores).
           </p>
         </div>

@@ -58,7 +58,7 @@ export function formatPct(val: number | null | undefined, decimals = 1): string 
 
 export const STRINGS = {
   appTitle: 'What-If AI',
-  appSubtitle: 'Simulate before you decide — Retail elasticity & counterfactual planning',
+  appSubtitle: 'Counterfactual price elasticity & scenario simulator',
   nav: [
     { id: 'upload' as ScreenId, step: '1', label: 'Upload Data' },
     { id: 'mapping' as ScreenId, step: '2', label: 'Confirm Columns' },
@@ -71,12 +71,12 @@ export const STRINGS = {
     SYNTHETIC: {
       text: 'SYNTHETIC',
       symbol: '◆',
-      tooltip: 'Mathematically generated synthetic retail data for algorithm verification.',
+      tooltip: 'Synthetic benchmark data generated for algorithm verification.',
     },
     PUBLIC_M5: {
       text: 'PUBLIC (M5)',
       symbol: '◎',
-      tooltip: `Public M5 Walmart retail benchmark — ${FX_CONFIG.disclaimer}`,
+      tooltip: `Public M5 Walmart benchmark — ${FX_CONFIG.disclaimer}`,
     },
     PUBLIC_DUNNHUMBY: {
       text: 'PUBLIC (DUNNHUMBY)',
@@ -86,15 +86,15 @@ export const STRINGS = {
     USER: {
       text: 'YOUR DATA',
       symbol: '●',
-      tooltip: 'Your uploaded business sales CSV.',
+      tooltip: 'Uploaded store sales CSV.',
     },
   } satisfies Record<DataLabel, { text: string; symbol: string; tooltip: string }>,
   disclaimers: {
     observational:
-      'Method note: Elasticity estimates are controlled observational estimates from historical variation, not proven causality.',
+      'Method note: controlled observational estimates from historical variation, not proven causality.',
     rangesNotPromises:
-      'Ranges, not promises: Outcomes span 10th–90th percentile elasticity uncertainty from bootstrap resampling.',
-    zeroBrowserMath: 'All forecasts and probabilities are computed deterministically by the Go/Python engine.',
+      'Ranges, not promises: 10th–90th percentile bootstrap elasticity uncertainty.',
+    zeroBrowserMath: 'All forecasts computed deterministically by the engine.',
   },
 };
 

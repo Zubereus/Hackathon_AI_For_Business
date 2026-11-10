@@ -38,6 +38,28 @@ describe('DataSourceBadge', () => {
   });
 });
 
+describe('theme toggle', () => {
+  it('switches between light and dark themes and remembers the selection', () => {
+    window.localStorage.removeItem('whatif_theme');
+    const app = render(<App initialUseFixtures={true} />);
+
+    const themeToggle = screen.getByTitle('Switch to Light Theme');
+    expect(document.documentElement).toHaveClass('dark');
+
+    fireEvent.click(themeToggle);
+    expect(document.documentElement).not.toHaveClass('dark');
+    expect(window.localStorage.getItem('whatif_theme')).toBe('light');
+
+    app.unmount();
+    render(<App initialUseFixtures={true} />);
+    expect(document.documentElement).not.toHaveClass('dark');
+
+    fireEvent.click(screen.getByTitle('Switch to Eye-Comfort Dark Theme'));
+    expect(document.documentElement).toHaveClass('dark');
+    expect(window.localStorage.getItem('whatif_theme')).toBe('dark');
+  });
+});
+
 describe('MappingScreen required field guardrail', () => {
   it('disables Confirm button and shows red missing-required alert when required fields are unmapped', () => {
     const onChangeMapping = vi.fn();

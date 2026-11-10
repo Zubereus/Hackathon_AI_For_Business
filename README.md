@@ -98,6 +98,9 @@ Mở **3 cửa sổ terminal / PowerShell** tại thư mục gốc của reposit
 ```powershell
 # Terminal 1 — Python ML Service (:8000)
 cd ml-py
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -e .
 python -m uvicorn app.main:app --host 127.0.0.1 --port 8000
 ```
 *(Hệ thống chạy mặc định không cần API key. Nếu muốn dùng LLM ngoài, thiết lập `LLM_PROVIDER="openai"` hoặc `"gemini"` và `LLM_API_KEY` trước khi chạy `uvicorn`.)*
