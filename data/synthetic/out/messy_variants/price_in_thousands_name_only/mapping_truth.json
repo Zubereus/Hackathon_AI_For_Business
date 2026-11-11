@@ -1,0 +1,18 @@
+{
+  "canonical_to_source": {
+    "date": "Ngày",
+    "product_name": "Sản phẩm",
+    "price": "Đơn giá (nghìn đồng)",
+    "quantity": "Số lượng",
+    "unit_cost": "Chi phí/đv (nghìn đồng)"
+  },
+  "meta": {
+    "date_format": "%d-%m-%y",
+    "price_unit": 1000,
+    "missing": [
+      "product_id",
+      "category",
+      "stock"
+    ]
+  }
+}

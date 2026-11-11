@@ -1,0 +1,18 @@
+{
+  "canonical_to_source": {
+    "date": "timestamp",
+    "product_id": "sku",
+    "product_name": "item_name",
+    "price": "unit_price",
+    "quantity": "qty"
+  },
+  "meta": {
+    "grain": "transaction",
+    "aggregate": "sum(qty) per date+sku, price=qty-weighted mean",
+    "missing": [
+      "category",
+      "unit_cost",
+      "stock"
+    ]
+  }
+}

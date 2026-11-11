@@ -1,0 +1,18 @@
+{
+  "canonical_to_source": {
+    "date": "date",
+    "product_id": "sku",
+    "product_name": "item",
+    "category": "group",
+    "price": "sell_price",
+    "quantity": "units"
+  },
+  "meta": {
+    "date_format": "%Y-%m-%d",
+    "price_unit": 1,
+    "missing": [
+      "unit_cost",
+      "stock"
+    ]
+  }
+}

@@ -3,6 +3,7 @@ import { ApiClient, DEFAULT_USE_FIXTURES } from './api';
 import { DataSourceBadge } from './components/DataSourceBadge';
 import { MoonIcon, SunIcon } from './components/Icons';
 import { STRINGS } from './i18n';
+import { loadSampleCsv } from './sampleDatasets';
 import { AssumptionsScreen } from './screens/AssumptionsScreen';
 import { MappingScreen } from './screens/MappingScreen';
 import { ReverseWhatIfScreen } from './screens/ReverseWhatIfScreen';
@@ -70,6 +71,7 @@ export const App: React.FC<AppProps> = ({
     return initialScreen;
   });
   const [activeLabel, setActiveLabel] = useState<DataLabel>('SYNTHETIC');
+  const [uploadDataLabel, setUploadDataLabel] = useState<DataLabel>('USER');
   const [loading, setLoading] = useState(false);
   const [nlqLoading, setNlqLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -215,13 +217,13 @@ export const App: React.FC<AppProps> = ({
       await runSimulateInternal(fitData.products, firstId, 10, seed);
       setActiveScreen('assumptions');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed loading demo dataset.');
+      setError(err instanceof Error ? err.message : 'Could not load the sample dataset.');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleUploadCsv = async (file: File) => {
+  const handleUploadCsv = async (file: File, dataLabel: DataLabel = 'USER') => {
     setLoading(true);
     setError(null);
     try {
@@ -245,10 +247,24 @@ export const App: React.FC<AppProps> = ({
       setMappingItems(mapRes.mapping);
       setSourceToCanonical(initialSourceMap);
       setMappingWarnings(mapRes.warnings);
-      setActiveLabel('USER');
+      setUploadDataLabel(dataLabel);
+      setActiveLabel(dataLabel);
       setActiveScreen('mapping');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed profiling uploaded CSV.');
+      setError(err instanceof Error ? err.message : 'Could not read that CSV file.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleLoadSample = async (sampleId: string) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const sampleFile = await loadSampleCsv(sampleId);
+      await handleUploadCsv(sampleFile, 'SYNTHETIC');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Could not load the synthetic sample.');
     } finally {
       setLoading(false);
     }
@@ -282,7 +298,7 @@ export const App: React.FC<AppProps> = ({
       }
       const commitRes = await client.commitMapping(uploadId, canonToSrc, commitOptions);
       const fitRes = await client.fitElasticity(commitRes.dataset_id, commitRes.label);
-      setActiveLabel(fitRes.data_label);
+      setActiveLabel(uploadDataLabel);
       setProducts(fitRes.products);
       const firstId = fitRes.products[0]?.product_id ?? 'P01';
       setSelectedProductId(firstId);
@@ -290,7 +306,7 @@ export const App: React.FC<AppProps> = ({
       await runSimulateInternal(fitRes.products, firstId, 10, seed);
       setActiveScreen('assumptions');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed fitting elasticity after mapping.');
+      setError(err instanceof Error ? err.message : 'Could not estimate price sensitivity from these columns.');
     } finally {
       setLoading(false);
     }
@@ -316,7 +332,7 @@ export const App: React.FC<AppProps> = ({
     try {
       await runSimulateInternal(products, pid, pct, simSeed);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Simulation failed.');
+      setError(err instanceof Error ? err.message : 'The simulation did not run.');
     } finally {
       setLoading(false);
     }
@@ -331,7 +347,7 @@ export const App: React.FC<AppProps> = ({
       if ('fallback' in parsed) {
         setNlqStatus({
           type: 'fallback',
-          message: `${parsed.error} Please adjust the manual controls beside this panel.`,
+          message: `${parsed.error} Set the price change with the controls instead.`,
         });
         return;
       }
@@ -340,13 +356,13 @@ export const App: React.FC<AppProps> = ({
       setHorizonDays(parsed.horizon_days);
       setNlqStatus({
         type: 'ok',
-        message: `Parsed: SKU=${parsed.product_id}, change=${parsed.change_value > 0 ? '+' : ''}${parsed.change_value}%, horizon=${parsed.horizon_days} days.`,
+        message: `Read as: ${parsed.product_id}, ${parsed.change_value > 0 ? '+' : ''}${parsed.change_value}% price change over ${parsed.horizon_days} days.`,
       });
       await runSimulateInternal(products, parsed.product_id, parsed.change_value, seed);
     } catch (err) {
       setNlqStatus({
         type: 'fallback',
-        message: `${err instanceof Error ? err.message : 'Parser error'}. Using manual controls.`,
+        message: `${err instanceof Error ? err.message : 'Could not read the question.'} Set the price change with the controls instead.`,
       });
     } finally {
       setNlqLoading(false);
@@ -395,66 +411,48 @@ export const App: React.FC<AppProps> = ({
       setOptimizeResult(response);
       setOptFixtureNote(fixtureNote ?? null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Optimization failed.');
+      setError(err instanceof Error ? err.message : 'The optimization did not run.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-[#090D16] text-slate-900 dark:text-slate-100 transition-colors">
-      {/* Top Bar with Glassmorphic Header */}
-      <header className="bg-white/90 dark:bg-[#0E1526]/90 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/80 sticky top-0 z-30 transition-all shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-3.5">
-            <div className="w-10 h-10 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-950 font-extrabold flex items-center justify-center text-sm shadow-sm ring-1 ring-slate-900/10 dark:ring-white/20 tracking-tight">
-              W?
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-base font-bold text-slate-900 dark:text-white tracking-tight leading-tight">
-                  {STRINGS.appTitle}
-                </h1>
-                <span className="text-[10px] font-semibold tracking-wider uppercase px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">
-                  Decision Sim
-                </span>
-              </div>
-              <p className="text-xs text-slate-500 dark:text-slate-400 font-normal">{STRINGS.appSubtitle}</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
+    <div className="flex min-h-screen flex-col">
+      <header className="border-b border-rule bg-surface">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-6 gap-y-2 px-6 pt-3">
+          <p className="text-[18px] font-semibold tracking-[-0.01em]">{STRINGS.appTitle}</p>
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-1">
             <DataSourceBadge label={activeLabel} />
-            <label className="inline-flex items-center gap-2 text-xs font-medium text-slate-600 dark:text-slate-300 bg-slate-100/90 dark:bg-slate-800/90 hover:bg-slate-200/70 dark:hover:bg-slate-700/70 transition-colors border border-slate-200 dark:border-slate-700 rounded-full px-3 py-1 cursor-pointer select-none">
+            <label
+              className="flex cursor-pointer select-none items-center gap-2 text-[13px] text-muted"
+              title="Show results saved from the engine instead of calling it."
+            >
               <input
                 type="checkbox"
                 checked={useFixtures}
                 onChange={(e) => setUseFixtures(e.target.checked)}
-                className="w-3.5 h-3.5 text-indigo-600 rounded border-slate-300 dark:border-slate-600 focus:ring-indigo-500 cursor-pointer"
+                className="h-3.5 w-3.5 accent-[rgb(var(--accent))]"
               />
-              <span className="tabular-nums font-mono text-[11px]">
-                {useFixtures ? 'Offline Fixtures' : 'Live Go API (:8080)'}
-              </span>
+              <span>Offline mode</span>
             </label>
-
-            {/* Dark / Light Mode Toggle for Instant Eye Comfort */}
             <button
               type="button"
               onClick={() => setIsDark(!isDark)}
-              title={isDark ? 'Switch to Light Theme' : 'Switch to Eye-Comfort Dark Theme'}
-              className="p-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-slate-700 transition-colors"
+              aria-label={isDark ? 'Switch to light theme' : 'Switch to dark theme'}
+              title={isDark ? 'Switch to light theme' : 'Switch to dark theme'}
+              className="btn btn-quiet"
             >
-              {isDark ? <SunIcon className="w-4 h-4 text-amber-400" /> : <MoonIcon className="w-4 h-4 text-slate-700" />}
+              {isDark ? <SunIcon aria-hidden="true" /> : <MoonIcon aria-hidden="true" />}
             </button>
           </div>
         </div>
 
-        {/* Executive Stepper Navigation */}
         <nav
-          aria-label="Workflow steps"
-          className="max-w-7xl mx-auto px-4 sm:px-6 py-1.5 flex items-center gap-1.5 overflow-x-auto border-t border-slate-100 dark:border-slate-800/60"
+          aria-label="Workflow"
+          className="mx-auto mt-1 flex max-w-6xl flex-wrap items-end gap-x-1 px-3 sm:px-6"
         >
-          {STRINGS.nav.map((item, idx) => {
+          {STRINGS.nav.map((item) => {
             const isActive = activeScreen === item.id;
             const needsProducts =
               item.id === 'assumptions' || item.id === 'whatif' || item.id === 'reverse';
@@ -466,53 +464,40 @@ export const App: React.FC<AppProps> = ({
                 key={item.id}
                 type="button"
                 disabled={isDisabled}
+                aria-current={isActive ? 'page' : undefined}
                 onClick={() => setActiveScreen(item.id)}
-                className={`group flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all duration-150 whitespace-nowrap ${
+                className={`-mb-px whitespace-nowrap border-b-2 px-2 py-2 text-sm transition-colors sm:px-3 sm:py-2.5 sm:text-[15px] ${
+                  item.id === 'reverse' ? 'sm:ml-6' : ''
+                } ${
                   isActive
-                    ? 'bg-slate-900 dark:bg-indigo-600 text-white shadow-sm ring-1 ring-slate-900/10 dark:ring-indigo-500/20'
+                    ? 'border-accent font-semibold text-ink'
                     : isDisabled
-                    ? 'text-slate-400 dark:text-slate-600 cursor-not-allowed opacity-50'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-slate-800/60 active:bg-slate-200/60'
+                    ? 'cursor-not-allowed border-transparent text-muted opacity-50'
+                    : 'border-transparent text-muted hover:text-ink'
                 }`}
               >
-                <span
-                  className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold transition-colors ${
-                    isActive
-                      ? 'bg-white/20 text-white'
-                      : isDisabled
-                      ? 'bg-slate-200/60 dark:bg-slate-800 text-slate-400 dark:text-slate-600'
-                      : 'bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 group-hover:bg-slate-300 dark:group-hover:bg-slate-700'
-                  }`}
-                >
-                  {item.step}.
-                </span>
-                <span className="tracking-tight">{item.label}</span>
-                {idx < STRINGS.nav.length - 1 && (
-                  <span className="hidden md:inline-block ml-1 text-slate-300 dark:text-slate-700 pointer-events-none select-none">
-                    /
-                  </span>
-                )}
+                {item.step && <span className="mr-1.5">{item.step}.</span>}
+                {item.label}
               </button>
             );
           })}
         </nav>
       </header>
 
-      {/* Main Content */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6">
+      <main className="mx-auto w-full max-w-6xl flex-1 px-6 py-10">
         {activeScreen === 'upload' && (
           <UploadScreen
-            activeLabel={activeLabel}
             loading={loading}
             error={error}
+            liveApi={!useFixtures}
             onSelectDemo={handleSelectDemo}
+            onLoadSample={handleLoadSample}
             onUploadFile={handleUploadCsv}
           />
         )}
 
         {activeScreen === 'mapping' && (
           <MappingScreen
-            activeLabel={activeLabel}
             fileName={uploadedFileName}
             nRows={nRows}
             columns={profileColumns}
@@ -531,7 +516,6 @@ export const App: React.FC<AppProps> = ({
 
         {activeScreen === 'assumptions' && (
           <AssumptionsScreen
-            activeLabel={activeLabel}
             products={products}
             onUpdateProduct={handleUpdateProduct}
             onProceedToWhatIf={() => {
@@ -543,7 +527,6 @@ export const App: React.FC<AppProps> = ({
 
         {activeScreen === 'whatif' && (
           <WhatIfScreen
-            activeLabel={activeLabel}
             products={products}
             selectedProductId={selectedProductId}
             priceChangePct={priceChangePct}
@@ -569,7 +552,6 @@ export const App: React.FC<AppProps> = ({
 
         {activeScreen === 'reverse' && (
           <ReverseWhatIfScreen
-            activeLabel={activeLabel}
             products={products}
             selectedProductId={selectedProductId}
             optimizeResult={optimizeResult}
@@ -580,14 +562,13 @@ export const App: React.FC<AppProps> = ({
           />
         )}
 
-        {activeScreen === 'validation' && <ValidationScreen activeLabel={activeLabel} />}
+        {activeScreen === 'validation' && <ValidationScreen />}
       </main>
 
-      <footer className="border-t border-slate-200/80 dark:border-slate-800/80 bg-white/70 dark:bg-[#0E1526]/70 backdrop-blur-sm py-4 text-xs text-slate-500 dark:text-slate-400">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-wrap items-center justify-between gap-3 text-slate-500 dark:text-slate-400">
-          <p>{STRINGS.disclaimers.zeroBrowserMath}</p>
-          <p className="text-slate-400 dark:text-slate-500">Honest Econometrics · Every screen carries a provenance badge</p>
-        </div>
+      <footer className="border-t border-rule">
+        <p className="mx-auto max-w-6xl px-6 py-4 text-[13px] text-muted">
+          {STRINGS.disclaimers.engineFigures}
+        </p>
       </footer>
     </div>
   );

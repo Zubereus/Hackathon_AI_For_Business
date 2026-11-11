@@ -1,66 +1,55 @@
 import React from 'react';
 import { DataSourceBadge } from '../components/DataSourceBadge';
-import { CheckIcon, InfoIcon, ShieldCheckIcon } from '../components/Icons';
-import { DataLabel } from '../types';
-
-interface ValidationScreenProps {
-  activeLabel: DataLabel;
-}
+import { PageHeader } from '../components/Page';
 
 const SYNTHETIC_RECOVERY_ROWS = [
   {
     scenario: 'fashion_shop_12',
-    badge: 'SYNTHETIC' as DataLabel,
     skus: '12',
     mae: '0.075',
     ci90: '91.7%',
     corr: '0.960',
-    notes: 'Matches Spec-C target (CI 90% >= 85%, r >= 0.80).',
+    notes: 'Meets the target: interval coverage ≥ 85% and rank agreement ≥ 0.80.',
   },
   {
     scenario: 'grocery_fmcg_15',
-    badge: 'SYNTHETIC' as DataLabel,
     skus: '15',
     mae: '0.109',
     ci90: '80.0%',
     corr: '0.791',
-    notes: 'Passed benchmark (Narrow FMCG elasticity spread).',
+    notes: 'Passed. True sensitivities sit in a narrow range.',
   },
   {
     scenario: 'electronics_home_10',
-    badge: 'SYNTHETIC' as DataLabel,
     skus: '10',
     mae: '0.118',
     ci90: '90.0%',
     corr: '0.952',
-    notes: 'High-ticket lower velocity SKUs recovered accurately.',
+    notes: 'High-priced, slow-selling products recovered accurately.',
   },
   {
     scenario: 'marketplace_large_40',
-    badge: 'SYNTHETIC' as DataLabel,
     skus: '40',
     mae: '0.098',
     ci90: '88.0%',
     corr: '0.940',
-    notes: 'Scale & multi-category robustness across 40 products.',
+    notes: 'Holds up across 40 products and several categories.',
   },
   {
     scenario: 'starter_4_products',
-    badge: 'SYNTHETIC' as DataLabel,
     skus: '4',
     mae: '0.048',
     ci90: '100.0%',
     corr: '1.000',
-    notes: 'Perfect rank order recovery on 4 starter SKUs.',
+    notes: 'Rank order recovered perfectly on all 4 products.',
   },
   {
     scenario: 'hard_low_price_variation_8',
-    badge: 'SYNTHETIC' as DataLabel,
     skus: '8',
     mae: '0.580',
     ci90: '87.5%',
     corr: '0.335',
-    notes: 'Intentional hard test: engine flagged low_price_variation warning on 8/8 (100%) SKUs.',
+    notes: 'Deliberately hard test. The engine raised the low price variation warning on all 8 products.',
   },
 ];
 
@@ -71,105 +60,111 @@ const BACKTEST_EVENTS = [
   { scenario: 'electronics_home_10', events: '5 / 5', meanWape: '25.5%', coverage80: '81.4%' },
 ];
 
-export const ValidationScreen: React.FC<ValidationScreenProps> = ({ activeLabel }) => {
+export const ValidationScreen: React.FC = () => {
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4 bg-white/80 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/80 dark:border-slate-800/80 rounded-2xl p-6 shadow-sm">
-        <div>
-          <h2 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">
-            Step 6: Econometric Validation & Backtest Evidence
-          </h2>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 max-w-2xl">
-            Read-only benchmark record mirrored directly from docs/VALIDATION.md. Zero fabricated accuracy or savings claims.
-          </p>
-        </div>
-        <DataSourceBadge label={activeLabel} />
-      </div>
+    <div>
+      <PageHeader title="Validation">
+        Test results copied from docs/VALIDATION.md. Nothing on this page is computed in the app,
+        and no accuracy or savings figure is estimated for it.
+      </PageHeader>
 
-      {/* Spec-C Recovery Benchmark */}
-      <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/80 dark:border-slate-800/80 rounded-2xl p-5 shadow-sm space-y-4">
+      <section aria-labelledby="recovery">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <div>
-            <h3 className="text-base font-bold text-slate-900 dark:text-white tracking-tight">
-              Synthetic Ground-Truth Elasticity Recovery (Spec-C GLM + Week-Block Bootstrap)
-            </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-              Trained cleanly with Tet lunar distance, double-day peaks (9.9, 11.11, 12.12), payday, weekday, and promotional controls.
-            </p>
-          </div>
+          <h2 id="recovery" className="h2">
+            Recovering known sensitivities on synthetic data
+          </h2>
           <DataSourceBadge label="SYNTHETIC" />
         </div>
+        <p className="mt-1 max-w-[72ch] text-muted">
+          Spec-C model (GLM with week-block bootstrap), controlling for distance to Tết, double-day
+          peaks (9.9, 11.11, 12.12), payday, weekday and promotions. Each row compares the
+          estimate with the true sensitivity built into the data.
+        </p>
 
-        <div className="overflow-hidden rounded-xl border border-slate-200/70 dark:border-slate-800">
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-slate-200/80 dark:divide-slate-800 text-sm">
-              <thead className="bg-slate-50/75 dark:bg-slate-950/70">
+        <div className="panel mt-4 overflow-hidden">
+          <div className="relative overflow-x-auto">
+            <table className="data-table min-w-[860px]">
+              <thead className="bg-sunken">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Dataset Scenario</th>
-                  <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">SKUs</th>
-                  <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">MAE |ê - e|</th>
-                  <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">90% CI Coverage</th>
-                  <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Spearman r</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Diagnostic Notes</th>
+                  <th scope="col" className="pl-5">
+                    Dataset
+                  </th>
+                  <th scope="col" className="num">
+                    Products
+                  </th>
+                  <th scope="col" className="num">
+                    Mean absolute error
+                  </th>
+                  <th scope="col" className="num">
+                    90% interval contains truth
+                  </th>
+                  <th scope="col" className="num">
+                    Rank agreement (Spearman)
+                  </th>
+                  <th scope="col" className="pr-5">
+                    Notes
+                  </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800/70">
+              <tbody>
                 {SYNTHETIC_RECOVERY_ROWS.map((row) => (
-                  <tr key={row.scenario} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition-colors">
-                    <td className="px-4 py-2.5 font-mono text-xs font-semibold text-slate-900 dark:text-white">
+                  <tr key={row.scenario}>
+                    <th scope="row" className="pl-5 font-semibold">
                       {row.scenario}
-                    </td>
-                    <td className="px-4 py-2.5 text-right font-mono tabular-nums text-slate-700 dark:text-slate-300">{row.skus}</td>
-                    <td className="px-4 py-2.5 text-right font-mono tabular-nums text-slate-700 dark:text-slate-300">{row.mae}</td>
-                    <td className="px-4 py-2.5 text-right font-mono tabular-nums font-semibold text-emerald-600 dark:text-emerald-400">{row.ci90}</td>
-                    <td className="px-4 py-2.5 text-right font-mono tabular-nums font-semibold text-indigo-600 dark:text-indigo-400">{row.corr}</td>
-                    <td className="px-4 py-2.5 text-xs text-slate-600 dark:text-slate-400">{row.notes}</td>
+                    </th>
+                    <td className="num">{row.skus}</td>
+                    <td className="num">{row.mae}</td>
+                    <td className="num">{row.ci90}</td>
+                    <td className="num">{row.corr}</td>
+                    <td className="max-w-[300px] pr-5 text-muted">{row.notes}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Out-of-time Backtest Summary */}
-      <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/80 dark:border-slate-800/80 rounded-2xl p-5 shadow-sm space-y-4">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <div>
-            <h3 className="text-base font-bold text-slate-900 dark:text-white tracking-tight">
-              Out-of-Time Historical Price-Change Backtest (19 Events)
-            </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-              Model trained strictly prior to price-change date (<code>t &lt; change_date</code>), evaluated on 14-day post-change holdout vs trailing 14-day naive baseline.
-            </p>
-          </div>
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/50">
-            <CheckIcon className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-            <span>18 / 19 Events (94.7%) Beat Naive Baseline</span>
-          </span>
-        </div>
+      <section aria-labelledby="backtest" className="mt-14">
+        <h2 id="backtest" className="h2">
+          Backtest on past price changes (19 events)
+        </h2>
+        <p className="mt-1 max-w-[72ch] text-muted">
+          For each price change, the model is fitted only on data before the change date, then
+          judged on the 14 days after it against a naive baseline: the trailing 14 days.
+        </p>
+        <p className="mt-3 font-semibold text-good">
+          18 / 19 events (94.7%) beat the naive baseline
+        </p>
 
-        <div className="overflow-hidden rounded-xl border border-slate-200/70 dark:border-slate-800">
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-slate-200/80 dark:divide-slate-800 text-sm">
-              <thead className="bg-slate-50/75 dark:bg-slate-950/70">
+        <div className="panel mt-4 overflow-hidden">
+          <div className="relative overflow-x-auto">
+            <table className="data-table min-w-[620px]">
+              <thead className="bg-sunken">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Dataset</th>
-                  <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Beats Naive</th>
-                  <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Mean Holdout WAPE</th>
-                  <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">80% Interval Coverage</th>
+                  <th scope="col" className="pl-5">
+                    Dataset
+                  </th>
+                  <th scope="col" className="num">
+                    Events beating baseline
+                  </th>
+                  <th scope="col" className="num">
+                    Mean holdout WAPE
+                  </th>
+                  <th scope="col" className="num pr-5">
+                    80% interval coverage
+                  </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800/70">
+              <tbody>
                 {BACKTEST_EVENTS.map((row) => (
-                  <tr key={row.scenario} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition-colors">
-                    <td className="px-4 py-2.5 font-mono text-xs font-semibold text-slate-900 dark:text-white">
+                  <tr key={row.scenario}>
+                    <th scope="row" className="pl-5 font-semibold">
                       {row.scenario}
-                    </td>
-                    <td className="px-4 py-2.5 text-right font-mono tabular-nums font-semibold text-slate-800 dark:text-slate-200">{row.events}</td>
-                    <td className="px-4 py-2.5 text-right font-mono tabular-nums text-slate-700 dark:text-slate-300">{row.meanWape}</td>
-                    <td className="px-4 py-2.5 text-right font-mono tabular-nums font-semibold text-emerald-600 dark:text-emerald-400">{row.coverage80}</td>
+                    </th>
+                    <td className="num">{row.events}</td>
+                    <td className="num">{row.meanWape}</td>
+                    <td className="num pr-5">{row.coverage80}</td>
                   </tr>
                 ))}
               </tbody>
@@ -177,37 +172,35 @@ export const ValidationScreen: React.FC<ValidationScreenProps> = ({ activeLabel 
           </div>
         </div>
 
-        <div className="text-xs text-slate-600 dark:text-slate-400 bg-slate-50/80 dark:bg-slate-950/60 border border-slate-200/70 dark:border-slate-800 rounded-xl p-3 flex items-start gap-2.5">
-          <InfoIcon className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
-          <div>
-            <strong className="text-slate-800 dark:text-slate-200">Honest failure log:</strong> 1 event (grocery_fmcg_15 SKU P04 on 2025-11-11) lost to trailing naive (WAPE 20.6% vs 17.5%) because a multiplicative promo x double-day peak saturated demand variance (80% interval coverage remained 100.0%).
-          </div>
-        </div>
-      </div>
+        <p className="mt-4 max-w-[72ch]">
+          <span className="font-semibold">One event lost to the baseline:</span> grocery_fmcg_15,
+          product P04, 2025-11-11 (WAPE 20.6% against 17.5%). A promotion stacked on a double-day
+          peak saturated demand variance. The 80% interval still covered 100.0% of outcomes.
+        </p>
+      </section>
 
-      {/* Column Mapping & NLQ Guardrails */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/80 dark:border-slate-800/80 rounded-2xl p-5 shadow-sm">
-          <div className="flex items-center gap-2 mb-1">
-            <ShieldCheckIcon className="w-4 h-4 text-indigo-500" />
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">NLP Column Mapping Accuracy</h4>
-          </div>
-          <p className="text-2xl font-extrabold font-mono text-slate-900 dark:text-white tracking-tight mt-1">33 / 33 (100%)</p>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
-            Verified across 5 chaotic variant schemas (Vietnamese headers, accented strings, shuffled columns, English receipt-level transactions, missing cost/stock). Zero false high-confidence assignments.
+      <section aria-labelledby="guardrails" className="mt-14 grid gap-10 md:grid-cols-2">
+        <div>
+          <h2 id="guardrails" className="h2">
+            Column mapping
+          </h2>
+          <p className="mt-2">33 / 33 (100%) columns mapped correctly.</p>
+          <p className="mt-1 text-muted">
+            Tested on five messy files: Vietnamese headers, accented text, shuffled columns,
+            English receipt-level rows, and files with no cost or stock. No wrong match was given
+            high confidence.
           </p>
         </div>
-        <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/80 dark:border-slate-800/80 rounded-2xl p-5 shadow-sm">
-          <div className="flex items-center gap-2 mb-1">
-            <ShieldCheckIcon className="w-4 h-4 text-emerald-500" />
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">NLQ Guardrails & Go Engine Speed</h4>
-          </div>
-          <p className="text-2xl font-extrabold font-mono text-slate-900 dark:text-white tracking-tight mt-1">38.8 ms / 505k draws</p>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
-            NLQ test suite: 30/30 valid questions parsed cleanly, 15/15 out-of-range/unknown SKUs rejected to manual form. Go optimizer executes 101 grid candidates x 5,000 sims in ~38.8 ms (byte-identical on 1 vs 8+ cores).
+        <div>
+          <h2 className="h2">Question parsing and engine speed</h2>
+          <p className="mt-2">30 / 30 valid questions parsed. 15 / 15 invalid ones rejected.</p>
+          <p className="mt-1 text-muted">
+            Out-of-range prices and unknown products are sent back to the manual form. The Go
+            optimizer evaluates 101 candidate prices × 5,000 simulations (505k draws) in about 38.8
+            ms, with identical output on 1 and 8+ cores.
           </p>
         </div>
-      </div>
+      </section>
     </div>
   );
 };

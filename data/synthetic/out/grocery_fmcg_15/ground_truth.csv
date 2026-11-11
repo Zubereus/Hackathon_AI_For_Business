@@ -1,0 +1,16 @@
+﻿product_id,product_name,category,true_elasticity
+P01,Gạo ST25 5kg,Thực phẩm,-0.5
+P02,Dầu ăn 1L,Thực phẩm,-0.4
+P03,Nước mắm 500ml,Thực phẩm,-0.5
+P04,Mì gói thùng 30 gói,Thực phẩm,-0.8
+P05,Sữa tươi 1L,Đồ uống,-0.7
+P06,Cà phê hòa tan 20 gói,Đồ uống,-0.9
+P07,Trà túi lọc 50 túi,Đồ uống,-0.8
+P08,Bột giặt 3kg,Gia dụng,-0.9
+P09,Nước rửa chén 750ml,Gia dụng,-0.6
+P10,Giấy vệ sinh 10 cuộn,Gia dụng,-0.8
+P11,Bánh quy hộp,Bánh kẹo,-1.1
+P12,Nước ngọt lốc 6 lon,Đồ uống,-1.2
+P13,Snack khoai tây,Bánh kẹo,-1.3
+P14,Kem đánh răng,Chăm sóc cá nhân,-0.5
+P15,Dầu gội 650ml,Chăm sóc cá nhân,-0.9

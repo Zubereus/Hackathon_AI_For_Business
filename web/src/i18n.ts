@@ -56,45 +56,63 @@ export function formatPct(val: number | null | undefined, decimals = 1): string 
   return `${sign}${val.toFixed(decimals)}%`;
 }
 
+/** Fixed-decimal number with a true minus sign (U+2212), for elasticities. */
+export function formatNum(val: number | null | undefined, decimals = 2): string {
+  if (val === null || val === undefined || Number.isNaN(val)) {
+    return '—';
+  }
+  return val.toFixed(decimals).replace('-', '−');
+}
+
+/** Turn the engine's warning codes into plain sentences. Unknown text passes through. */
+export function describeWarning(code: string): string {
+  if (code === 'low_price_variation') return 'Price barely changed, so the estimate is unreliable';
+  if (code === 'not_significant') return 'Not statistically significant';
+  if (code.startsWith('price_variation_sd below')) return 'Price varied only moderately';
+  return code;
+}
+
+/** Turn the optimizer's constraint messages into plain sentences. Unknown text passes through. */
+export function describeViolation(message: string): string {
+  const margin = /^min_margin_pct \((.+?) < (.+?)\)$/.exec(message);
+  if (margin) return `Margin ${margin[1]} is below the ${margin[2]} minimum`;
+  return message;
+}
+
 export const STRINGS = {
   appTitle: 'What-If AI',
-  appSubtitle: 'Counterfactual price elasticity & scenario simulator',
   nav: [
-    { id: 'upload' as ScreenId, step: '1', label: 'Upload Data' },
-    { id: 'mapping' as ScreenId, step: '2', label: 'Confirm Columns' },
+    { id: 'upload' as ScreenId, step: '1', label: 'Upload data' },
+    { id: 'mapping' as ScreenId, step: '2', label: 'Confirm columns' },
     { id: 'assumptions' as ScreenId, step: '3', label: 'Assumptions' },
-    { id: 'whatif' as ScreenId, step: '4', label: 'What-If Simulation' },
-    { id: 'reverse' as ScreenId, step: '5', label: 'Reverse What-If' },
-    { id: 'validation' as ScreenId, step: '6', label: 'Validation' },
+    { id: 'whatif' as ScreenId, step: '4', label: 'What-if' },
+    { id: 'reverse' as ScreenId, step: '', label: 'Reverse what-if' },
+    { id: 'validation' as ScreenId, step: '', label: 'Validation' },
   ],
   badges: {
     SYNTHETIC: {
       text: 'SYNTHETIC',
-      symbol: '◆',
-      tooltip: 'Synthetic benchmark data generated for algorithm verification.',
+      tooltip: 'Synthetic data generated to test the method. Not a real business.',
     },
     PUBLIC_M5: {
       text: 'PUBLIC (M5)',
-      symbol: '◎',
-      tooltip: `Public M5 Walmart benchmark — ${FX_CONFIG.disclaimer}`,
+      tooltip: `Public M5 Walmart data, ${FX_CONFIG.disclaimer}`,
     },
     PUBLIC_DUNNHUMBY: {
       text: 'PUBLIC (DUNNHUMBY)',
-      symbol: '◎',
-      tooltip: `Public Dunnhumby grocery panel — ${FX_CONFIG.disclaimer}`,
+      tooltip: `Public Dunnhumby grocery data, ${FX_CONFIG.disclaimer}`,
     },
     USER: {
       text: 'YOUR DATA',
-      symbol: '●',
-      tooltip: 'Uploaded store sales CSV.',
+      tooltip: 'The sales CSV you uploaded.',
     },
-  } satisfies Record<DataLabel, { text: string; symbol: string; tooltip: string }>,
+  } satisfies Record<DataLabel, { text: string; tooltip: string }>,
   disclaimers: {
     observational:
-      'Method note: controlled observational estimates from historical variation, not proven causality.',
+      'These are controlled observational estimates: they use past price changes and adjust for season, promotions and holidays, but they do not prove cause and effect.',
     rangesNotPromises:
-      'Ranges, not promises: 10th–90th percentile bootstrap elasticity uncertainty.',
-    zeroBrowserMath: 'All forecasts computed deterministically by the engine.',
+      'Ranges, not promises. The optimistic and pessimistic cases use the 10th and 90th percentile of the estimated price sensitivity.',
+    engineFigures:
+      'Every figure comes from the engine. The language model only reads your question, maps ambiguous columns and explains results.',
   },
 };
-

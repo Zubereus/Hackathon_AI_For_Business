@@ -1,16 +1,30 @@
 /** @type {import('tailwindcss').Config} */
+const token = (name) => `rgb(var(--${name}) / <alpha-value>)`;
+
 export default {
   darkMode: 'class',
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
       colors: {
-        dark: {
-          bg: '#090D16',
-          card: '#111827',
-          surface: '#151E32',
-          border: '#1F293D',
-        },
+        paper: token('paper'),
+        surface: token('surface'),
+        sunken: token('sunken'),
+        ink: token('ink'),
+        muted: token('muted'),
+        rule: token('rule'),
+        'rule-strong': token('rule-strong'),
+        accent: token('accent'),
+        'accent-ink': token('accent-ink'),
+        good: token('good'),
+        'good-bg': token('good-bg'),
+        bad: token('bad'),
+        'bad-bg': token('bad-bg'),
+        warn: token('warn'),
+        'warn-bg': token('warn-bg'),
+      },
+      fontFamily: {
+        sans: ['"Source Sans 3"', '"Segoe UI"', 'system-ui', '-apple-system', 'sans-serif'],
       },
     },
   },

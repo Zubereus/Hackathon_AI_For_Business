@@ -1,5 +1,5 @@
 import precomputedBundle from './fixtures/precomputed_fixtures.json';
-import { formatInt, formatPct, formatVND } from './i18n';
+import { formatInt, formatNum, formatPct, formatVND } from './i18n';
 import {
   ColumnMappingItem,
   ColumnProfile,
@@ -309,8 +309,8 @@ export class ApiClient {
       const response = prodEntry[modeKey][String(nearest)];
       const note =
         bestDist > 0.01
-          ? `Offline fixture mode displayed nearest Go-precomputed step (${formatPct(nearest, 0)}). Connect live Go gateway (:8080) for exact ${formatPct(req.price_change_pct, 1)} and custom cost sweeps.`
-          : 'Served from Go-precomputed offline fixture snapshot.';
+          ? `Offline mode shows the nearest saved step (${formatPct(nearest, 0)}). Turn off offline mode to simulate exactly ${formatPct(req.price_change_pct, 1)}.`
+          : 'Saved engine results (offline mode).';
       return { response, fixtureNote: note };
     }
 
@@ -336,7 +336,7 @@ export class ApiClient {
       const response = entry[req.objective] || entry.max_expected_profit;
       return {
         response,
-        fixtureNote: 'Served from Go-precomputed offline optimization fixture.',
+        fixtureNote: 'Saved engine results (offline mode).',
       };
     }
 
@@ -422,13 +422,13 @@ export class ApiClient {
       const be = scenarioResult.break_even_elasticity;
       const beText =
         be !== null && be !== undefined
-          ? ` Break-even elasticity is ${be.toFixed(2)}.`
-          : ' Break-even elasticity is not defined for zero price change or non-positive unit margin.';
+          ? ` Profit stays level only if elasticity is ${formatNum(be)}.`
+          : ' There is no break-even point when the price change is 0% or unit cost is at or above the price.';
       return {
         text:
-          `Baseline profit is ${formatVND(base.profit)} on ${formatInt(base.qty)} units at ${formatVND(base.price_vnd ?? null)}. ` +
-          `Under the expected median scenario, profit shifts to ${formatVND(expected.profit)} (${formatVND(optimistic.profit)} optimistic to ${formatVND(pessimistic.profit)} pessimistic). ` +
-          `Across Monte Carlo draws, the 5th–95th percentile profit range spans ${formatVND(dist.p5)} to ${formatVND(dist.p95)}.` +
+          `Baseline: ${formatInt(base.qty)} units at ${formatVND(base.price_vnd ?? null)} give a profit of ${formatVND(base.profit)}. ` +
+          `At the expected sensitivity, profit moves to ${formatVND(expected.profit)} (${formatVND(pessimistic.profit)} pessimistic, ${formatVND(optimistic.profit)} optimistic). ` +
+          `Nine in ten simulated outcomes land between ${formatVND(dist.p5)} and ${formatVND(dist.p95)}.` +
           beText,
       };
     }

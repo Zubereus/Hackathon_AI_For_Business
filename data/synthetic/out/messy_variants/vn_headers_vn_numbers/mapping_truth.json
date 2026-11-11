@@ -1,0 +1,18 @@
+{
+  "canonical_to_source": {
+    "date": "Ngày bán",
+    "product_id": "Mã SP",
+    "product_name": "Tên sản phẩm",
+    "category": "Ngành hàng",
+    "price": "Giá bán (VNĐ)",
+    "unit_cost": "Giá vốn",
+    "quantity": "SL bán",
+    "stock": "Tồn kho",
+    "promo": "KM"
+  },
+  "meta": {
+    "date_format": "%d/%m/%Y",
+    "number_locale": "vi",
+    "price_unit": 1
+  }
+}

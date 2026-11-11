@@ -20,6 +20,7 @@ build/
 data/*
 !data/.gitkeep
 !data/README.md
+!data/synthetic/
 !data/raw/
 data/raw/*
 !data/raw/.gitkeep

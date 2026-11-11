@@ -9,23 +9,11 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
-import { DataSourceBadge } from '../components/DataSourceBadge';
-import {
-  AlertTriangleIcon,
-  CheckIcon,
-  InfoIcon,
-  ShieldCheckIcon,
-  SlidersIcon,
-  SparklesIcon,
-  TargetIcon,
-  TrendingDownIcon,
-  TrendingUpIcon,
-} from '../components/Icons';
-import { formatCompactVND, formatInt, formatPct, formatVND, STRINGS } from '../i18n';
-import { DataLabel, ProductElasticity, ScenarioMetrics, SimulateResponse } from '../types';
+import { Notice, PageHeader } from '../components/Page';
+import { formatCompactVND, formatInt, formatNum, formatPct, formatVND, STRINGS } from '../i18n';
+import { ProductElasticity, SimulateResponse } from '../types';
 
 interface WhatIfScreenProps {
-  activeLabel: DataLabel;
   products: ProductElasticity[];
   selectedProductId: string;
   priceChangePct: number;
@@ -44,64 +32,25 @@ interface WhatIfScreenProps {
     horizonDays?: number;
     seed?: number;
   }) => void;
-  onRunSimulate: (override?: { productId?: string; priceChangePct?: number; horizonDays?: number; seed?: number }) => void;
+  onRunSimulate: (override?: {
+    productId?: string;
+    priceChangePct?: number;
+    horizonDays?: number;
+    seed?: number;
+  }) => void;
   onParseNLQ: (question: string) => void;
 }
 
-const ScenarioCard: React.FC<{
-  title: string;
-  subtitle: string;
-  metrics: ScenarioMetrics;
-  baseProfit: number;
-  accentClass: string;
-  icon: React.ReactNode;
-}> = ({ title, subtitle, metrics, baseProfit, accentClass, icon }) => {
-  const diff = metrics.profit - baseProfit;
-  return (
-    <div className={`bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border rounded-2xl p-5 shadow-sm hover:shadow-md transition-all ${accentClass}`}>
-      <div className="flex items-center justify-between mb-1.5">
-        <div className="flex items-center gap-2">
-          {icon}
-          <span className="text-sm font-bold text-slate-900 dark:text-white tracking-tight">{title}</span>
-        </div>
-        {title !== 'Base' && (
-          <span
-            className={`inline-flex items-center gap-0.5 text-[11px] font-mono font-bold px-2 py-0.5 rounded-full ${
-              diff >= 0
-                ? 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60'
-                : 'bg-rose-50 dark:bg-rose-950/50 text-rose-800 dark:text-rose-300 border border-rose-200 dark:border-rose-800/60'
-            }`}
-          >
-            {diff >= 0 ? '+' : ''}
-            {formatCompactVND(diff)}
-          </span>
-        )}
-      </div>
-      <p className="text-[11px] text-slate-500 dark:text-slate-400 mb-4 line-clamp-1">{subtitle}</p>
-      <dl className="space-y-2 text-xs">
-        <div className="flex justify-between items-center text-slate-600 dark:text-slate-300">
-          <dt>Unit Price</dt>
-          <dd className="font-mono font-semibold text-slate-800 dark:text-slate-100 tabular-nums">{formatVND(metrics.price_vnd ?? null)}</dd>
-        </div>
-        <div className="flex justify-between items-center text-slate-600 dark:text-slate-300">
-          <dt>Projected Qty</dt>
-          <dd className="font-mono font-semibold text-slate-800 dark:text-slate-100 tabular-nums">{formatInt(metrics.qty)} units</dd>
-        </div>
-        <div className="flex justify-between items-center text-slate-600 dark:text-slate-300">
-          <dt>Revenue</dt>
-          <dd className="font-mono font-semibold text-slate-800 dark:text-slate-100 tabular-nums">{formatVND(metrics.revenue)}</dd>
-        </div>
-        <div className="flex justify-between items-center pt-2.5 border-t border-slate-100 dark:border-slate-800/80">
-          <dt className="font-bold text-slate-900 dark:text-white">Profit</dt>
-          <dd className="font-mono font-extrabold text-sm text-slate-950 dark:text-white tabular-nums">{formatVND(metrics.profit)}</dd>
-        </div>
-      </dl>
-    </div>
-  );
-};
+const SCENARIOS = [
+  { key: 'base', name: 'Baseline', note: 'No price change' },
+  { key: 'optimistic', name: 'Optimistic', note: 'Customers less price-sensitive (10th percentile)' },
+  { key: 'expected', name: 'Expected', note: 'Median estimated sensitivity' },
+  { key: 'pessimistic', name: 'Pessimistic', note: 'Customers more price-sensitive (90th percentile)' },
+] as const;
+
+const PRESETS = [-20, -10, 0, 10, 20];
 
 export const WhatIfScreen: React.FC<WhatIfScreenProps> = ({
-  activeLabel,
   products,
   selectedProductId,
   priceChangePct,
@@ -127,150 +76,121 @@ export const WhatIfScreen: React.FC<WhatIfScreenProps> = ({
     simulationResult?.profit_distribution.histogram.map((b) => ({
       rangeLabel: formatCompactVND((b.bin_start + b.bin_end) / 2),
       mid: (b.bin_start + b.bin_end) / 2,
-      binStart: b.bin_start,
-      binEnd: b.bin_end,
       count: b.count,
     })) ?? [];
 
   const baseProfit = simulationResult?.scenarios.base.profit ?? 0;
 
   return (
-    <div className="space-y-6">
-      {/* Surface Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4 bg-white/80 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/80 dark:border-slate-800/80 rounded-2xl p-6 shadow-sm">
-        <div>
-          <h2 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">Step 4: What-If Scenario Simulator</h2>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 max-w-2xl">
-            Ask a natural-language pricing question or use the manual controls below. Forecasts are bootstrap probability ranges, not promises.
-          </p>
-        </div>
-        <DataSourceBadge label={activeLabel} />
-      </div>
+    <div>
+      <PageHeader title="What-if simulation">
+        Test a price change and see the range of likely outcomes before you make it.
+      </PageHeader>
 
-      {/* Natural Language Box + Always-Visible Manual Form */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-        {/* NLQ Panel */}
-        <div className="lg:col-span-5 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/80 dark:border-slate-800/80 rounded-2xl p-5 shadow-sm flex flex-col justify-between space-y-3">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <SparklesIcon className="w-4 h-4 text-indigo-500" />
-              <label htmlFor="nlq-input" className="block text-sm font-bold text-slate-900 dark:text-white tracking-tight">
-                Ask a Question (Natural Language)
-              </label>
-            </div>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mb-2.5">
-              LLM translates your question into validated parameters only — all simulation numbers come from the engine.
-            </p>
-            <textarea
-              id="nlq-input"
-              rows={3}
-              value={question}
-              onChange={(e) => setQuestion(e.target.value)}
-              placeholder="e.g. Discount Áo sơ mi trắng 15% over 30 days?"
-              className="w-full border border-slate-300 dark:border-slate-700 rounded-xl p-3 text-xs sm:text-sm text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 bg-white dark:bg-slate-800/80 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 shadow-sm transition-all"
-            />
-            {/* Quick Suggestions */}
-            <div className="flex flex-wrap gap-1.5 mt-2">
-              <button
-                type="button"
-                onClick={() => setQuestion('Increase price by 10% for the next 30 days?')}
-                className="text-[11px] text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md border border-slate-200/60 dark:border-slate-700 transition-colors"
-              >
-                +10% over 30d
-              </button>
-              <button
-                type="button"
-                onClick={() => setQuestion('Discount price by 15% over 14 days?')}
-                className="text-[11px] text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md border border-slate-200/60 dark:border-slate-700 transition-colors"
-              >
-                -15% flash sale
-              </button>
-            </div>
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+        <section aria-labelledby="ask" className="panel flex flex-col p-5">
+          <h2 id="ask" className="h2">
+            <label htmlFor="nlq-input">Ask a question</label>
+          </h2>
+          <p className="hint mt-1">
+            The language model only turns your question into fields. All numbers come from the
+            engine.
+          </p>
+          <textarea
+            id="nlq-input"
+            rows={3}
+            value={question}
+            onChange={(e) => setQuestion(e.target.value)}
+            placeholder="For example: cut Áo sơ mi trắng by 15% for 30 days"
+            className="field mt-3"
+          />
+          <div className="mt-2 flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => setQuestion('Increase price by 10% for the next 30 days?')}
+              className="btn btn-quiet rounded border border-rule"
+            >
+              +10% for 30 days
+            </button>
+            <button
+              type="button"
+              onClick={() => setQuestion('Discount price by 15% over 14 days?')}
+              className="btn btn-quiet rounded border border-rule"
+            >
+              −15% for 14 days
+            </button>
           </div>
 
           {nlqStatus && (
-            <div
-              role="status"
-              className={`rounded-xl p-3 text-xs border flex items-start gap-2 shadow-sm ${
-                nlqStatus.type === 'ok'
-                  ? 'bg-emerald-50/90 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800/60 text-emerald-900 dark:text-emerald-200'
-                  : 'bg-amber-50/90 dark:bg-amber-950/40 border-amber-200 dark:border-amber-800/60 text-amber-900 dark:text-amber-200'
-              }`}
-            >
-              {nlqStatus.type === 'ok' ? (
-                <CheckIcon className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
-              ) : (
-                <AlertTriangleIcon className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
-              )}
-              <div className="leading-relaxed">{nlqStatus.message}</div>
+            <div className="mt-3">
+              <Notice tone={nlqStatus.type === 'ok' ? 'info' : 'warn'} role="status">
+                {nlqStatus.message}
+              </Notice>
             </div>
           )}
 
-          <button
-            type="button"
-            disabled={nlqLoading || !question.trim() || products.length === 0}
-            onClick={() => onParseNLQ(question)}
-            className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 active:scale-[0.99] text-white text-xs font-semibold rounded-xl transition-all shadow-md shadow-indigo-600/20 disabled:opacity-50"
-          >
-            <SparklesIcon className="w-4 h-4 text-indigo-200" />
-            <span>{nlqLoading ? 'Parsing Question...' : 'Parse & Simulate Question'}</span>
-          </button>
-        </div>
+          <div className="mt-auto pt-4">
+            <button
+              type="button"
+              disabled={nlqLoading || !question.trim() || products.length === 0}
+              onClick={() => onParseNLQ(question)}
+              className="btn btn-primary w-full"
+            >
+              {nlqLoading ? 'Reading question…' : 'Read question and simulate'}
+            </button>
+          </div>
+        </section>
 
-        {/* Manual Decision Form */}
-        <div className="lg:col-span-7 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/80 dark:border-slate-800/80 rounded-2xl p-5 shadow-sm space-y-4">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <div className="flex items-center gap-2">
-              <SlidersIcon className="w-4 h-4 text-slate-700 dark:text-slate-300" />
-              <h3 className="text-sm font-bold text-slate-900 dark:text-white tracking-tight">Manual Simulation Controls</h3>
-            </div>
-            <div className="flex items-center gap-1 bg-slate-100/80 dark:bg-slate-800/80 p-0.5 rounded-lg border border-slate-200/60 dark:border-slate-700">
-              {[-20, -10, 0, 10, 20].map((preset) => (
+        <section aria-labelledby="manual" className="panel p-5">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h2 id="manual" className="h2">
+              Set it yourself
+            </h2>
+            <div role="group" aria-label="Price change presets" className="flex gap-1">
+              {PRESETS.map((preset) => (
                 <button
                   key={preset}
                   type="button"
+                  aria-pressed={priceChangePct === preset}
                   onClick={() => {
                     onChangeParams({ priceChangePct: preset });
                     onRunSimulate({ priceChangePct: preset });
                   }}
-                  className={`px-2.5 py-1 text-xs font-mono font-medium rounded-md transition-all ${
+                  className={`rounded border px-2.5 py-1 text-[13px] font-medium transition-colors ${
                     priceChangePct === preset
-                      ? 'bg-slate-900 dark:bg-indigo-600 text-white shadow-sm'
-                      : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-white dark:hover:bg-slate-700'
+                      ? 'border-accent bg-accent text-accent-ink'
+                      : 'border-rule-strong text-ink hover:bg-sunken'
                   }`}
                 >
-                  {formatPct(preset, 0)}
+                  {formatPct(preset, 0).replace('-', '−')}
                 </button>
               ))}
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="mt-4 grid gap-4 sm:grid-cols-2">
             <div>
-              <label htmlFor="sim-product" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Product SKU
+              <label htmlFor="sim-product" className="label">
+                Product
               </label>
               <select
                 id="sim-product"
                 value={selectedProduct?.product_id ?? ''}
                 onChange={(e) => onChangeParams({ productId: e.target.value })}
-                className="w-full border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 shadow-sm focus:ring-2 focus:ring-indigo-500/20"
+                className="field"
               >
                 {products.map((p) => (
                   <option key={p.product_id} value={p.product_id}>
-                    {p.product_id} — {p.product_name} ({formatVND(p.current_price_vnd)})
+                    {p.product_id}, {p.product_name} ({formatVND(p.current_price_vnd)})
                   </option>
                 ))}
               </select>
             </div>
 
             <div>
-              <div className="flex items-center justify-between mb-1">
-                <label htmlFor="sim-price-pct" className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
-                  Price Change (%)
-                </label>
-                <span className="text-[11px] text-slate-500 dark:text-slate-400 font-mono">[-50% to +100%]</span>
-              </div>
+              <label htmlFor="sim-price-pct" className="label">
+                Price change (%)
+              </label>
               <div className="flex items-center gap-3">
                 <input
                   id="sim-price-slider"
@@ -295,14 +215,14 @@ export const WhatIfScreen: React.FC<WhatIfScreenProps> = ({
                       priceChangePct: Math.min(100, Math.max(-50, Number(e.target.value) || 0)),
                     })
                   }
-                  className="w-20 border border-slate-300 dark:border-slate-700 rounded-xl px-2.5 py-1.5 text-xs font-mono text-right text-slate-800 dark:text-slate-100 bg-white dark:bg-slate-800 shadow-sm"
+                  className="field field-num w-20"
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="sim-horizon" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Horizon (days) [7–90]
+              <label htmlFor="sim-horizon" className="label">
+                Horizon (days)
               </label>
               <input
                 id="sim-horizon"
@@ -315,221 +235,244 @@ export const WhatIfScreen: React.FC<WhatIfScreenProps> = ({
                     horizonDays: Math.min(90, Math.max(7, Math.round(Number(e.target.value) || 30))),
                   })
                 }
-                className="w-full border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-1.5 text-xs font-mono text-slate-800 dark:text-slate-100 bg-white dark:bg-slate-800 shadow-sm"
+                className="field"
               />
+              <p className="hint mt-1">From 7 to 90 days.</p>
             </div>
 
             <div>
-              <label htmlFor="sim-seed" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Deterministic Seed
+              <label htmlFor="sim-seed" className="label">
+                Random seed
               </label>
               <input
                 id="sim-seed"
                 type="number"
                 value={seed}
                 onChange={(e) => onChangeParams({ seed: Math.round(Number(e.target.value) || 42) })}
-                className="w-full border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-1.5 text-xs font-mono text-slate-800 dark:text-slate-100 bg-white dark:bg-slate-800 shadow-sm"
+                className="field"
               />
+              <p className="hint mt-1">The same seed gives the same result.</p>
             </div>
           </div>
 
-          <div className="flex justify-end pt-1">
+          <div className="mt-5 flex justify-end">
             <button
               type="button"
               disabled={loading || products.length === 0}
               onClick={() => onRunSimulate()}
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-slate-900 dark:bg-indigo-600 text-white text-xs font-semibold rounded-xl hover:bg-slate-800 dark:hover:bg-indigo-500 active:scale-[0.98] transition-all shadow-md shadow-indigo-600/20 disabled:opacity-50"
+              className="btn btn-primary"
             >
-              <TargetIcon className="w-4 h-4 text-slate-300 dark:text-indigo-200" />
-              <span>{loading ? 'Running 5,000 Monte Carlo Draws...' : 'Run Simulation'}</span>
+              {loading ? 'Simulating…' : 'Run simulation'}
             </button>
           </div>
-        </div>
+        </section>
       </div>
 
       {error && (
-        <div role="alert" className="bg-rose-50/90 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/50 text-rose-900 dark:text-rose-200 rounded-xl p-4 text-xs sm:text-sm flex items-start gap-3 shadow-sm">
-          <div className="p-1 rounded-lg bg-rose-100 dark:bg-rose-900/50 text-rose-700 dark:text-rose-300 shrink-0">
-            <AlertTriangleIcon className="w-4 h-4" />
-          </div>
-          <div>
-            <strong className="font-semibold text-rose-950 dark:text-rose-100">Simulation error: </strong>
-            <span className="text-rose-800 dark:text-rose-300">{error} (Verify numeric inputs or switch to fixture snapshot.)</span>
-          </div>
+        <div className="mt-6">
+          <Notice tone="error" title="The simulation did not run.">
+            {error} Check the numbers you entered, or turn on offline mode.
+          </Notice>
         </div>
       )}
 
-      {fixtureNote && (
-        <div className="bg-slate-100/80 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-xl px-4 py-2.5 text-xs">
-          {fixtureNote}
-        </div>
-      )}
+      {fixtureNote && <p className="hint mt-4">{fixtureNote}</p>}
 
       {simulationResult && (
         <>
-          <div className="bg-amber-50/80 dark:bg-amber-950/40 border border-amber-200/80 dark:border-amber-900/50 text-amber-950 dark:text-amber-200 rounded-2xl px-4 py-2.5 text-xs font-medium flex items-center gap-2 shadow-sm">
-            <InfoIcon className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
-            <span>{STRINGS.disclaimers.rangesNotPromises}</span>
-          </div>
+          <section aria-labelledby="result" className="mt-12">
+            <h2 id="result" className="h2">
+              Result
+            </h2>
+            {explanationText && (
+              <p className="mt-3 max-w-[68ch] text-[17px] leading-snug">{explanationText}</p>
+            )}
+            <p className="hint mt-3">{STRINGS.disclaimers.rangesNotPromises}</p>
 
-          {/* 4 Scenario Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-            <ScenarioCard
-              title="Base"
-              subtitle="Status quo (0% price change)"
-              metrics={simulationResult.scenarios.base}
-              baseProfit={baseProfit}
-              accentClass="border-slate-200/90 dark:border-slate-800"
-              icon={<span className="w-2.5 h-2.5 rounded-sm bg-slate-400 dark:bg-slate-500 inline-block" />}
-            />
-            <ScenarioCard
-              title="Optimistic"
-              subtitle="10th pct sensitivity (less price-sensitive)"
-              metrics={simulationResult.scenarios.optimistic}
-              baseProfit={baseProfit}
-              accentClass="border-emerald-200 dark:border-emerald-800/60 bg-emerald-50/30 dark:bg-emerald-950/20"
-              icon={<TrendingUpIcon className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />}
-            />
-            <ScenarioCard
-              title="Expected"
-              subtitle="Median estimated price elasticity"
-              metrics={simulationResult.scenarios.expected}
-              baseProfit={baseProfit}
-              accentClass="border-indigo-200 dark:border-indigo-800/60 bg-indigo-50/30 dark:bg-indigo-950/20"
-              icon={<TargetIcon className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />}
-            />
-            <ScenarioCard
-              title="Pessimistic"
-              subtitle="90th pct sensitivity (highly price-sensitive)"
-              metrics={simulationResult.scenarios.pessimistic}
-              baseProfit={baseProfit}
-              accentClass="border-rose-200 dark:border-rose-800/60 bg-rose-50/30 dark:bg-rose-950/20"
-              icon={<TrendingDownIcon className="w-4 h-4 text-rose-600 dark:text-rose-400" />}
-            />
-          </div>
-
-          {/* Distribution Histogram + Break-Even Elasticity */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-            <div className="lg:col-span-8 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/80 dark:border-slate-800/80 rounded-2xl p-5 shadow-sm">
-              <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
-                <div>
-                  <h3 className="text-base font-bold text-slate-900 dark:text-white tracking-tight">
-                    Monte Carlo Profit Distribution
-                  </h3>
-                  <div className="flex flex-wrap items-center gap-2 mt-1.5 text-xs">
-                    <span className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-mono">
-                      P5 Downside: <strong className="text-slate-900 dark:text-white">{formatVND(simulationResult.profit_distribution.p5)}</strong>
-                    </span>
-                    <span className="px-2 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950/60 text-indigo-800 dark:text-indigo-300 font-mono">
-                      Median P50: <strong className="text-indigo-950 dark:text-indigo-200">{formatVND(simulationResult.profit_distribution.p50)}</strong>
-                    </span>
-                    <span className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-mono">
-                      P95 Upside: <strong className="text-slate-900 dark:text-white">{formatVND(simulationResult.profit_distribution.p95)}</strong>
-                    </span>
-                  </div>
-                </div>
+            <div className="panel mt-5 overflow-hidden">
+              <div className="relative overflow-x-auto">
+                <table className="data-table min-w-[720px]">
+                  <thead className="bg-sunken">
+                    <tr>
+                      <th scope="col" className="pl-5">
+                        Scenario
+                      </th>
+                      <th scope="col" className="num">
+                        Price
+                      </th>
+                      <th scope="col" className="num">
+                        Units
+                      </th>
+                      <th scope="col" className="num">
+                        Revenue
+                      </th>
+                      <th scope="col" className="num">
+                        Profit
+                      </th>
+                      <th scope="col" className="num pr-5">
+                        Profit vs baseline
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {SCENARIOS.map((sc) => {
+                      const m = simulationResult.scenarios[sc.key];
+                      const diff = m.profit - baseProfit;
+                      const isExpected = sc.key === 'expected';
+                      return (
+                        <tr key={sc.key} className={isExpected ? 'bg-sunken/60' : ''}>
+                          <th scope="row" className="pl-5">
+                            <div className="font-semibold">{sc.name}</div>
+                            <div className="hint font-normal">{sc.note}</div>
+                          </th>
+                          <td className="num">{formatVND(m.price_vnd ?? null)}</td>
+                          <td className="num">{formatInt(m.qty)}</td>
+                          <td className="num">{formatVND(m.revenue)}</td>
+                          <td className={`num ${isExpected ? 'font-semibold' : ''}`}>
+                            {formatVND(m.profit)}
+                          </td>
+                          <td
+                            className={`num pr-5 ${
+                              sc.key === 'base' ? 'text-muted' : diff >= 0 ? 'text-good' : 'text-bad'
+                            }`}
+                          >
+                            {sc.key === 'base'
+                              ? '—'
+                              : `${diff >= 0 ? '+' : '−'}${formatCompactVND(Math.abs(diff))}`}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
               </div>
+            </div>
+          </section>
 
-              <div className="w-full h-64">
-                <ResponsiveContainer width="100%" height={250} minWidth={260}>
-                  <BarChart data={histData} margin={{ top: 10, right: 16, left: 8, bottom: 20 }}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#334155" opacity={0.3} />
+          <div className="mt-12 grid gap-10 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+            <section aria-labelledby="distribution">
+              <h2 id="distribution" className="h2">
+                Profit across simulated outcomes
+              </h2>
+              <dl className="mt-3 flex flex-wrap gap-x-10 gap-y-2">
+                <div>
+                  <dt className="hint">Downside (5th percentile)</dt>
+                  <dd className="text-[16px] font-semibold">
+                    {formatVND(simulationResult.profit_distribution.p5)}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="hint">Median</dt>
+                  <dd className="text-[16px] font-semibold">
+                    {formatVND(simulationResult.profit_distribution.p50)}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="hint">Upside (95th percentile)</dt>
+                  <dd className="text-[16px] font-semibold">
+                    {formatVND(simulationResult.profit_distribution.p95)}
+                  </dd>
+                </div>
+              </dl>
+
+              <div
+                className="mt-5 h-[260px] w-full"
+                role="img"
+                aria-label="Histogram of simulated profit. Bars at or above baseline profit are teal, bars below are amber."
+              >
+                <ResponsiveContainer width="100%" height={260} minWidth={260}>
+                  <BarChart data={histData} margin={{ top: 8, right: 8, left: 0, bottom: 4 }}>
+                    <CartesianGrid vertical={false} stroke="rgb(var(--rule))" />
                     <XAxis
                       dataKey="rangeLabel"
-                      tick={{ fontSize: 10, fill: '#94A3B8' }}
-                      axisLine={{ stroke: '#475569' }}
+                      tick={{ fontSize: 12, fill: 'rgb(var(--muted))' }}
+                      axisLine={{ stroke: 'rgb(var(--rule-strong))' }}
                       tickLine={false}
                       interval="preserveStartEnd"
                     />
-                    <YAxis width={48} tick={{ fontSize: 11, fill: '#94A3B8' }} axisLine={false} tickLine={false} />
+                    <YAxis
+                      width={44}
+                      tick={{ fontSize: 12, fill: 'rgb(var(--muted))' }}
+                      axisLine={false}
+                      tickLine={false}
+                    />
                     <Tooltip
+                      cursor={{ fill: 'rgb(var(--sunken))' }}
                       content={({ active, payload }) => {
                         if (!active || !payload || !payload.length) return null;
                         const data = payload[0].payload;
                         return (
-                          <div className="bg-slate-900/95 dark:bg-slate-950/95 text-white rounded-xl p-2.5 text-xs shadow-xl backdrop-blur-md border border-slate-700">
-                            <p className="text-slate-400 font-mono text-[10px]">Profit ~ {data.rangeLabel}</p>
-                            <p className="font-bold text-sm mt-0.5">{data.count} draws</p>
-                            <p className="text-[10px] mt-1 text-slate-300">
-                              {data.mid >= baseProfit ? '✓ Above status quo' : '▼ Below status quo'}
+                          <div className="rounded border border-rule-strong bg-surface px-3 py-2 text-[13px] text-ink">
+                            <p className="text-muted">Profit around {data.rangeLabel}</p>
+                            <p className="font-semibold">{data.count} outcomes</p>
+                            <p className="text-muted">
+                              {data.mid >= baseProfit ? 'At or above baseline' : 'Below baseline'}
                             </p>
                           </div>
                         );
                       }}
                     />
-                    <Bar dataKey="count" isAnimationActive={false} radius={[4, 4, 0, 0]}>
+                    <Bar dataKey="count" isAnimationActive={false} radius={[2, 2, 0, 0]}>
                       {histData.map((entry, idx) => (
                         <Cell
                           key={`cell-${idx}`}
-                          fill={entry.mid >= baseProfit ? '#6366f1' : '#f59e0b'}
+                          fill={
+                            entry.mid >= baseProfit
+                              ? 'rgb(var(--chart-above))'
+                              : 'rgb(var(--chart-below))'
+                          }
                         />
                       ))}
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
               </div>
-              <div className="flex items-center gap-4 text-[11px] text-slate-500 dark:text-slate-400 mt-2 px-1">
-                <div className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-sm bg-indigo-500 inline-block shadow-[0_0_6px_rgba(99,102,241,0.5)]" />
-                  <span>Beats baseline profit ({formatVND(baseProfit)})</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-sm bg-amber-500 inline-block" />
-                  <span>Falls below baseline</span>
-                </div>
-              </div>
-            </div>
+              <ul className="mt-2 flex flex-wrap gap-x-6 gap-y-1 text-[13px] text-muted">
+                <li className="flex items-center gap-2">
+                  <span className="inline-block h-2.5 w-2.5 rounded-sm bg-[rgb(var(--chart-above))]" />
+                  At or above baseline profit ({formatVND(baseProfit)})
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="inline-block h-2.5 w-2.5 rounded-sm bg-[rgb(var(--chart-below))]" />
+                  Below baseline
+                </li>
+              </ul>
+            </section>
 
-            <div className="lg:col-span-4 space-y-4">
-              {/* Break-even elasticity card */}
-              <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/80 dark:border-slate-800/80 rounded-2xl p-5 shadow-sm">
-                <div className="flex items-center gap-2 mb-2">
-                  <ShieldCheckIcon className="w-4 h-4 text-indigo-500" />
-                  <h3 className="text-sm font-bold text-slate-900 dark:text-white tracking-tight">Break-Even Elasticity Guardrail</h3>
-                </div>
-                {simulationResult.break_even_elasticity !== null &&
-                simulationResult.break_even_elasticity !== undefined ? (
-                  <>
-                    <div className="grid grid-cols-2 gap-3 my-3">
-                      <div className="bg-slate-50/90 dark:bg-slate-950/80 rounded-xl p-3 border border-slate-200/70 dark:border-slate-800">
-                        <div className="text-[11px] text-slate-500 dark:text-slate-400">Break-Even (e*)</div>
-                        <div className="text-lg font-bold font-mono text-slate-900 dark:text-white">
-                          {simulationResult.break_even_elasticity.toFixed(2)}
-                        </div>
-                      </div>
-                      <div className="bg-indigo-50/90 dark:bg-indigo-950/60 rounded-xl p-3 border border-indigo-200/70 dark:border-indigo-900/60">
-                        <div className="text-[11px] text-indigo-700 dark:text-indigo-300">Estimated Median</div>
-                        <div className="text-lg font-bold font-mono text-indigo-900 dark:text-indigo-200">
-                          {selectedProduct ? selectedProduct.elasticity_median.toFixed(2) : '—'}
-                        </div>
-                      </div>
+            <section aria-labelledby="breakeven">
+              <h2 id="breakeven" className="h2">
+                Break-even sensitivity
+              </h2>
+              {simulationResult.break_even_elasticity !== null &&
+              simulationResult.break_even_elasticity !== undefined ? (
+                <>
+                  <dl className="mt-3 space-y-3">
+                    <div>
+                      <dt className="hint">Break-even</dt>
+                      <dd className="text-[16px] font-semibold">
+                        {formatNum(simulationResult.break_even_elasticity)}
+                      </dd>
                     </div>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                      This price move breaks even at elasticity{' '}
-                      <span className="font-mono font-semibold text-slate-800 dark:text-slate-200">
-                        {simulationResult.break_even_elasticity.toFixed(2)}
-                      </span>
-                      . When customer sensitivity is stronger than e*, profit falls.
-                    </p>
-                  </>
-                ) : (
-                  <p className="text-xs text-slate-500 dark:text-slate-400">
-                    Break-even elasticity is undefined when price change is 0% or unit cost exceeds selling price.
+                    <div>
+                      <dt className="hint">Estimated (median)</dt>
+                      <dd className="text-[16px] font-semibold">
+                        {selectedProduct ? formatNum(selectedProduct.elasticity_median) : '—'}
+                      </dd>
+                    </div>
+                  </dl>
+                  <p className="mt-4 text-muted">
+                    At this price change, profit stays level if elasticity is{' '}
+                    {formatNum(simulationResult.break_even_elasticity)}. If customers are more
+                    price-sensitive than that, profit falls.
                   </p>
-                )}
-              </div>
-
-              {/* Verified Explanation card */}
-              {explanationText && (
-                <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/80 dark:border-slate-800/80 rounded-2xl p-5 shadow-sm">
-                  <div className="flex items-center gap-2 mb-2">
-                    <SparklesIcon className="w-4 h-4 text-indigo-500" />
-                    <h3 className="text-sm font-bold text-slate-900 dark:text-white tracking-tight">Verified Quantitative Summary</h3>
-                  </div>
-                  <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">{explanationText}</p>
-                </div>
+                </>
+              ) : (
+                <p className="mt-3 text-muted">
+                  There is no break-even point when the price change is 0% or unit cost is at or
+                  above the selling price.
+                </p>
               )}
-            </div>
+            </section>
           </div>
         </>
       )}

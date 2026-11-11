@@ -28,8 +28,14 @@ describe('DataSourceBadge', () => {
 
     expect(screen.getByTestId('data-source-badge-SYNTHETIC')).toHaveTextContent('SYNTHETIC');
     expect(screen.getByTestId('data-source-badge-PUBLIC_M5')).toHaveTextContent('PUBLIC (M5)');
-    expect(screen.getByTestId('data-source-badge-PUBLIC_M5')).toHaveTextContent(
-      'illustrative conversion from USD at rate 25.000 ₫/$'
+    expect(screen.getByTestId('data-source-badge-PUBLIC_M5')).toHaveTextContent('converted from USD');
+    expect(screen.getByTestId('data-source-badge-PUBLIC_M5')).toHaveAttribute(
+      'title',
+      expect.stringContaining('illustrative conversion from USD at rate 25.000 ₫/$')
+    );
+    expect(screen.getByTestId('data-source-badge-PUBLIC_DUNNHUMBY')).toHaveAttribute(
+      'title',
+      expect.stringContaining('illustrative conversion from USD at rate 25.000 ₫/$')
     );
     expect(screen.getByTestId('data-source-badge-PUBLIC_DUNNHUMBY')).toHaveTextContent(
       'PUBLIC (DUNNHUMBY)'
@@ -43,7 +49,7 @@ describe('theme toggle', () => {
     window.localStorage.removeItem('whatif_theme');
     const app = render(<App initialUseFixtures={true} />);
 
-    const themeToggle = screen.getByTitle('Switch to Light Theme');
+    const themeToggle = screen.getByRole('button', { name: 'Switch to light theme' });
     expect(document.documentElement).toHaveClass('dark');
 
     fireEvent.click(themeToggle);
@@ -54,7 +60,7 @@ describe('theme toggle', () => {
     render(<App initialUseFixtures={true} />);
     expect(document.documentElement).not.toHaveClass('dark');
 
-    fireEvent.click(screen.getByTitle('Switch to Eye-Comfort Dark Theme'));
+    fireEvent.click(screen.getByRole('button', { name: 'Switch to dark theme' }));
     expect(document.documentElement).toHaveClass('dark');
     expect(window.localStorage.getItem('whatif_theme')).toBe('dark');
   });
@@ -65,7 +71,6 @@ describe('MappingScreen required field guardrail', () => {
     const onChangeMapping = vi.fn();
     const { rerender } = render(
       <MappingScreen
-        activeLabel="USER"
         fileName="messy.csv"
         nRows={100}
         columns={[
@@ -94,7 +99,6 @@ describe('MappingScreen required field guardrail', () => {
     // Now simulate fixing the missing price field
     rerender(
       <MappingScreen
-        activeLabel="USER"
         fileName="messy.csv"
         nRows={100}
         columns={[
@@ -122,47 +126,48 @@ describe('MappingScreen required field guardrail', () => {
 });
 
 describe('Offline fixture end-to-end flow', () => {
-  it('completes Upload -> Demo Synthetic -> Assumptions -> What-If -> Reverse -> Validation with zero console errors', async () => {
+  it('completes Upload -> sample dataset -> Assumptions -> What-if -> Reverse what-if -> Validation with zero console errors', async () => {
     const errSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     render(<App initialUseFixtures={true} />);
 
-    // Screen 1: Click synthetic shop demo
-    const demoBtn = screen.getByRole('button', { name: /Load Synthetic Shop Demo/i });
-    fireEvent.click(demoBtn);
+    expect(screen.getAllByRole('button', { name: 'Live API required' })).toHaveLength(12);
 
-    // Screen 3: Assumptions loads P01 & controlled observational note
+    // Upload: load the synthetic fashion shop sample
+    fireEvent.click(screen.getByRole('button', { name: /Load fashion shop sample/i }));
+
+    // Assumptions: sample products and the method note
     await waitFor(() => {
-      expect(screen.getByText(/Step 3: Review Elasticity Estimates/i)).toBeInTheDocument();
+      expect(screen.getByRole('heading', { level: 1, name: 'Assumptions' })).toBeInTheDocument();
     });
-    expect(screen.getByText(/Áo thun basic/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Áo thun basic/i).length).toBeGreaterThan(0);
     expect(screen.getByText(/controlled observational estimates/i)).toBeInTheDocument();
 
-    // Proceed to What-If
-    fireEvent.click(screen.getByRole('button', { name: /Proceed to What-If Simulation/i }));
+    // Continue to the simulation
+    fireEvent.click(screen.getByRole('button', { name: /Continue to simulation/i }));
     await waitFor(() => {
-      expect(screen.getByText(/Step 4: What-If Scenario Simulator/i)).toBeInTheDocument();
+      expect(screen.getByRole('heading', { level: 1, name: 'What-if simulation' })).toBeInTheDocument();
     });
     expect(screen.getAllByText('Optimistic').length).toBeGreaterThan(0);
     expect(screen.getAllByText('Expected').length).toBeGreaterThan(0);
     expect(screen.getAllByText('Pessimistic').length).toBeGreaterThan(0);
-    expect(screen.getByText(/Break-Even Elasticity Guardrail/i)).toBeInTheDocument();
+    expect(screen.getByText(/Break-even sensitivity/i)).toBeInTheDocument();
 
-    // Navigate to Reverse What-If and trigger optimize
-    fireEvent.click(screen.getByRole('button', { name: /5\.\s*Reverse What-If/i }));
+    // Reverse what-if: run the optimizer
+    fireEvent.click(screen.getByRole('button', { name: /Reverse what-if/i }));
     await waitFor(() => {
-      expect(screen.getByText(/Step 5: Reverse What-If Price Optimizer/i)).toBeInTheDocument();
+      expect(screen.getByRole('heading', { level: 1, name: 'Reverse what-if' })).toBeInTheDocument();
     });
-    fireEvent.click(screen.getByRole('button', { name: /Find Optimal Prices/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Find best prices/i }));
     await waitFor(() => {
-      expect(screen.getByText(/Expected Profit vs Downside/i)).toBeInTheDocument();
+      expect(screen.getByText(/Profit across candidate prices/i)).toBeInTheDocument();
     });
 
-    // Navigate to Validation tab
-    fireEvent.click(screen.getByRole('button', { name: /6\.\s*Validation/i }));
+    // Validation tab
+    fireEvent.click(screen.getByRole('button', { name: /Validation/i }));
     await waitFor(() => {
-      expect(screen.getByText(/Step 6: Econometric Validation/i)).toBeInTheDocument();
+      expect(screen.getByRole('heading', { level: 1, name: 'Validation' })).toBeInTheDocument();
     });
-    expect(screen.getByText(/18 \/ 19 Events \(94\.7%\)/i)).toBeInTheDocument();
+    expect(screen.getByText(/18 \/ 19 events \(94\.7%\)/i)).toBeInTheDocument();
 
     expect(errSpy).not.toHaveBeenCalled();
     errSpy.mockRestore();

@@ -1,0 +1,16 @@
+{
+  "canonical_to_source": {
+    "date": "TXN_DT",
+    "product_id": "SKU_CD",
+    "product_name": "SKU_DESC",
+    "category": "CAT_L1",
+    "price": "UNIT_PRC",
+    "unit_cost": "UNIT_CST",
+    "quantity": "QTY",
+    "stock": "OH_QTY"
+  },
+  "meta": {
+    "date_format": "%Y%m%d",
+    "price_unit": 1
+  }
+}
