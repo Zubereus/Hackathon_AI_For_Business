@@ -30,13 +30,9 @@ web/coverage/
 *.zip
 data/*.zip
 data/raw/*.csv
-assets/
-notebooks/
 phases/
 slides/
 e2e/
-tests/
-test_engine/
 ml-py/tests/
 ml-py/scripts/
 engine-go/bin/
