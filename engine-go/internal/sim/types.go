@@ -30,6 +30,8 @@ type SchedulePhase struct {
 type BusinessContext struct {
 	BaseMarginPct     *float64 `json:"base_margin_pct,omitempty"`
 	Recent14dAvgQty   *float64 `json:"recent_14d_avg_qty,omitempty"`
+	DailyMeanQty      *float64 `json:"daily_mean_qty,omitempty"`
+	DailyStdQty       *float64 `json:"daily_std_qty,omitempty"`
 	DemandTrendPct    *float64 `json:"demand_trend_pct,omitempty"`
 	StockDaysCover    *float64 `json:"stock_days_cover,omitempty"`
 	StockoutDaysPct   *float64 `json:"stockout_days_pct,omitempty"`
@@ -205,4 +207,3 @@ type RankedOption struct {
 type OptimizeResponse struct {
 	Ranked []RankedOption `json:"ranked"`
 }
-

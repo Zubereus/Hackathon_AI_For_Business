@@ -13,8 +13,27 @@ import (
 	"strings"
 
 	"github.com/whatif-ai/engine-go/internal/optimize"
+	"github.com/whatif-ai/engine-go/internal/planning"
 	"github.com/whatif-ai/engine-go/internal/sim"
 )
+
+func decodeAndRun[Req any, Resp any](w http.ResponseWriter, r *http.Request, fn func(Req) (Resp, error)) {
+	var req Req
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		writeJSON(w, http.StatusUnprocessableEntity, map[string]string{
+			"error": fmt.Sprintf("Invalid JSON payload: %v", err),
+		})
+		return
+	}
+	resp, err := fn(req)
+	if err != nil {
+		writeJSON(w, http.StatusUnprocessableEntity, map[string]string{
+			"error": err.Error(),
+		})
+		return
+	}
+	writeJSON(w, http.StatusOK, resp)
+}
 
 func writeJSON(w http.ResponseWriter, status int, payload any) {
 	w.Header().Set("Content-Type", "application/json")
@@ -103,7 +122,7 @@ func corsMiddleware(next http.Handler) http.Handler {
 			}
 			w.Header().Set("Access-Control-Allow-Origin", allowOrigin)
 		}
-		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE, OPTIONS")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 		if r.Method == http.MethodOptions {
 			w.WriteHeader(http.StatusNoContent)
@@ -140,6 +159,18 @@ func main() {
 	// Simulation & optimization endpoints (stateless, CPU-bound math)
 	mux.HandleFunc("POST /api/simulate", simulateHandler)
 	mux.HandleFunc("POST /api/optimize", optimizeHandler)
+	mux.HandleFunc("POST /api/planning/replenish", func(w http.ResponseWriter, r *http.Request) {
+		decodeAndRun(w, r, planning.OptimizeReplenishment)
+	})
+	mux.HandleFunc("POST /api/planning/runway", func(w http.ResponseWriter, r *http.Request) {
+		decodeAndRun(w, r, planning.SimulateCashRunway)
+	})
+	mux.HandleFunc("POST /api/planning/portfolio", func(w http.ResponseWriter, r *http.Request) {
+		decodeAndRun(w, r, planning.OptimizePortfolio)
+	})
+	mux.HandleFunc("POST /api/planning/voi", func(w http.ResponseWriter, r *http.Request) {
+		decodeAndRun(w, r, planning.AnalyzeValueOfInformation)
+	})
 
 	// Reverse proxy routes to ml-py service
 	mux.HandleFunc("/api/ingest/", func(w http.ResponseWriter, r *http.Request) {
@@ -152,6 +183,18 @@ func main() {
 		mlProxy.ServeHTTP(w, r)
 	})
 	mux.HandleFunc("/api/backtest", func(w http.ResponseWriter, r *http.Request) {
+		mlProxy.ServeHTTP(w, r)
+	})
+	mux.HandleFunc("/api/monitoring/", func(w http.ResponseWriter, r *http.Request) {
+		mlProxy.ServeHTTP(w, r)
+	})
+	mux.HandleFunc("/api/causal/", func(w http.ResponseWriter, r *http.Request) {
+		mlProxy.ServeHTTP(w, r)
+	})
+	mux.HandleFunc("/api/journal", func(w http.ResponseWriter, r *http.Request) {
+		mlProxy.ServeHTTP(w, r)
+	})
+	mux.HandleFunc("/api/journal/", func(w http.ResponseWriter, r *http.Request) {
 		mlProxy.ServeHTTP(w, r)
 	})
 

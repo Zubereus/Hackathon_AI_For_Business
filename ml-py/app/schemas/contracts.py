@@ -82,6 +82,8 @@ class BusinessContext(BaseModel):
 
     base_margin_pct: Optional[float] = Field(None, description="Current gross margin % = (P0 - C) / P0 * 100")
     recent_14d_avg_qty: Optional[float] = Field(None, description="Mean daily units sold in recent 14 days")
+    daily_mean_qty: Optional[float] = Field(None, description="Uncensored historical mean daily units sold")
+    daily_std_qty: Optional[float] = Field(None, description="Uncensored historical daily units std dev")
     demand_trend_pct: Optional[float] = Field(None, description="% change in recent 14d volume vs prior 14d")
     stock_days_cover: Optional[float] = Field(None, description="Estimated days of stock at baseline demand rate")
     stockout_days_pct: Optional[float] = Field(None, description="Share of historical days with stock == 0")
@@ -333,4 +335,241 @@ class RankedOption(BaseModel):
 
 class OptimizeResponse(BaseModel):
     ranked: List[RankedOption]
+
+
+# ---------------- MONITORING: CALIBRATION, REGIMES & DRIFT ----------------
+class ReliabilityPoint(BaseModel):
+    nominal_quantile: float
+    empirical_coverage: float
+    n_obs: int
+
+
+class RollingCalibrationWindow(BaseModel):
+    window_label: str
+    start_date: str
+    end_date: str
+    n_obs: int
+    wape_pct: float
+    picp_80: float
+    mpiw_80: float
+    wis: float
+
+
+class CalibrationMetrics(BaseModel):
+    n_oos: int
+    picp_50: float
+    picp_80: float
+    picp_90: float
+    mpiw_80: float
+    relative_mpiw_80_pct: float
+    pinball_q10: float
+    pinball_q50: float
+    pinball_q90: float
+    wis: float
+    reliability_curve: List[ReliabilityPoint] = Field(default_factory=list)
+    rolling_windows: List[RollingCalibrationWindow] = Field(default_factory=list)
+    calibration_status: Literal["well_calibrated", "under_covered", "over_dispersed"]
+
+
+class ChangePointItem(BaseModel):
+    date: str
+    index: int
+    before_mean_qty: float
+    after_mean_qty: float
+    pct_shift: float
+    bic_gain: float
+
+
+class DemandRegime(BaseModel):
+    regime_id: int
+    start_date: str
+    end_date: str
+    n_days: int
+    mean_qty: float
+    std_qty: float
+    cv: float
+    label: Literal["baseline", "expansion", "contraction", "volatile"]
+
+
+class RegimeSeriesPoint(BaseModel):
+    date: str
+    actual_qty: float
+    rolling_mean_qty: float
+    regime_mean_qty: float
+
+
+class RegimeAnalysis(BaseModel):
+    change_points: List[ChangePointItem] = Field(default_factory=list)
+    regimes: List[DemandRegime] = Field(default_factory=list)
+    early_elasticity: Optional[float] = None
+    recent_elasticity: Optional[float] = None
+    elasticity_shift_z: Optional[float] = None
+    elasticity_shift_p_value: Optional[float] = None
+    elasticity_stable: bool = True
+    series_preview: List[RegimeSeriesPoint] = Field(default_factory=list)
+
+
+class DriftMetrics(BaseModel):
+    baseline_window: str
+    recent_window: str
+    price_psi: float
+    price_ks_stat: float
+    price_ks_p_value: float
+    qty_psi: float
+    qty_ks_stat: float
+    qty_ks_p_value: float
+    baseline_wape_pct: float
+    recent_wape_pct: float
+    error_drift_ratio: float
+    residual_mean_bias_pct: float
+    durbin_watson: float
+    drift_status: Literal["healthy", "watch", "retrain_recommended"]
+    drift_flags: List[str] = Field(default_factory=list)
+
+
+class MonitoringEvaluateRequest(BaseModel):
+    dataset_id: str
+    product_id: str
+    n_rolling_windows: int = Field(default=3, ge=2, le=6)
+    seed: int = Field(default=42)
+
+
+class MonitoringEvaluateResponse(BaseModel):
+    product_id: str
+    data_label: DataLabel
+    total_usable_days: int
+    calibration: CalibrationMetrics
+    regimes: RegimeAnalysis
+    drift: DriftMetrics
+    data_provenance: str = Field(
+        default="historical_sales_only",
+        description="Distinguishes observed daily history from out-of-sample rolling fits",
+    )
+
+
+# ---------------- CAUSAL IMPACT (ITS & DiD) ----------------
+class CausalAnalyzeRequest(BaseModel):
+    dataset_id: str
+    product_id: str
+    control_product_id: Optional[str] = None
+    intervention_date: Optional[str] = None
+    post_days: int = Field(default=21, ge=7, le=90)
+    method: Literal["auto", "did", "its"] = "auto"
+
+
+class CausalSeriesPoint(BaseModel):
+    date: str
+    actual_qty: float
+    counterfactual_qty: float
+    control_qty: Optional[float] = None
+    is_post: bool
+
+
+class CausalAnalyzeResponse(BaseModel):
+    method_used: Literal["did", "its"]
+    treated_product_id: str
+    control_product_id: Optional[str] = None
+    intervention_date: str
+    pre_days: int
+    post_days: int
+    incremental_daily_qty: float
+    incremental_qty_ci95_low: float
+    incremental_qty_ci95_high: float
+    p_value: float
+    incremental_total_revenue_vnd: float
+    incremental_total_profit_vnd: float
+    parallel_trends_p_value: Optional[float] = None
+    parallel_trends_passed: Optional[bool] = None
+    control_contaminated: bool = False
+    causal_confidence: Literal[
+        "moderate_quasi_experimental",
+        "low_violated_assumptions",
+        "observational_its_only",
+    ]
+    identification_assumptions: List[str] = Field(default_factory=list)
+    warnings: List[str] = Field(default_factory=list)
+    series: List[CausalSeriesPoint] = Field(default_factory=list)
+
+
+# ---------------- BUSINESS DECISION JOURNAL (SQLite) ----------------
+DecisionStatus = Literal["planned", "implemented", "evaluated"]
+DecisionKind = Literal["pricing", "schedule", "portfolio", "replenish", "template"]
+
+
+class JournalCreateRequest(BaseModel):
+    dataset_id: str
+    data_label: DataLabel
+    product_id: str
+    product_name: str
+    title: str
+    decision_type: DecisionKind = "pricing"
+    horizon_days: int = Field(default=30, ge=1, le=180)
+    planned_price_vnd: int
+    planned_price_change_pct: float
+    planned_restock_units: int = 0
+    assumptions: Dict[str, Any] = Field(default_factory=dict)
+    expected_qty: float
+    expected_revenue_vnd: float
+    expected_profit_vnd: float
+    p5_profit_vnd: float
+    p95_profit_vnd: float
+    prob_beat_base: float
+    notes: str = ""
+
+
+class JournalUpdateRequest(BaseModel):
+    status: Optional[DecisionStatus] = None
+    implemented_at: Optional[str] = None
+    actual_qty: Optional[float] = None
+    actual_revenue_vnd: Optional[float] = None
+    actual_profit_vnd: Optional[float] = None
+    notes: Optional[str] = None
+
+
+class JournalEvaluateFromDatasetRequest(BaseModel):
+    dataset_id: str
+    start_date: str
+    horizon_days: Optional[int] = None
+
+
+class DecisionRecord(BaseModel):
+    id: str
+    created_at: str
+    updated_at: str
+    dataset_id: str
+    data_label: str
+    product_id: str
+    product_name: str
+    title: str
+    decision_type: str
+    horizon_days: int
+    planned_price_vnd: int
+    planned_price_change_pct: float
+    planned_restock_units: int
+    assumptions: Dict[str, Any] = Field(default_factory=dict)
+    expected_qty: float
+    expected_revenue_vnd: float
+    expected_profit_vnd: float
+    p5_profit_vnd: float
+    p95_profit_vnd: float
+    prob_beat_base: float
+    status: DecisionStatus
+    implemented_at: Optional[str] = None
+    evaluated_at: Optional[str] = None
+    actual_qty: Optional[float] = None
+    actual_revenue_vnd: Optional[float] = None
+    actual_profit_vnd: Optional[float] = None
+    profit_variance_vnd: Optional[float] = None
+    profit_variance_pct: Optional[float] = None
+    within_p5_p95_band: Optional[bool] = None
+    notes: str = ""
+
+
+class JournalListResponse(BaseModel):
+    items: List[DecisionRecord]
+    total_count: int
+    evaluated_count: int
+    within_band_rate_pct: Optional[float] = None
+    cumulative_simulated_profit_vnd: float
+    cumulative_actual_profit_vnd: float
 

@@ -5,7 +5,9 @@ import { DataSourceBadge } from './components/DataSourceBadge';
 import { DatabaseIcon, MoonIcon, SunIcon } from './components/Icons';
 import { getStrings, Lang } from './i18n';
 import { loadSampleCsv } from './sampleDatasets';
+import { JournalScreen } from './screens/JournalScreen';
 import { MappingScreen } from './screens/MappingScreen';
+import { PlanningScreen } from './screens/PlanningScreen';
 import { ReverseWhatIfScreen } from './screens/ReverseWhatIfScreen';
 import { UploadScreen } from './screens/UploadScreen';
 import { ValidationScreen } from './screens/ValidationScreen';
@@ -22,6 +24,7 @@ import {
   NLQParseFallback,
   OptimizeResponse,
   ProductElasticity,
+  RankedOption,
   SchedulePhase,
   ScreenId,
   SimulateResponse,
@@ -133,14 +136,22 @@ export const App: React.FC<AppProps> = ({
   const [activeScreen, setActiveScreen] = useState<ScreenId>(() => {
     if (typeof window !== 'undefined' && window.location.search) {
       const s = new URLSearchParams(window.location.search).get('screen') as ScreenId | null;
-      if (s === 'reverse' || s === 'validation' || s === 'whatif') return s;
+      if (s === 'reverse' || s === 'planning' || s === 'validation' || s === 'journal' || s === 'whatif') {
+        return s;
+      }
     }
-    if (initialScreen === 'reverse' || initialScreen === 'validation') {
+    if (
+      initialScreen === 'reverse' ||
+      initialScreen === 'planning' ||
+      initialScreen === 'validation' ||
+      initialScreen === 'journal'
+    ) {
       return initialScreen;
     }
     return 'whatif';
   });
 
+  const [activeDatasetId, setActiveDatasetId] = useState<string>('fashion_shop_12');
   const [activeLabel, setActiveLabel] = useState<DataLabel>('SYNTHETIC');
   const [uploadDataLabel, setUploadDataLabel] = useState<DataLabel>('USER');
   const [loading, setLoading] = useState(false);
@@ -186,6 +197,7 @@ export const App: React.FC<AppProps> = ({
   const [nlqStatus, setNlqStatus] = useState<{ type: 'ok' | 'fallback'; message: string } | null>(null);
   const [optimizeResult, setOptimizeResult] = useState<OptimizeResponse | null>(null);
   const [optFixtureNote, setOptFixtureNote] = useState<string | null>(null);
+  const [journalStatus, setJournalStatus] = useState<string | null>(null);
 
   const mountedRef = useRef(true);
   useEffect(() => {
@@ -349,6 +361,7 @@ export const App: React.FC<AppProps> = ({
       }
 
       if (cancelled || !mountedRef.current) return;
+      setActiveDatasetId('fashion_shop_12');
       setActiveLabel(fitData.data_label);
       setProducts(fitData.products);
       const firstId = fitData.products[0]?.product_id ?? 'P01';
@@ -438,6 +451,7 @@ export const App: React.FC<AppProps> = ({
         fitData = client.getDemoElasticity(demoLabel).elasticity;
       }
 
+      setActiveDatasetId(demoLabel === 'PUBLIC_M5' ? 'M5' : 'fashion_shop_12');
       setActiveLabel(fitData.data_label);
       setProducts(fitData.products);
       const firstId = fitData.products[0]?.product_id ?? 'P01';
@@ -548,6 +562,7 @@ export const App: React.FC<AppProps> = ({
       }
       const commitRes = await client.commitMapping(uploadId, canonToSrc, commitOptions);
       const fitRes = await client.fitElasticity(commitRes.dataset_id, commitRes.label);
+      setActiveDatasetId(commitRes.dataset_id);
       setActiveLabel(uploadDataLabel);
       setProducts(fitRes.products);
       const firstId = fitRes.products[0]?.product_id ?? 'P01';
@@ -831,6 +846,82 @@ export const App: React.FC<AppProps> = ({
     }
   };
 
+  const handleSaveWhatIfToJournal = async (payload: {
+    title: string;
+    decisionType: 'pricing' | 'schedule' | 'template';
+  }) => {
+    const prod = products.find((p) => p.product_id === selectedProductId) ?? products[0];
+    if (!prod || !simulationResult) return;
+    setJournalStatus(null);
+    try {
+      await client.createJournalEntry({
+        dataset_id: activeDatasetId,
+        data_label: activeLabel,
+        product_id: prod.product_id,
+        product_name: prod.product_name,
+        title: payload.title,
+        decision_type: payload.decisionType,
+        horizon_days: horizonDays,
+        planned_price_vnd: Math.round(prod.current_price_vnd * (1 + priceChangePct / 100)),
+        planned_price_change_pct: priceChangePct,
+        planned_restock_units: plannedRestockUnits,
+        assumptions: {
+          elasticity_median: prod.elasticity_median,
+          unit_cost_change_pct: unitCostChangePct,
+          extra_fixed_cost_vnd: extraFixedCostVnd,
+          decision_goal: decisionGoal,
+        },
+        expected_qty: simulationResult.scenarios.expected.qty,
+        expected_revenue_vnd: simulationResult.scenarios.expected.revenue,
+        expected_profit_vnd: simulationResult.scenarios.expected.profit,
+        p5_profit_vnd: simulationResult.profit_distribution.p5,
+        p95_profit_vnd: simulationResult.profit_distribution.p95,
+        prob_beat_base: simulationResult.prob_beat_base ?? 0.5,
+      });
+      setJournalStatus(
+        lang === 'vi'
+          ? 'Đã lưu kịch bản vào Nhật ký Quyết định (SQLite).'
+          : 'Saved scenario to Decision Journal (SQLite).'
+      );
+    } catch (e) {
+      setJournalStatus(e instanceof Error ? e.message : String(e));
+    }
+  };
+
+  const handleSaveOptimizeToJournal = async (bestOpt: RankedOption, pid: string) => {
+    const prod = products.find((p) => p.product_id === pid) ?? products[0];
+    if (!prod) return;
+    setJournalStatus(null);
+    try {
+      await client.createJournalEntry({
+        dataset_id: activeDatasetId,
+        data_label: activeLabel,
+        product_id: prod.product_id,
+        product_name: prod.product_name,
+        title: `${prod.product_id} Target-Price (${bestOpt.price_change_pct > 0 ? `+${bestOpt.price_change_pct}%` : `${bestOpt.price_change_pct}%`})`,
+        decision_type: 'pricing',
+        horizon_days: 30,
+        planned_price_vnd: bestOpt.price_vnd,
+        planned_price_change_pct: bestOpt.price_change_pct,
+        planned_restock_units: 0,
+        assumptions: { elasticity_median: prod.elasticity_median, source: 'reverse_optimizer' },
+        expected_qty: prod.baseline_qty_per_period,
+        expected_revenue_vnd: bestOpt.price_vnd * prod.baseline_qty_per_period,
+        expected_profit_vnd: bestOpt.expected_profit,
+        p5_profit_vnd: bestOpt.p5_profit,
+        p95_profit_vnd: bestOpt.expected_profit + (bestOpt.expected_profit - bestOpt.p5_profit),
+        prob_beat_base: bestOpt.prob_hit_target,
+      });
+      setJournalStatus(
+        lang === 'vi'
+          ? 'Đã lưu mức giá mục tiêu vào Nhật ký Quyết định (SQLite).'
+          : 'Saved best candidate price to Decision Journal (SQLite).'
+      );
+    } catch (e) {
+      setJournalStatus(e instanceof Error ? e.message : String(e));
+    }
+  };
+
   return (
     <div className="flex min-h-screen flex-col bg-paper">
       <header className="sticky top-0 z-30 border-b border-rule bg-surface/95 backdrop-blur-md">
@@ -906,7 +997,7 @@ export const App: React.FC<AppProps> = ({
           >
             {strings.nav.map((item) => {
               const isActive = activeScreen === item.id;
-              const needsProducts = item.id === 'whatif' || item.id === 'reverse';
+              const needsProducts = item.id === 'whatif' || item.id === 'reverse' || item.id === 'planning';
               const isDisabled = needsProducts && products.length === 0;
 
               return (
@@ -1025,6 +1116,8 @@ export const App: React.FC<AppProps> = ({
             }}
             onRunSimulate={(override) => handleRunSimulate(override)}
             onParseNLQ={handleParseNLQ}
+            onSaveToJournal={handleSaveWhatIfToJournal}
+            journalStatus={journalStatus}
           />
         )}
 
@@ -1038,10 +1131,40 @@ export const App: React.FC<AppProps> = ({
             loading={loading}
             error={error}
             onRunOptimize={handleRunOptimize}
+            onSaveToJournal={handleSaveOptimizeToJournal}
+            journalStatus={journalStatus}
           />
         )}
 
-        {activeScreen === 'validation' && <ValidationScreen lang={lang} />}
+        {activeScreen === 'planning' && (
+          <PlanningScreen
+            lang={lang}
+            products={products}
+            selectedProductId={selectedProductId}
+            client={client}
+            useFixtures={useFixtures}
+          />
+        )}
+
+        {activeScreen === 'validation' && (
+          <ValidationScreen
+            lang={lang}
+            client={client}
+            activeDatasetId={activeDatasetId}
+            products={products}
+            selectedProductId={selectedProductId}
+            useFixtures={useFixtures}
+          />
+        )}
+
+        {activeScreen === 'journal' && (
+          <JournalScreen
+            lang={lang}
+            client={client}
+            activeDatasetId={activeDatasetId}
+            useFixtures={useFixtures}
+          />
+        )}
       </main>
 
       <footer className="border-t border-rule">

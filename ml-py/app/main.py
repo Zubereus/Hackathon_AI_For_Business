@@ -18,18 +18,30 @@ from fastapi import FastAPI, File, HTTPException, UploadFile, status
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.backtest.run import execute_backtest
+from app.causal.analyze import analyze_causal_impact
 from app.elasticity.fit import fit_product_elasticity
 from app.ingest.profile import profile_dataframe
 from app.ingest.transform import transform_to_canonical
+from app.journal.store import (
+    create_decision,
+    delete_decision,
+    evaluate_decision_from_dataset,
+    list_decisions,
+    update_decision,
+)
 from app.llm.explain import explain_scenario
 from app.llm.parse import parse_question
 from app.mapping.assign import resolve_column_mappings
+from app.monitoring.evaluate import evaluate_monitoring
 from app.schemas.contracts import (
     BacktestRequest,
     BacktestResponse,
+    CausalAnalyzeRequest,
+    CausalAnalyzeResponse,
     ColumnMappingItem,
     ColumnProfile,
     DataLabel,
+    DecisionRecord,
     DecisionSpec,
     ElasticityFitRequest,
     ElasticityFitResponse,
@@ -38,7 +50,13 @@ from app.schemas.contracts import (
     IngestMapRequest,
     IngestMapResponse,
     IngestProfileResponse,
+    JournalCreateRequest,
+    JournalEvaluateFromDatasetRequest,
+    JournalListResponse,
+    JournalUpdateRequest,
     MappingAlternative,
+    MonitoringEvaluateRequest,
+    MonitoringEvaluateResponse,
     NLQExplainRequest,
     NLQExplainResponse,
     NLQParseFallback,
@@ -395,3 +413,113 @@ def nlq_explain(request: NLQExplainRequest) -> NLQExplainResponse:
         situation_summary=res.get("situation_summary"),
         recommendations=res.get("recommendations", []),
     )
+
+
+# ---------------- PHASE 8: DECISION INTELLIGENCE (MONITORING, CAUSAL, JOURNAL) ----------------
+
+@app.post("/monitoring/evaluate", response_model=MonitoringEvaluateResponse)
+def monitoring_evaluate(request: MonitoringEvaluateRequest) -> MonitoringEvaluateResponse:
+    """Compute probabilistic calibration (PICP, MPIW, WIS, Pinball), demand regimes & drift."""
+    df, label = resolve_dataset(request.dataset_id)
+    is_m5 = label == "PUBLIC_M5"
+    try:
+        return evaluate_monitoring(
+            df=df,
+            product_id=request.product_id,
+            data_label=label,
+            is_m5_data=is_m5,
+            n_rolling_windows=request.n_rolling_windows,
+            seed=request.seed,
+        )
+    except ValueError as val_err:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(val_err),
+        )
+    except Exception as err:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Monitoring evaluation failed: {err}",
+        )
+
+
+@app.post("/causal/analyze", response_model=CausalAnalyzeResponse)
+def causal_analyze(request: CausalAnalyzeRequest) -> CausalAnalyzeResponse:
+    """Estimate quasi-experimental causal impact (DiD with pre-trend test or ITS)."""
+    df, _ = resolve_dataset(request.dataset_id)
+    try:
+        return analyze_causal_impact(
+            df=df,
+            product_id=request.product_id,
+            control_product_id=request.control_product_id,
+            intervention_date=request.intervention_date,
+            post_days=request.post_days,
+            method=request.method,
+        )
+    except ValueError as val_err:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(val_err),
+        )
+    except Exception as err:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Causal impact analysis failed: {err}",
+        )
+
+
+@app.get("/journal", response_model=JournalListResponse)
+def journal_list(product_id: Optional[str] = None) -> JournalListResponse:
+    """List saved decisions and outcome calibration metrics from SQLite journal."""
+    return list_decisions(product_id=product_id)
+
+
+@app.post("/journal", response_model=DecisionRecord, status_code=status.HTTP_201_CREATED)
+def journal_create(request: JournalCreateRequest) -> DecisionRecord:
+    """Save a simulated decision proposal into persistent SQLite Decision Journal."""
+    return create_decision(request)
+
+
+@app.patch("/journal/{decision_id}", response_model=DecisionRecord)
+def journal_update(decision_id: str, request: JournalUpdateRequest) -> DecisionRecord:
+    """Update lifecycle status, actuals, or decision notes for a persisted entry."""
+    updated = update_decision(decision_id, request)
+    if updated is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Decision '{decision_id}' not found.",
+        )
+    return updated
+
+
+@app.post("/journal/{decision_id}/evaluate", response_model=DecisionRecord)
+def journal_evaluate_actual(
+    decision_id: str,
+    request: JournalEvaluateFromDatasetRequest,
+) -> DecisionRecord:
+    """Measure real post-decision qty, revenue, and profit from matching dates in dataset."""
+    df, _ = resolve_dataset(request.dataset_id)
+    try:
+        return evaluate_decision_from_dataset(
+            df=df,
+            decision_id=decision_id,
+            start_date=request.start_date,
+            horizon_days=request.horizon_days,
+        )
+    except ValueError as val_err:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(val_err),
+        )
+
+
+@app.delete("/journal/{decision_id}")
+def journal_delete(decision_id: str) -> Dict[str, Any]:
+    """Delete a persisted decision entry from SQLite journal."""
+    deleted = delete_decision(decision_id)
+    if not deleted:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Decision '{decision_id}' not found.",
+        )
+    return {"deleted": True, "id": decision_id}

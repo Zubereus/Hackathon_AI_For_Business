@@ -1,7 +1,24 @@
-import React from 'react';
+import React, { useState } from 'react';
+import {
+  CartesianGrid,
+  ComposedChart,
+  Line,
+  LineChart,
+  ReferenceLine,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts';
+import { ApiClient } from '../api';
 import { DataSourceBadge } from '../components/DataSourceBadge';
 import { Notice, PageHeader } from '../components/Page';
-import { Lang } from '../i18n';
+import { formatNum, formatVND, Lang } from '../i18n';
+import {
+  CausalAnalyzeResponse,
+  MonitoringEvaluateResponse,
+  ProductElasticity,
+} from '../types';
 
 const SYNTHETIC_RECOVERY_ROWS = [
   {
@@ -67,18 +84,121 @@ const BACKTEST_EVENTS = [
   { scenario: 'electronics_home_10', events: '5 / 5', meanWape: '25.5%', coverage80: '81.4%' },
 ];
 
-export const ValidationScreen: React.FC<{ lang?: Lang }> = ({ lang = 'en' }) => {
+type ValidationTab = 'track_record' | 'monitoring' | 'causal';
+
+interface ValidationScreenProps {
+  lang?: Lang;
+  client?: ApiClient;
+  activeDatasetId?: string;
+  products?: ProductElasticity[];
+  selectedProductId?: string;
+  useFixtures?: boolean;
+}
+
+export const ValidationScreen: React.FC<ValidationScreenProps> = ({
+  lang = 'en',
+  client,
+  activeDatasetId = 'fashion_shop_12',
+  products = [],
+  selectedProductId = 'P01',
+  useFixtures = false,
+}) => {
   const isVi = lang === 'vi';
+  const [tab, setTab] = useState<ValidationTab>('track_record');
+  const [targetProductId, setTargetProductId] = useState<string>(
+    selectedProductId || products[0]?.product_id || 'P01'
+  );
+  const [controlProductId, setControlProductId] = useState<string>('');
+  const [interventionDate, setInterventionDate] = useState<string>('');
+  const [causalPostDays, setCausalPostDays] = useState<number>(21);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [monitoringRes, setMonitoringRes] = useState<MonitoringEvaluateResponse | null>(null);
+  const [causalRes, setCausalRes] = useState<CausalAnalyzeResponse | null>(null);
+
+  const runMonitoring = async () => {
+    if (!client) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await client.evaluateMonitoring(activeDatasetId, targetProductId, 3);
+      setMonitoringRes(res);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const runCausal = async () => {
+    if (!client) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await client.analyzeCausalImpact({
+        dataset_id: activeDatasetId,
+        product_id: targetProductId,
+        control_product_id: controlProductId || null,
+        intervention_date: interventionDate.trim() ? interventionDate.trim() : null,
+        post_days: causalPostDays,
+        method: controlProductId ? 'did' : 'its',
+      });
+      setCausalRes(res);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-8">
       <PageHeader
         title={isVi ? 'Kiểm chứng độ chính xác của công cụ' : 'How accurate & honest is this tool?'}
       >
         {isVi
-          ? 'Tất cả số liệu bên dưới được lấy nguyên văn từ hồ sơ kiểm thử thực tế (docs/VALIDATION.md) — giải thích bằng ngôn ngữ dễ hiểu để bạn biết công cụ mạnh ở đâu và khi nào cần thận trọng.'
-          : 'All numbers below come straight from verified test runs in docs/VALIDATION.md — explained in plain language so you know where the tool shines and where it warns you.'}
+          ? 'Bao gồm hồ sơ kiểm thử tổng hợp (docs/VALIDATION.md), chẩn đoán hiệu chỉnh xác suất & trôi mô hình (Calibration / Regimes / Drift), và phân tích tác động nhân quả DiD / ITS.'
+          : 'Includes verified validation benchmarks (docs/VALIDATION.md), live probabilistic calibration & regime/drift diagnostics, and honest DiD / ITS causal impact testing.'}
       </PageHeader>
+
+      <div className="flex flex-wrap gap-2">
+        <button
+          type="button"
+          onClick={() => { setError(null); setTab('track_record'); }}
+          className={`rounded-xl border px-3.5 py-2 text-[13px] font-semibold ${
+            tab === 'track_record'
+              ? 'border-accent bg-accent text-accent-ink shadow-sm'
+              : 'border-rule bg-surface text-muted hover:text-ink'
+          }`}
+        >
+          {isVi ? '1. Hồ sơ Backtest chuẩn (19 sự kiện)' : '1. Verified Track Record (19 Events)'}
+        </button>
+        <button
+          type="button"
+          onClick={() => { setError(null); setTab('monitoring'); }}
+          className={`rounded-xl border px-3.5 py-2 text-[13px] font-semibold ${
+            tab === 'monitoring'
+              ? 'border-accent bg-accent text-accent-ink shadow-sm'
+              : 'border-rule bg-surface text-muted hover:text-ink'
+          }`}
+        >
+          {isVi ? '2. Calibration, Regime & Drift Monitor' : '2. Calibration, Regimes & Drift Monitor'}
+        </button>
+        <button
+          type="button"
+          onClick={() => { setError(null); setTab('causal'); }}
+          className={`rounded-xl border px-3.5 py-2 text-[13px] font-semibold ${
+            tab === 'causal'
+              ? 'border-accent bg-accent text-accent-ink shadow-sm'
+              : 'border-rule bg-surface text-muted hover:text-ink'
+          }`}
+        >
+          {isVi ? '3. Tác động Nhân quả (DiD & ITS)' : '3. Causal Impact (DiD & ITS)'}
+        </button>
+      </div>
+
+      {tab === 'track_record' && (
+        <div className="space-y-10">
 
       <div className="grid gap-4 sm:grid-cols-3">
         <div className="panel border-cobalt/30 bg-cobalt-bg/40 p-4">
@@ -270,13 +390,259 @@ export const ValidationScreen: React.FC<{ lang?: Lang }> = ({ lang = 'en' }) => 
               ? '30 / 30 câu hỏi hợp lệ đọc chuẩn · 15 / 15 câu sai phạm vi được chặn an toàn.'
               : '30 / 30 valid questions parsed · 15 / 15 out-of-bounds questions blocked safely.'}
           </p>
-          <p className="mt-1 text-[14px] text-muted">
-            {isVi
-              ? 'AI không tự làm toán; máy quét 101 mức giá × 5.000 kịch bản (505.000 phép tính) chỉ trong ~38,8 ms và không bao giờ bịa số liệu.'
-              : 'AI never does math. The Go engine evaluates 101 prices × 5,000 market runs (505k draws) in ~38.8 ms with strict number verification.'}
-          </p>
+            <p className="mt-1 text-[14px] text-muted">
+              {isVi
+                ? 'AI không tự làm toán; máy quét 101 mức giá × 5.000 kịch bản (505.000 phép tính) chỉ trong ~38,8 ms và không bao giờ bịa số liệu.'
+                : 'AI never does math. The Go engine evaluates 101 prices × 5,000 market runs (505k draws) in ~38.8 ms with strict number verification.'}
+            </p>
+          </div>
+        </section>
         </div>
-      </section>
+      )}
+
+      {/* ---------------- 2. PROBABILISTIC CALIBRATION, REGIMES & DRIFT ---------------- */}
+      {tab === 'monitoring' && (
+        <section className="space-y-5" data-testid="validation-monitoring-section">
+          {useFixtures && (
+            <Notice tone="warn">
+              {isVi
+                ? 'Tắt Chế độ xem mẫu ở góc trên để chạy kiểm định cuộn thời gian thực trên backend Python.'
+                : 'Turn off Sample snapshot mode in the header to run live Python rolling calibration & drift checks.'}
+            </Notice>
+          )}
+          {error && <Notice tone="error">{error}</Notice>}
+
+          <div className="panel p-5 flex flex-wrap items-end gap-4">
+            <div className="min-w-[220px] flex-1">
+              <label className="label">{isVi ? 'Chọn SKU kiểm tra' : 'Select SKU to audit'}</label>
+              <select
+                value={targetProductId}
+                onChange={(e) => setTargetProductId(e.target.value)}
+                className="field"
+              >
+                {(products.length > 0 ? products : [{ product_id: 'P01', product_name: 'P01' }]).map((p) => (
+                  <option key={p.product_id} value={p.product_id}>
+                    {p.product_id} — {p.product_name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <button
+              type="button"
+              disabled={loading || !client}
+              onClick={runMonitoring}
+              className="btn btn-primary"
+            >
+              {loading
+                ? isVi ? 'Đang chạy Calibration & Drift…' : 'Evaluating Calibration & Drift…'
+                : isVi ? 'Chạy Kiểm định Xác suất, Regime & Drift' : 'Run Calibration, Regime & Drift Audit'}
+            </button>
+          </div>
+
+          {monitoringRes && (
+            <div className="space-y-5">
+              {/* Calibration Strip */}
+              <div className="grid gap-3 sm:grid-cols-5">
+                <div className="panel p-4">
+                  <p className="hint">PICP @ 80%</p>
+                  <p className="mt-1 text-[22px] font-bold text-ink">{monitoringRes.calibration.picp_80}%</p>
+                  <p className="hint text-[11px]">50%: {monitoringRes.calibration.picp_50}% · 90%: {monitoringRes.calibration.picp_90}%</p>
+                </div>
+                <div className="panel p-4">
+                  <p className="hint">MPIW @ 80%</p>
+                  <p className="mt-1 text-[22px] font-bold text-ink">{monitoringRes.calibration.mpiw_80} {isVi ? 'sp' : 'u'}</p>
+                  <p className="hint text-[11px]">{monitoringRes.calibration.relative_mpiw_80_pct}% {isVi ? 'TB thực tế' : 'of mean'}</p>
+                </div>
+                <div className="panel p-4">
+                  <p className="hint">WIS ({isVi ? 'Thấp = Tốt' : 'Lower Better'})</p>
+                  <p className="mt-1 text-[22px] font-bold text-ink">{monitoringRes.calibration.wis}</p>
+                  <p className="hint text-[11px]">Pinball q10/q50/q90: {monitoringRes.calibration.pinball_q10} / {monitoringRes.calibration.pinball_q50} / {monitoringRes.calibration.pinball_q90}</p>
+                </div>
+                <div className="panel p-4">
+                  <p className="hint">{isVi ? 'Trạng thái Hiệu chỉnh' : 'Calibration Status'}</p>
+                  <p className={`mt-1 text-[17px] font-bold uppercase ${
+                    monitoringRes.calibration.calibration_status === 'well_calibrated' ? 'text-good' : 'text-warn'
+                  }`}>
+                    {monitoringRes.calibration.calibration_status}
+                  </p>
+                </div>
+                <div className="panel p-4">
+                  <p className="hint">{isVi ? 'Sức khỏe Drift Mô hình' : 'Model Drift Status'}</p>
+                  <p className={`mt-1 text-[17px] font-bold uppercase ${
+                    monitoringRes.drift.drift_status === 'healthy' ? 'text-good' :
+                    monitoringRes.drift.drift_status === 'watch' ? 'text-warn' : 'text-bad'
+                  }`}>
+                    {monitoringRes.drift.drift_status}
+                  </p>
+                  <p className="hint text-[11px]">DW={monitoringRes.drift.durbin_watson} · Price PSI={monitoringRes.drift.price_psi}</p>
+                </div>
+              </div>
+
+              {/* Charts: Reliability Diagram & Demand Regimes */}
+              <div className="grid gap-5 lg:grid-cols-2">
+                <div className="panel p-5">
+                  <h3 className="h3 mb-2">{isVi ? 'Đồ thị Độ tin cậy Xác suất (Reliability Curve)' : 'Quantile Reliability Diagram'}</h3>
+                  <p className="hint mb-3">
+                    {isVi ? 'Càng bám sát đường chéo lý tưởng thì các phân vị q10–q90 càng chuẩn xác.' : 'Closer to nominal quantile diagonal indicates sharper empirical quantile calibration.'}
+                  </p>
+                  <div className="h-[220px] w-full">
+                    <ResponsiveContainer width="100%" height={220} minWidth={240}>
+                      <LineChart data={monitoringRes.calibration.reliability_curve} margin={{ top: 8, right: 16, left: 0, bottom: 4 }}>
+                        <CartesianGrid stroke="rgb(var(--rule))" strokeDasharray="3 3" />
+                        <XAxis dataKey="nominal_quantile" tickFormatter={(v: number) => `${v}%`} tick={{ fontSize: 11, fill: 'rgb(var(--muted))' }} />
+                        <YAxis domain={[0, 100]} tickFormatter={(v: number) => `${v}%`} tick={{ fontSize: 11, fill: 'rgb(var(--muted))' }} />
+                        <Tooltip formatter={(val: number, name: string) => [`${val}%`, name]} />
+                        <Line type="monotone" dataKey="nominal_quantile" name={isVi ? 'Kỳ vọng lý tưởng' : 'Ideal'} stroke="rgb(var(--muted))" strokeDasharray="4 4" dot={false} isAnimationActive={false} />
+                        <Line type="monotone" dataKey="empirical_coverage" name={isVi ? 'Thực tế quan sát' : 'Observed'} stroke="rgb(var(--accent))" strokeWidth={2.5} isAnimationActive={false} />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+
+                <div className="panel p-5">
+                  <h3 className="h3 mb-2">{isVi ? 'Phát hiện Chế độ Cầu & Điểm gãy Cấu trúc (BIC)' : 'Demand Regimes & Structural Breakpoints'}</h3>
+                  <p className="hint mb-3">
+                    {isVi
+                      ? `Số điểm gãy: ${monitoringRes.regimes.change_points.length} · Ổn định co giãn sớm/gần đây: ${monitoringRes.regimes.elasticity_stable ? 'Ổn định' : 'Có dịch chuyển'} (p=${monitoringRes.regimes.elasticity_shift_p_value ?? '—'})`
+                      : `Breakpoints: ${monitoringRes.regimes.change_points.length} · Elasticity stability: ${monitoringRes.regimes.elasticity_stable ? 'Stable' : 'Shifted'} (p=${monitoringRes.regimes.elasticity_shift_p_value ?? '—'})`}
+                  </p>
+                  <div className="h-[220px] w-full">
+                    <ResponsiveContainer width="100%" height={220} minWidth={240}>
+                      <ComposedChart data={monitoringRes.regimes.series_preview} margin={{ top: 8, right: 16, left: 0, bottom: 4 }}>
+                        <CartesianGrid stroke="rgb(var(--rule))" strokeDasharray="3 3" />
+                        <XAxis dataKey="date" tick={{ fontSize: 10, fill: 'rgb(var(--muted))' }} interval="preserveStartEnd" />
+                        <YAxis tick={{ fontSize: 11, fill: 'rgb(var(--muted))' }} />
+                        <Tooltip />
+                        <Line type="monotone" dataKey="rolling_mean_qty" name={isVi ? 'TB trượt 7 ngày' : '7d Rolling Mean'} stroke="rgb(var(--cobalt))" strokeWidth={1.75} dot={false} isAnimationActive={false} />
+                        <Line type="stepAfter" dataKey="regime_mean_qty" name={isVi ? 'Mức nền Regime' : 'Regime Mean'} stroke="rgb(var(--warn))" strokeWidth={2.5} dot={false} isAnimationActive={false} />
+                      </ComposedChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+              </div>
+
+              {/* Drift Details Table */}
+              <div className="panel p-5 space-y-2 text-[13px]">
+                <h3 className="h3">{isVi ? 'Chi tiết Chẩn đoán Drift & Phần dư' : 'Drift & Residual Diagnostic Breakdown'}</h3>
+                <div className="grid gap-3 sm:grid-cols-3 pt-1">
+                  <div>Price PSI / KS p: <strong>{monitoringRes.drift.price_psi}</strong> / p={monitoringRes.drift.price_ks_p_value}</div>
+                  <div>Demand PSI / KS p: <strong>{monitoringRes.drift.qty_psi}</strong> / p={monitoringRes.drift.qty_ks_p_value}</div>
+                  <div>WAPE Baseline → Recent: <strong>{monitoringRes.drift.baseline_wape_pct}% → {monitoringRes.drift.recent_wape_pct}%</strong> (ratio {monitoringRes.drift.error_drift_ratio}x)</div>
+                  <div>Residual Bias: <strong>{monitoringRes.drift.residual_mean_bias_pct}%</strong></div>
+                  <div>Durbin-Watson: <strong>{monitoringRes.drift.durbin_watson}</strong></div>
+                  <div>Flags: <strong>{monitoringRes.drift.drift_flags.length > 0 ? monitoringRes.drift.drift_flags.join(', ') : 'None'}</strong></div>
+                </div>
+              </div>
+            </div>
+          )}
+        </section>
+      )}
+
+      {/* ---------------- 3. CAUSAL IMPACT (DiD & ITS) ---------------- */}
+      {tab === 'causal' && (
+        <section className="space-y-5" data-testid="validation-causal-section">
+          {useFixtures && (
+            <Notice tone="warn">
+              {isVi
+                ? 'Tắt Chế độ xem mẫu ở góc trên để chạy kiểm định DiD / ITS trực tiếp trên dữ liệu bán hàng.'
+                : 'Turn off Sample snapshot mode in the header to run live Python DiD / ITS causal diagnostics.'}
+            </Notice>
+          )}
+          {error && <Notice tone="error">{error}</Notice>}
+
+          <div className="panel p-5 grid gap-4 sm:grid-cols-4 items-end">
+            <div>
+              <label className="label">{isVi ? 'SKU can thiệp (Treated)' : 'Treated SKU'}</label>
+              <select value={targetProductId} onChange={(e) => setTargetProductId(e.target.value)} className="field">
+                {(products.length > 0 ? products : [{ product_id: 'P01', product_name: 'P01' }]).map((p) => (
+                  <option key={p.product_id} value={p.product_id}>{p.product_id} — {p.product_name}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="label">{isVi ? 'SKU đối chứng (Control -> DiD, bỏ trống -> ITS)' : 'Control SKU (DiD if chosen, else ITS)'}</label>
+              <select value={controlProductId} onChange={(e) => setControlProductId(e.target.value)} className="field">
+                <option value="">{isVi ? '— Không chọn (chạy ITS đơn SKU) —' : '— None (Single-SKU ITS) —'}</option>
+                {products.filter((p) => p.product_id !== targetProductId).map((p) => (
+                  <option key={p.product_id} value={p.product_id}>{p.product_id} — {p.product_name}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="label">{isVi ? 'Ngày can thiệp (trống = tự dò)' : 'Intervention date (blank = auto)'}</label>
+              <input type="text" placeholder="YYYY-MM-DD" value={interventionDate} onChange={(e) => setInterventionDate(e.target.value)} className="field" />
+            </div>
+            <div className="flex gap-2 items-end">
+              <div className="w-24">
+                <label className="label">{isVi ? 'Hậu kỳ (d)' : 'Post days'}</label>
+                <input type="number" min={7} max={60} value={causalPostDays} onChange={(e) => setCausalPostDays(Number(e.target.value) || 21)} className="field field-num" />
+              </div>
+              <button type="button" disabled={loading || !client} onClick={runCausal} className="btn btn-primary flex-1">
+                {loading ? (isVi ? 'Đang ước lượng…' : 'Analyzing…') : isVi ? 'Ước lượng DiD / ITS' : 'Run Causal Audit'}
+              </button>
+            </div>
+          </div>
+
+          {causalRes && (
+            <div className="space-y-4">
+              {causalRes.warnings.map((w, i) => (
+                <Notice key={i} tone="warn">{w}</Notice>
+              ))}
+
+              <div className="grid gap-3 sm:grid-cols-4">
+                <div className="panel p-4">
+                  <p className="hint">{isVi ? 'Phương pháp & Ngày' : 'Method & Date'}</p>
+                  <p className="mt-1 text-[18px] font-bold uppercase text-ink">{causalRes.method_used} · {causalRes.intervention_date}</p>
+                  <p className="hint text-[11px]">{causalRes.pre_days}d pre / {causalRes.post_days}d post</p>
+                </div>
+                <div className="panel p-4">
+                  <p className="hint">{isVi ? 'Tăng thêm / ngày [95% CI]' : 'Incremental Daily Qty [95% CI]'}</p>
+                  <p className="mt-1 text-[20px] font-bold text-ink">{causalRes.incremental_daily_qty > 0 ? '+' : ''}{formatNum(causalRes.incremental_daily_qty)}</p>
+                  <p className="hint text-[11px]">[{formatNum(causalRes.incremental_qty_ci95_low)}, {formatNum(causalRes.incremental_qty_ci95_high)}] (p={causalRes.p_value})</p>
+                </div>
+                <div className="panel p-4">
+                  <p className="hint">{isVi ? 'Doanh thu / Lãi tăng thêm' : 'Incremental Revenue / Profit'}</p>
+                  <p className="mt-1 text-[16px] font-bold text-good">{formatVND(causalRes.incremental_total_profit_vnd)}</p>
+                  <p className="hint text-[11px]">Rev: {formatVND(causalRes.incremental_total_revenue_vnd)}</p>
+                </div>
+                <div className="panel p-4">
+                  <p className="hint">{isVi ? 'Kiểm định Xu hướng Song song' : 'Parallel Trends & Confidence'}</p>
+                  <p className={`mt-1 text-[15px] font-bold ${
+                    causalRes.parallel_trends_passed === true ? 'text-good' : 'text-warn'
+                  }`}>
+                    {causalRes.parallel_trends_p_value !== null && causalRes.parallel_trends_p_value !== undefined
+                      ? `p=${causalRes.parallel_trends_p_value} (${causalRes.parallel_trends_passed ? 'PASS' : 'FAIL'})`
+                      : causalRes.causal_confidence}
+                  </p>
+                </div>
+              </div>
+
+              <div className="panel p-5">
+                <h3 className="h3 mb-3">{isVi ? 'Thực tế vs Đối chứng (Counterfactual) qua Ngày can thiệp' : 'Actual vs Counterfactual Path Across Intervention'}</h3>
+                <div className="h-[250px] w-full">
+                  <ResponsiveContainer width="100%" height={250} minWidth={240}>
+                    <LineChart data={causalRes.series} margin={{ top: 8, right: 16, left: 0, bottom: 4 }}>
+                      <CartesianGrid stroke="rgb(var(--rule))" strokeDasharray="3 3" />
+                      <XAxis dataKey="date" tick={{ fontSize: 10, fill: 'rgb(var(--muted))' }} interval="preserveStartEnd" />
+                      <YAxis tick={{ fontSize: 11, fill: 'rgb(var(--muted))' }} />
+                      <Tooltip />
+                      <ReferenceLine x={causalRes.intervention_date} stroke="rgb(var(--warn))" strokeDasharray="4 4" />
+                      <Line type="monotone" dataKey="actual_qty" name={isVi ? 'Thực tế (Treated)' : 'Actual'} stroke="rgb(var(--accent))" strokeWidth={2.5} dot={false} isAnimationActive={false} />
+                      <Line type="monotone" dataKey="counterfactual_qty" name={isVi ? 'Đối chứng giả định' : 'Counterfactual'} stroke="rgb(var(--muted))" strokeDasharray="5 4" strokeWidth={2} dot={false} isAnimationActive={false} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+                <div className="mt-4 border-t border-rule pt-3 text-[12px] text-muted space-y-1">
+                  <p className="font-semibold text-ink">{isVi ? 'Giả định nhận diện nhân quả bắt buộc:' : 'Required Identification Assumptions:'}</p>
+                  {causalRes.identification_assumptions.map((a, idx) => (
+                    <p key={idx}>• {a}</p>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+        </section>
+      )}
     </div>
   );
 };

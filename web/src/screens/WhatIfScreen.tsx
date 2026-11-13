@@ -34,6 +34,7 @@ import { Notice } from '../components/Page';
 import { StepExplainer } from '../components/StepExplainer';
 import { StoreHealthPulse } from '../components/StoreHealthPulse';
 import { TransparentAssumptionsCard } from '../components/TransparentAssumptionsCard';
+import { SCENARIO_TEMPLATES } from '../data/scenarioTemplates';
 import {
   describeWarning,
   formatCompactVND,
@@ -49,6 +50,7 @@ import {
   NLQParseFallback,
   PinnedScenario,
   ProductElasticity,
+  ScenarioTemplateDef,
   SchedulePhase,
   SimulateResponse,
   SuggestedScenarioPreset,
@@ -105,6 +107,11 @@ interface WhatIfScreenProps {
     seed?: number;
   }) => void;
   onParseNLQ: (question: string) => void;
+  onSaveToJournal?: (payload: {
+    title: string;
+    decisionType: 'pricing' | 'schedule' | 'template';
+  }) => Promise<void> | void;
+  journalStatus?: string | null;
 }
 
 const DEFAULT_SCHEDULE_PRESET: SchedulePhase[] = [
@@ -185,6 +192,8 @@ export const WhatIfScreen: React.FC<WhatIfScreenProps> = ({
   onChangeParams,
   onRunSimulate,
   onParseNLQ,
+  onSaveToJournal,
+  journalStatus,
 }) => {
   const isVi = lang === 'vi';
 
@@ -754,6 +763,63 @@ export const WhatIfScreen: React.FC<WhatIfScreenProps> = ({
             </div>
           </div>
 
+          {/* 6 Scenario Templates (#11) */}
+          <div
+            className="mt-4 rounded-xl border border-rule bg-sunken/40 p-3.5"
+            data-testid="scenario-templates-bar"
+          >
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <span className="text-[12px] font-bold uppercase tracking-wide text-muted">
+                {isVi
+                  ? '6 Kịch bản mẫu nhanh (User Assumptions)'
+                  : '6 Playbook Scenario Templates (Editable Assumptions)'}
+              </span>
+              <span className="hint text-[11px]">
+                {isVi
+                  ? 'Áp dụng thông số giả định sẵn vào Engine Go'
+                  : 'Loads preset assumptions into live Go simulation'}
+              </span>
+            </div>
+            <div className="mt-2.5 grid gap-2 sm:grid-cols-2">
+              {SCENARIO_TEMPLATES.map((tpl: ScenarioTemplateDef) => (
+                <button
+                  key={tpl.id}
+                  type="button"
+                  data-testid={`template-btn-${tpl.id}`}
+                  onClick={() => {
+                    const sched = tpl.schedulePhases ?? [];
+                    onChangeParams({
+                      priceChangePct: tpl.priceChangePct,
+                      horizonDays: tpl.horizonDays,
+                      decisionGoal: tpl.decisionGoal,
+                      extraFixedCostVnd: tpl.extraFixedCostVnd,
+                      plannedRestockUnits: tpl.plannedRestockUnits,
+                      holdingCostPctPerMonth: tpl.holdingCostPctPerMonth,
+                      schedulePhases: sched,
+                    });
+                    onRunSimulate({
+                      priceChangePct: tpl.priceChangePct,
+                      horizonDays: tpl.horizonDays,
+                      decisionGoal: tpl.decisionGoal,
+                      extraFixedCostVnd: tpl.extraFixedCostVnd,
+                      plannedRestockUnits: tpl.plannedRestockUnits,
+                      holdingCostPctPerMonth: tpl.holdingCostPctPerMonth,
+                      schedule: sched,
+                    });
+                  }}
+                  className="rounded-lg border border-rule bg-surface p-2.5 text-left transition-all hover:border-accent"
+                >
+                  <div className="text-[12.5px] font-bold text-ink">
+                    {isVi ? tpl.titleVi : tpl.titleEn}
+                  </div>
+                  <div className="hint mt-0.5 text-[11px]">
+                    {isVi ? tpl.assumptionBadgeVi : tpl.assumptionBadgeEn}
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             {/* Decision Goal & Clearance Warehouse Context */}
             <div className="sm:col-span-2 rounded-md border border-rule bg-sunken/40 p-3.5">
@@ -1297,27 +1363,49 @@ export const WhatIfScreen: React.FC<WhatIfScreenProps> = ({
                 <h2 id="result" className="h2 text-[20px]">
                   {isVi ? 'Kết quả tính thử & Lời khuyên hành động' : 'Result & Actionable Advice'}
                 </h2>
-                {selectedProduct && (
-                  <button
-                    type="button"
-                    data-testid="toggle-step-guide-btn"
-                    aria-expanded={showStepGuide}
-                    onClick={() => setShowStepGuide((prev) => !prev)}
-                    className="btn btn-secondary gap-1.5 text-[13px]"
-                  >
-                    <InfoIcon className="h-4 w-4 text-accent" aria-hidden="true" />
-                    <span>
-                      {showStepGuide
-                        ? isVi
-                          ? 'Ẩn giải thích 4 bước'
-                          : 'Hide 4-step breakdown'
-                        : isVi
-                          ? 'Xem cách máy tính (4 bước dễ hiểu)'
-                          : 'See how this is calculated (4 steps)'}
-                    </span>
-                  </button>
-                )}
+                <div className="flex flex-wrap items-center gap-2">
+                  {onSaveToJournal && selectedProduct && (
+                    <button
+                      type="button"
+                      data-testid="save-whatif-journal-btn"
+                      onClick={() =>
+                        onSaveToJournal({
+                          title: `${selectedProduct.product_id} (${priceChangePct > 0 ? `+${priceChangePct}%` : `${priceChangePct}%`}, ${horizonDays}d)`,
+                          decisionType: isScheduleMode ? 'schedule' : 'pricing',
+                        })
+                      }
+                      className="btn btn-secondary gap-1.5 text-[13px]"
+                    >
+                      {isVi ? 'Lưu vào Nhật ký Quyết định' : 'Save to Decision Journal'}
+                    </button>
+                  )}
+                  {selectedProduct && (
+                    <button
+                      type="button"
+                      data-testid="toggle-step-guide-btn"
+                      aria-expanded={showStepGuide}
+                      onClick={() => setShowStepGuide((prev) => !prev)}
+                      className="btn btn-secondary gap-1.5 text-[13px]"
+                    >
+                      <InfoIcon className="h-4 w-4 text-accent" aria-hidden="true" />
+                      <span>
+                        {showStepGuide
+                          ? isVi
+                            ? 'Ẩn giải thích 4 bước'
+                            : 'Hide 4-step breakdown'
+                          : isVi
+                            ? 'Xem cách máy tính (4 bước dễ hiểu)'
+                            : 'See how this is calculated (4 steps)'}
+                      </span>
+                    </button>
+                  )}
+                </div>
               </div>
+              {journalStatus && (
+                <Notice tone="info" role="status">
+                  {journalStatus}
+                </Notice>
+              )}
 
               {explanationData && (
                 <div

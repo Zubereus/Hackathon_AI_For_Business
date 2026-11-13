@@ -230,6 +230,42 @@ func quantileSorted(sorted []float64, p float64) float64 {
 	return sorted[lo]*(1.0-frac) + sorted[hi]*frac
 }
 
+// SplitMix64 exposes deterministic 64-bit state mixing for downstream Go planning modules.
+func SplitMix64(x uint64) uint64 {
+	return splitmix64(x)
+}
+
+// U64ToUnitFloat converts a uint64 into a strictly positive float in (0, 1].
+func U64ToUnitFloat(x uint64) float64 {
+	return u64ToUnitFloat(x)
+}
+
+// StdNormalFromSeed samples a deterministic standard normal draw Z ~ N(0, 1) from a uint64 seed.
+func StdNormalFromSeed(seed uint64) float64 {
+	u1 := u64ToUnitFloat(splitmix64(seed ^ 0x517cc1b727220a95))
+	u2 := u64ToUnitFloat(splitmix64(seed ^ 0x94d049bb133111eb))
+	return math.Sqrt(-2.0*math.Log(u1)) * math.Cos(2.0*math.Pi*u2)
+}
+
+// QuantileSorted returns the linear-interpolated p-quantile (p in [0, 1]) of a sorted slice.
+func QuantileSorted(sorted []float64, p float64) float64 {
+	return quantileSorted(sorted, p)
+}
+
+// ComputePointScenario evaluates deterministic price-elasticity scenario outcomes.
+func ComputePointScenario(
+	price float64,
+	q0 float64,
+	priceRatio float64,
+	elasticity float64,
+	cost float64,
+	fixedCost float64,
+	hasStock bool,
+	stockCap float64,
+) ScenarioMetrics {
+	return computePointScenario(price, q0, priceRatio, elasticity, cost, fixedCost, hasStock, stockCap)
+}
+
 // ComputeBreakEvenElasticity evaluates e* = ln((P0-C)/(P1-C)) / ln(P1/P0).
 // Returns nil if undefined (no price change, or margin <= 0 in either state) so NaN/Inf never leak.
 func ComputeBreakEvenElasticity(p0, p1, cost float64) *float64 {

@@ -2,25 +2,40 @@ import precomputedBundle from './fixtures/precomputed_fixtures.json';
 import { formatInt, formatNum, formatPct, formatVND } from './i18n';
 import {
   BusinessContext,
+  CashRunwayRequest,
+  CashRunwayResponse,
+  CausalAnalyzeRequest,
+  CausalAnalyzeResponse,
   ClearanceMetrics,
   ColumnMappingItem,
   ColumnProfile,
   DataLabel,
   DecisionGoal,
+  DecisionRecord,
   DecisionSpec,
   ElasticityFitResponse,
   IngestCommitOptions,
   IngestCommitResponse,
   IngestMapResponse,
   IngestProfileResponse,
+  JournalCreateRequest,
+  JournalListResponse,
+  JournalUpdateRequest,
+  MonitoringEvaluateResponse,
   NLQExplainResponse,
   NLQParseResponse,
   OptimizeRequest,
   OptimizeResponse,
+  PortfolioOptimizeRequest,
+  PortfolioOptimizeResponse,
   ProductElasticity,
+  ReplenishRequest,
+  ReplenishResponse,
   SchedulePhase,
   SimulateRequest,
   SimulateResponse,
+  VOIRequest,
+  VOIResponse,
 } from './types';
 
 export const GO_API_BASE =
@@ -1090,6 +1105,141 @@ export class ApiClient {
         decision_spec: extra?.decisionSpec ?? null,
         optimize_summary: extra?.optimizeSummary ?? null,
       }),
+    });
+    if (!res.ok) {
+      throw new Error(await parseErrorDetail(res));
+    }
+    return res.json();
+  }
+
+  // ---------------- DECISION INTELLIGENCE ENDPOINTS ----------------
+
+  private async postJson<TReq, TResp>(path: string, payload: TReq): Promise<TResp> {
+    const res = await fetch(`${GO_API_BASE}${path}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) {
+      throw new Error(await parseErrorDetail(res));
+    }
+    return res.json();
+  }
+
+  async optimizeReplenishment(req: ReplenishRequest): Promise<ReplenishResponse> {
+    if (this.useFixtures) {
+      throw new Error('Sample snapshot mode: connect to live Go engine (:8080) to compute EOQ & Safety Stock.');
+    }
+    return this.postJson('/api/planning/replenish', req);
+  }
+
+  async simulateCashRunway(req: CashRunwayRequest): Promise<CashRunwayResponse> {
+    if (this.useFixtures) {
+      throw new Error('Sample snapshot mode: connect to live Go engine (:8080) to simulate cash runway.');
+    }
+    return this.postJson('/api/planning/runway', req);
+  }
+
+  async optimizePortfolio(req: PortfolioOptimizeRequest): Promise<PortfolioOptimizeResponse> {
+    if (this.useFixtures) {
+      throw new Error('Sample snapshot mode: connect to live Go engine (:8080) to optimize multi-SKU portfolio.');
+    }
+    return this.postJson('/api/planning/portfolio', req);
+  }
+
+  async analyzeValueOfInformation(req: VOIRequest): Promise<VOIResponse> {
+    if (this.useFixtures) {
+      throw new Error('Sample snapshot mode: connect to live Go engine (:8080) to compute EVPI & EVSI.');
+    }
+    return this.postJson('/api/planning/voi', req);
+  }
+
+  async evaluateMonitoring(
+    datasetId: string,
+    productId: string,
+    nRollingWindows = 3
+  ): Promise<MonitoringEvaluateResponse> {
+    if (this.useFixtures) {
+      throw new Error('Sample snapshot mode: connect to live ML service to run rolling calibration & drift tests.');
+    }
+    return this.postJson('/api/monitoring/evaluate', {
+      dataset_id: datasetId,
+      product_id: productId,
+      n_rolling_windows: nRollingWindows,
+      seed: 42,
+    });
+  }
+
+  async analyzeCausalImpact(req: CausalAnalyzeRequest): Promise<CausalAnalyzeResponse> {
+    if (this.useFixtures) {
+      throw new Error('Sample snapshot mode: connect to live ML service to run causal DiD / ITS diagnostics.');
+    }
+    return this.postJson('/api/causal/analyze', req);
+  }
+
+  async listJournal(productId?: string): Promise<JournalListResponse> {
+    if (this.useFixtures) {
+      return {
+        items: [],
+        total_count: 0,
+        evaluated_count: 0,
+        within_band_rate_pct: null,
+        cumulative_simulated_profit_vnd: 0,
+        cumulative_actual_profit_vnd: 0,
+      };
+    }
+    const qs = productId ? `?product_id=${encodeURIComponent(productId)}` : '';
+    const res = await fetch(`${GO_API_BASE}/api/journal${qs}`);
+    if (!res.ok) {
+      throw new Error(await parseErrorDetail(res));
+    }
+    return res.json();
+  }
+
+  async createJournalEntry(req: JournalCreateRequest): Promise<DecisionRecord> {
+    if (this.useFixtures) {
+      throw new Error('Sample snapshot mode: connect to live backend to persist decisions into SQLite journal.');
+    }
+    return this.postJson('/api/journal', req);
+  }
+
+  async updateJournalEntry(decisionId: string, req: JournalUpdateRequest): Promise<DecisionRecord> {
+    if (this.useFixtures) {
+      throw new Error('Sample snapshot mode: connect to live backend to update decision records.');
+    }
+    const res = await fetch(`${GO_API_BASE}/api/journal/${encodeURIComponent(decisionId)}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(req),
+    });
+    if (!res.ok) {
+      throw new Error(await parseErrorDetail(res));
+    }
+    return res.json();
+  }
+
+  async evaluateJournalFromDataset(
+    decisionId: string,
+    datasetId: string,
+    startDate: string,
+    horizonDays?: number
+  ): Promise<DecisionRecord> {
+    if (this.useFixtures) {
+      throw new Error('Sample snapshot mode: connect to live backend to auto-measure CSV outcomes.');
+    }
+    return this.postJson(`/api/journal/${encodeURIComponent(decisionId)}/evaluate`, {
+      dataset_id: datasetId,
+      start_date: startDate,
+      horizon_days: horizonDays ?? null,
+    });
+  }
+
+  async deleteJournalEntry(decisionId: string): Promise<{ deleted: boolean }> {
+    if (this.useFixtures) {
+      throw new Error('Sample snapshot mode: connect to live backend to delete decision records.');
+    }
+    const res = await fetch(`${GO_API_BASE}/api/journal/${encodeURIComponent(decisionId)}`, {
+      method: 'DELETE',
     });
     if (!res.ok) {
       throw new Error(await parseErrorDetail(res));

@@ -11,7 +11,7 @@ import {
 import { TargetIcon } from '../components/Icons';
 import { Notice, PageHeader } from '../components/Page';
 import { describeViolation, formatCompactVND, formatPct, formatVND, Lang } from '../i18n';
-import { OptimizeResponse, ProductElasticity } from '../types';
+import { OptimizeResponse, ProductElasticity, RankedOption } from '../types';
 
 interface ReverseWhatIfScreenProps {
   lang?: Lang;
@@ -31,6 +31,8 @@ interface ReverseWhatIfScreenProps {
     respectStock: boolean;
     seed: number;
   }) => void;
+  onSaveToJournal?: (bestOption: RankedOption, productId: string) => Promise<void> | void;
+  journalStatus?: string | null;
 }
 
 export const ReverseWhatIfScreen: React.FC<ReverseWhatIfScreenProps> = ({
@@ -42,6 +44,8 @@ export const ReverseWhatIfScreen: React.FC<ReverseWhatIfScreenProps> = ({
   loading,
   error,
   onRunOptimize,
+  onSaveToJournal,
+  journalStatus,
 }) => {
   const isVi = lang === 'vi';
   const [productId, setProductId] = useState(selectedProductId || products[0]?.product_id || 'P01');
@@ -409,9 +413,26 @@ export const ReverseWhatIfScreen: React.FC<ReverseWhatIfScreenProps> = ({
           </section>
 
           <section aria-labelledby="ranked" className="pt-2">
-            <h2 id="ranked" className="h2 mb-3">
-              {isVi ? 'Top mức giá gợi ý (xếp từ tốt nhất)' : 'Top recommended prices'}
-            </h2>
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+              <h2 id="ranked" className="h2">
+                {isVi ? 'Top mức giá gợi ý (xếp từ tốt nhất)' : 'Top recommended prices'}
+              </h2>
+              {onSaveToJournal && optimizeResult.ranked[0] && (
+                <button
+                  type="button"
+                  data-testid="save-optimize-journal-btn"
+                  onClick={() => onSaveToJournal(optimizeResult.ranked[0], productId)}
+                  className="btn btn-secondary text-[13px]"
+                >
+                  {isVi ? 'Lưu mức giá tốt nhất vào Nhật ký' : 'Save Best Price to Journal'}
+                </button>
+              )}
+            </div>
+            {journalStatus && (
+              <div className="mb-3">
+                <Notice tone="info" role="status">{journalStatus}</Notice>
+              </div>
+            )}
             <div className="panel overflow-hidden">
               <div className="relative overflow-x-auto">
                 <table className="data-table min-w-[820px]">

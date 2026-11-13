@@ -132,7 +132,9 @@ export function getStrings(lang: Lang) {
     nav: [
       { id: 'whatif' as ScreenId, step: '', label: isVi ? 'Thử kịch bản giá' : 'Simulate Price Plan' },
       { id: 'reverse' as ScreenId, step: '', label: isVi ? 'Tìm giá đạt mục tiêu lãi' : 'Find Target Price' },
+      { id: 'planning' as ScreenId, step: '', label: isVi ? 'Vốn, Kho & Danh mục' : 'Capital & Portfolio' },
       { id: 'validation' as ScreenId, step: '', label: isVi ? 'Độ tin cậy công cụ' : 'Accuracy Track Record' },
+      { id: 'journal' as ScreenId, step: '', label: isVi ? 'Nhật ký Quyết định' : 'Decision Journal' },
     ],
     header: {
       dataButton: isVi ? 'Nạp file bán hàng (CSV)' : 'Load Sales Data (CSV)',

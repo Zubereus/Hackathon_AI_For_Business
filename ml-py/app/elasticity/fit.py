@@ -258,6 +258,8 @@ def fit_product_elasticity(
     # Current business situation snapshot (computed deterministically from historical data)
     base_margin_pct = round((recent_price - recent_cost) / recent_price * 100.0, 2) if recent_price > 0 else 0.0
     recent_14d_avg = round(float(np.mean(hist_quantities[-14:])), 2) if len(hist_quantities) > 0 else None
+    daily_mean_qty = round(float(np.mean(hist_quantities)), 2) if len(hist_quantities) > 0 else None
+    daily_std_qty = round(float(np.std(hist_quantities, ddof=1)), 2) if len(hist_quantities) > 1 else (0.0 if len(hist_quantities) == 1 else None)
     demand_trend_pct: Optional[float] = None
     if len(hist_quantities) >= 28:
         prev_14d = float(np.mean(hist_quantities[-28:-14]))
@@ -302,10 +304,13 @@ def fit_product_elasticity(
     biz_ctx = BusinessContext(
         base_margin_pct=base_margin_pct,
         recent_14d_avg_qty=recent_14d_avg,
+        daily_mean_qty=daily_mean_qty,
+        daily_std_qty=daily_std_qty,
         demand_trend_pct=demand_trend_pct,
         stock_days_cover=stock_days_cover,
         stockout_days_pct=stockout_days_pct,
         promo_share_pct=promo_share_pct,
+        current_stock_units=stock_avail,
         significant=is_significant,
         warnings=warnings,
     )

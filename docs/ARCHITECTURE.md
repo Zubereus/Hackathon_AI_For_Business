@@ -190,3 +190,19 @@ Break-even elasticity (single move, unconstrained, P1 != P0, P0 > cost, P1 > cos
 - **React Web (`web/`)**: `npm run build` (`tsc && vite build`) + `npm test -- --run` (Vitest unit & bilingual E2E UI flows)
 - **Live 3-Tier Cross-Check**: `python -u e2e/demo_path.py` and `python e2e/cross_check_py_go.py` (`<= 0.5%` Py/Go parity)
 - **One-Command Container Stack**: `docker compose up --build` (runs `ml-py:8000` → `engine-go:8080` → `web:5173`)
+
+---
+
+## 6. Decision Intelligence Platform Extensions
+
+See [`docs/DECISION_INTELLIGENCE_AUDIT.md`](DECISION_INTELLIGENCE_AUDIT.md) and [`docs/WHATIF_AI_MASTER_GUIDE.md`](WHATIF_AI_MASTER_GUIDE.md) for the complete technical audit, mathematical models, SQLite DDL, and bilingual system reference covering:
+- **Go Planning & Optimization (`engine-go/internal/planning/`)**:
+  - `POST /api/planning/replenish`: Wilson EOQ, Safety Stock, Reorder Point, lead-time stockout probability, and capital/warehouse-constrained SKU ordering.
+  - `POST /api/planning/runway`: DIO/DSO/DPO/CCC working capital diagnostics and parallel `SplitMix64` Monte Carlo cash balance fan charts.
+  - `POST /api/planning/portfolio`: Multi-SKU Multiple-Choice Knapsack DP + Lagrangian warehouse search reusing `sim.RunSimulation`.
+  - `POST /api/planning/voi`: Preposterior EVPI, Normal-conjugate EVSI, ENGS, and experiment gating from empirical elasticity draws.
+- **Python Monitoring, Causal Audit & Persistent SQLite Journal (`ml-py/app/{monitoring,causal,journal}/`)**:
+  - `POST /api/monitoring/evaluate` → `/monitoring/evaluate`: Rolling calibration (`PICP`, `MPIW`, `Pinball`, `WIS`, reliability curve), BIC change-point regime detection, and drift telemetry (`PSI`, `KS`, WAPE drift ratio, `Durbin-Watson`).
+  - `POST /api/causal/analyze` → `/causal/analyze`: Newey-West HAC Difference-in-Differences (with pre-treatment parallel-trends test & control contamination checks) and Interrupted Time Series.
+  - `GET/POST /api/journal`, `PATCH/DELETE /api/journal/{id}`, `POST /api/journal/{id}/evaluate`: SQLite `decisions.db` inside `WHATIF_WORKDIR` (`ml_workdir` Docker volume) tracking Simulated → Implemented → Actual outcome reconciliation.
+- **Frontend Decision Workspaces (`web/src/`)**: 6 Scenario Templates (`data/scenarioTemplates.ts`), `PlanningScreen.tsx`, `JournalScreen.tsx`, and Calibration/Regime/Drift/Causal sub-tabs inside `ValidationScreen.tsx`.
