@@ -10,7 +10,7 @@ Every metric and interface in **What-If AI** explicitly discloses these boundari
 - **No cross-price elasticity in MVP**: Each SKU is modeled independently (`log(Q_i) ~ beta_i * log(P_i)`). Cannibalization across substitute SKUs (e.g., discounting Shirt A stealing demand from Shirt B) or halo effects on complements are not yet jointly estimated.
 - **No competitor reaction modeling**: Simulations assume competitor prices remain constant within the 7–90 day horizon. Prolonged price wars would shift the effective demand curve.
 - **Stockout demand censoring**: When inventory hits `stock == 0`, observed sales undercount true demand. Days with zero ending stock are weighted down/flagged, so prolonged stockouts reduce effective sample power.
-- **Requires historical price variation**: When historical `sd(ln(price)) < 0.04` (flat-price SKUs), the engine explicitly triggers a `low_price_variation` warning instead of producing falsely confident point elasticities (verified on `hard_low_price_variation_8`: 8/8 SKUs flagged).
+- **Requires historical price variation**: When historical `sd(ln(price)) < 0.03` (flat-price SKUs), the engine explicitly triggers a `low_price_variation` warning instead of producing falsely confident point elasticities (verified on `hard_low_price_variation_8`: 8/8 SKUs flagged).
 - **Functional form bounds**: Constant-elasticity (iso-elastic) demand assumes local log-linearity within `[-50%, +100%]`. Extreme pricing outside historical support extrapolates beyond data coverage.
 
 ## 3. Data Provenance & Currency Limits

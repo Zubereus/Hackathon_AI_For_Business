@@ -1,0 +1,1458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>What-If AI — Team Ngọa Hổ Tàng Long (15-Slide Pitch Deck v2)</title>
+  <style>
+    @font-face {
+      font-family: "Source Sans 3";
+      src: url("../web/public/fonts/source-sans-3-latin-wght-normal.woff2") format("woff2");
+      font-weight: 200 900;
+      font-style: normal;
+      font-display: swap;
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+
+    @font-face {
+      font-family: "Source Sans 3";
+      src: url("../web/public/fonts/source-sans-3-vietnamese-wght-normal.woff2") format("woff2");
+      font-weight: 200 900;
+      font-style: normal;
+      font-display: swap;
+      unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+    }
+
+    :root {
+      --navy: #0B1526;
+      --slate-dark: #1E293B;
+      --slate: #334155;
+      --muted: #64748B;
+      --paper: #FAF8F3;
+      --surface: #FFFFFF;
+      --border: #E2E8F0;
+      --teal: #0F766E;
+      --teal-soft: #ECFDF5;
+      --teal-border: #A7F3D0;
+      --cobalt: #1D4ED8;
+      --cobalt-soft: #EFF6FF;
+      --cobalt-border: #BFDBFE;
+      --amber: #B45309;
+      --amber-soft: #FEF3C7;
+      --amber-border: #F59E0B;
+      --red: #B91C1C;
+      --red-soft: #FEF2F2;
+      --red-border: #FECACA;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    @page { size: 13.333in 7.5in; margin: 0; }
+
+    html, body {
+      font-family: "Source Sans 3", "Segoe UI", system-ui, -apple-system, sans-serif;
+      background: #E2E8F0;
+      color: var(--navy);
+      font-size: 14pt;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+
+    .slide {
+      width: 13.333in;
+      height: 7.5in;
+      position: relative;
+      overflow: hidden;
+      background: var(--paper);
+      padding: 0.30in 0.46in 0.24in 0.46in;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      page-break-after: always;
+      break-after: page;
+    }
+
+    .slide::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 5px;
+      background: linear-gradient(90deg, #0F766E 0%, #1D4ED8 60%, #D97706 100%);
+    }
+
+    .slide:last-child { page-break-after: auto; break-after: auto; }
+
+    @media screen {
+      .slide { margin: 20px auto; box-shadow: 0 16px 40px rgba(15, 23, 42, 0.14); border-radius: 6px; }
+    }
+
+    @media print {
+      body { background: #FFFFFF; }
+      .slide { margin: 0; box-shadow: none; border-radius: 0; }
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.06in;
+      flex-shrink: 0;
+    }
+
+    .eyebrow {
+      font-size: 10.5pt;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--teal);
+    }
+
+    .topbar-right { display: flex; align-items: center; gap: 8px; }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      font-size: 9.5pt;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #FFFFFF;
+      color: var(--slate-dark);
+      white-space: nowrap;
+    }
+
+    .pill.synthetic { background: var(--amber-soft); border-color: var(--amber-border); color: #92400E; }
+    .pill.public { background: var(--cobalt-soft); border-color: var(--cobalt-border); color: #1E40AF; }
+    .pill.teal { background: var(--teal-soft); border-color: var(--teal-border); color: #065F46; }
+    .pill.red { background: var(--red-soft); border-color: var(--red-border); color: #991B1B; }
+
+    .tbc {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 6px;
+      border: 1.5px dashed var(--amber-border);
+      background: var(--amber-soft);
+      color: #92400E;
+      font-weight: 700;
+      font-size: 12.5pt;
+      line-height: 1.25;
+    }
+
+    .slide-num {
+      font-size: 10.5pt;
+      font-weight: 800;
+      color: var(--muted);
+      font-variant-numeric: tabular-nums;
+      margin-left: 4px;
+    }
+
+    h1.title-hero {
+      font-size: 38pt;
+      font-weight: 800;
+      line-height: 1.06;
+      letter-spacing: -0.02em;
+      color: var(--navy);
+      margin-bottom: 6px;
+    }
+
+    h2.slide-title {
+      font-size: 20pt;
+      font-weight: 800;
+      line-height: 1.16;
+      letter-spacing: -0.015em;
+      color: var(--navy);
+      margin-bottom: 0.11in;
+      flex-shrink: 0;
+    }
+
+    .body {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 13px 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+      min-height: 0;
+    }
+
+    .card.top-align { justify-content: flex-start; }
+
+    .card.teal-tint { background: #F0FDFA; border-color: var(--teal-border); }
+    .card.cobalt-tint { background: #EFF6FF; border-color: var(--cobalt-border); }
+    .card.amber-tint { background: #FFFBEB; border-color: #FCD34D; }
+    .card.red-tint { background: #FEF2F2; border-color: var(--red-border); }
+
+    .card-kicker {
+      font-size: 9.5pt;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--teal);
+      margin-bottom: 4px;
+    }
+
+    .card-title {
+      font-size: 15.5pt;
+      font-weight: 800;
+      color: var(--navy);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      line-height: 1.2;
+    }
+
+    .card-text { font-size: 14pt; line-height: 1.36; color: var(--slate-dark); }
+
+    ul.clean { list-style: none; display: flex; flex-direction: column; gap: 7px; }
+    ul.clean li {
+      position: relative;
+      padding-left: 16px;
+      font-size: 14pt;
+      line-height: 1.34;
+      color: var(--slate-dark);
+    }
+    ul.clean li::before {
+      content: "▪";
+      position: absolute;
+      left: 0;
+      top: 0;
+      color: var(--teal);
+      font-weight: 900;
+    }
+
+    .stat-num {
+      font-size: 22pt;
+      font-weight: 800;
+      line-height: 1.08;
+      color: var(--teal);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .stat-label {
+      font-size: 12pt;
+      font-weight: 700;
+      color: var(--slate);
+      margin-top: 3px;
+      line-height: 1.25;
+    }
+
+    .img-frame {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      background: #FFFFFF;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 3px 12px rgba(15, 23, 42, 0.05);
+      min-height: 0;
+    }
+
+    .img-frame img {
+      width: 100%;
+      flex: 1;
+      min-height: 0;
+      object-fit: contain;
+      background: #FFFFFF;
+      display: block;
+    }
+
+    .img-frame img.cover { object-fit: cover; }
+
+    .img-caption {
+      font-size: 10.5pt;
+      font-weight: 700;
+      color: var(--slate);
+      background: #F8FAFC;
+      border-top: 1px solid var(--border);
+      padding: 5px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+      gap: 8px;
+    }
+
+    .badge-inline {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 5px;
+      font-size: 9.5pt;
+      font-weight: 800;
+      white-space: nowrap;
+      vertical-align: middle;
+    }
+
+    .b-green { background: #DCFCE7; color: #166534; }
+    .b-blue  { background: #DBEAFE; color: #1E40AF; }
+    .b-amber { background: #FEF3C7; color: #92400E; border: 1px solid #F59E0B; }
+    .b-red   { background: #FEE2E2; color: #991B1B; }
+    .b-slate { background: #E2E8F0; color: #334155; }
+
+    table.compact { width: 100%; border-collapse: collapse; font-size: 14pt; }
+    table.compact th {
+      text-align: left;
+      padding: 11px 12px;
+      background: #F1F5F9;
+      color: var(--navy);
+      font-weight: 800;
+      border-bottom: 2px solid #CBD5E1;
+      font-size: 14pt;
+    }
+    table.compact td {
+      padding: 11px 12px;
+      border-bottom: 1px solid var(--border);
+      color: var(--slate-dark);
+      vertical-align: middle;
+      line-height: 1.3;
+      font-size: 14pt;
+    }
+    table.compact tr:last-child td { border-bottom: none; }
+
+    .tech-footnote {
+      padding: 5px 11px;
+      border-radius: 8px;
+      background: #F1F5F9;
+      border: 1px solid #E2E8F0;
+      font-size: 10pt;
+      color: #475569;
+      line-height: 1.3;
+      flex-shrink: 0;
+    }
+
+    .footer {
+      margin-top: 6px;
+      padding-top: 5px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 9.5pt;
+      color: var(--muted);
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ==================== SLIDE 1: TITLE ==================== -->
+<section class="slide">
+  <div class="topbar">
+    <span class="eyebrow">HACKATHON AI FOR BUSINESS INNOVATION 2026</span>
+    <div class="topbar-right">
+      <span class="pill teal">Offline Capable · VI | EN</span>
+      <span class="pill">Zero LLM Math</span>
+      <span class="slide-num">01 / 15</span>
+    </div>
+  </div>
+
+  <div class="body" style="justify-content: center;">
+    <div style="display: grid; grid-template-columns: 1.18fr 0.82fr; gap: 24px; align-items: center;">
+      <div style="display: flex; flex-direction: column; gap: 15px;">
+        <div style="display: inline-flex; align-items: center; gap: 12px;">
+          <div style="width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, #0F766E, #1D4ED8); display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 18pt; color: #FFFFFF; box-shadow: 0 6px 14px rgba(15,118,110,0.20);">W?</div>
+          <div>
+            <div style="font-size: 13pt; font-weight: 800; color: var(--teal); letter-spacing: 0.04em;">TEAM NGỌA HỔ TÀNG LONG</div>
+            <div style="font-size: 13.5pt; color: var(--slate-dark); font-weight: 600; line-height: 1.35;">
+              Nguyễn Hoàng Tùng (Leader) · Phạm Viết Trường · Ngô Thanh Tùng
+            </div>
+          </div>
+        </div>
+
+        <h1 class="title-hero">What-If AI</h1>
+        <p style="font-size: 17pt; font-weight: 700; line-height: 1.28; color: var(--navy);">
+          Simulate before you decide — Validate with data — Track realized profit.
+        </p>
+
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+          <div class="card teal-tint" style="padding: 13px 14px;">
+            <div class="stat-num">38.8 ms</div>
+            <div class="stat-label">101 prices × 5,000 draws</div>
+          </div>
+          <div class="card amber-tint" style="padding: 13px 14px;">
+            <div class="stat-num" style="color: var(--cobalt);">18 / 19</div>
+            <div class="stat-label">Beat naive baseline <span class="badge-inline b-amber" style="margin-top: 2px;">SYNTHETIC backtest</span></div>
+          </div>
+          <div class="card" style="padding: 13px 14px;">
+            <div class="stat-num">0 Digits</div>
+            <div class="stat-label">Calculated by LLM</div>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+          <span class="pill">Controlled Econometrics + Go Monte Carlo</span>
+          <span class="pill">Pricing · Restock · Cash Runway · Journal</span>
+        </div>
+      </div>
+
+      <div class="img-frame" style="height: 5.45in; background: #FFFFFF; border: 1.5px solid var(--border);">
+        <img class="cover" src="../web/public/images/hero-retail.jpg" alt="What-If AI Retail Decision Workspace" />
+        <div class="img-caption">
+          <span>Prototype v0.1 + MVP v0.2 · Local-First Decision Workspace</span>
+          <span class="badge-inline b-green">Live Verified</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>What-If AI · Team Ngọa Hổ Tàng Long</span>
+    <span>English Pitch Deck · 13 Nov 2026</span>
+  </div>
+</section>
+
+<!-- ==================== SLIDE 2: WHY THIS EXISTS, WHAT IT IS, CORE VALUE ==================== -->
+<section class="slide">
+  <div class="topbar">
+    <span class="eyebrow">01 · WHY · WHAT · VALUE</span>
+    <div class="topbar-right">
+      <span class="pill synthetic">Stress Metrics: SYNTHETIC</span>
+      <span class="slide-num">02 / 15</span>
+    </div>
+  </div>
+  <h2 class="slide-title">Retail SMEs Price Blindly Because Spreadsheets Look Back and Generic AI Guesses.</h2>
+
+  <div class="body" style="gap: 10px;">
+    <div style="display: grid; grid-template-columns: 1.15fr 0.92fr 0.93fr; gap: 14px; flex: 1; min-height: 0;">
+      <!-- Col 1: Why this exists -->
+      <div class="card red-tint top-align" style="justify-content: space-between;">
+        <div class="card-kicker" style="color: var(--red);">Why This Exists</div>
+        <ul class="clean" style="gap: 9px;">
+          <li><strong>Gut-feel moves:</strong> Prices, promos &amp; restocks rely on intuition or backward sheets.</li>
+          <li><strong>Messy POS CSVs:</strong> VN headers, dot-thousands &amp; missing costs stall analysis.</li>
+          <li><strong>Peak trap:</strong> 11.11 / Tết surges mimic elasticity: <strong>−5.9</strong> naive vs <strong>−1.5</strong> true <span class="badge-inline b-amber">SYNTHETIC</span>.</li>
+          <li><strong>Unsafe AI chat:</strong> Generic chatbots fabricate cash figures.</li>
+        </ul>
+        <span class="badge-inline b-red" style="align-self: flex-start;">Target: Vietnamese Retail SMEs (20–300 SKUs)</span>
+      </div>
+
+      <!-- Col 2: What it is -->
+      <div class="card cobalt-tint top-align" style="justify-content: space-between;">
+        <div>
+          <div class="card-kicker" style="color: var(--cobalt);">What It Is</div>
+          <div class="card-title" style="font-size: 16pt;">"One CSV in, one decision out."</div>
+          <p class="card-text">Offline laptop workspace in <strong>VI | EN</strong> turning sales exports into profit ranges.</p>
+        </div>
+
+        <svg viewBox="0 0 360 142" style="width: 100%; height: auto; display: block;">
+          <defs>
+            <marker id="arrStep" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+              <path d="M0,0.5 L6.5,3.5 L0,6.5 Z" fill="#0F766E"/>
+            </marker>
+          </defs>
+          <rect x="4" y="18" width="72" height="58" rx="10" fill="#FFFFFF" stroke="#93C5FD" stroke-width="2"/>
+          <text x="40" y="45" text-anchor="middle" font-size="14" font-weight="800" fill="#1E3A8A">CSV</text>
+          <text x="40" y="64" text-anchor="middle" font-size="10.5" font-weight="700" fill="#475569">Upload</text>
+          <path d="M 78 47 L 91 47" stroke="#0F766E" stroke-width="2.4" marker-end="url(#arrStep)"/>
+
+          <rect x="94" y="18" width="84" height="58" rx="10" fill="#FFFFFF" stroke="#5EEAD4" stroke-width="2"/>
+          <text x="136" y="45" text-anchor="middle" font-size="14" font-weight="800" fill="#0F766E">Simulate</text>
+          <text x="136" y="64" text-anchor="middle" font-size="10.5" font-weight="700" fill="#475569">P5–P95</text>
+          <path d="M 180 47 L 193 47" stroke="#0F766E" stroke-width="2.4" marker-end="url(#arrStep)"/>
+
+          <rect x="196" y="18" width="76" height="58" rx="10" fill="#ECFDF5" stroke="#0F766E" stroke-width="2"/>
+          <text x="234" y="45" text-anchor="middle" font-size="14" font-weight="800" fill="#065F46">Decide</text>
+          <text x="234" y="64" text-anchor="middle" font-size="10.5" font-weight="700" fill="#065F46">Guardrail</text>
+          <path d="M 274 47 L 287 47" stroke="#0F766E" stroke-width="2.4" marker-end="url(#arrStep)"/>
+
+          <rect x="290" y="18" width="66" height="58" rx="10" fill="#FEF3C7" stroke="#F59E0B" stroke-width="2"/>
+          <text x="323" y="45" text-anchor="middle" font-size="14" font-weight="800" fill="#92400E">Track</text>
+          <text x="323" y="64" text-anchor="middle" font-size="10.5" font-weight="700" fill="#92400E">Actual</text>
+
+          <path d="M 323 78 L 323 116 L 40 116 L 40 82" fill="none" stroke="#64748B" stroke-width="2" stroke-dasharray="4 3" marker-end="url(#arrStep)"/>
+          <rect x="78" y="103" width="204" height="24" rx="6" fill="#EFF6FF"/>
+          <text x="180" y="119" text-anchor="middle" font-size="11.5" font-weight="800" fill="#1E40AF">Actual outcomes recalibrate next cycle</text>
+        </svg>
+
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <span class="badge-inline b-green">Runs Offline</span>
+          <span class="badge-inline b-blue">Zero API Key Required</span>
+        </div>
+      </div>
+
+      <!-- Col 3: Core value -->
+      <div class="card teal-tint top-align" style="justify-content: space-between;">
+        <div class="card-kicker">Core Value</div>
+        <ul class="clean" style="gap: 10px;">
+          <li><strong>Simulate before you decide:</strong> See safe-to-upside profit bands (P5–P95).</li>
+          <li><strong>Validate with data:</strong> Safety elasticity cutoff, holdout proof &amp; drift alerts.</li>
+          <li><strong>Track realized profit:</strong> Compare plan vs actual store cash outcomes.</li>
+          <li><strong>Zero LLM math:</strong> Fail-closed numeric checks protect owners.</li>
+        </ul>
+        <span class="badge-inline b-slate" style="align-self: flex-start;">Decision Transparency First</span>
+      </div>
+    </div>
+
+    <!-- Bottom 4-role question strip -->
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; flex-shrink: 0;">
+      <div class="card" style="padding: 9px 12px;">
+        <div class="card-kicker" style="color: var(--navy); margin-bottom: 2px;">Shop Owner</div>
+        <div class="card-text"><em>"Will cash stay above my buffer?"</em></div>
+      </div>
+      <div class="card" style="padding: 9px 12px;">
+        <div class="card-kicker" style="color: var(--teal); margin-bottom: 2px;">Merchandiser</div>
+        <div class="card-text"><em>"Which price grows profit safely?"</em></div>
+      </div>
+      <div class="card" style="padding: 9px 12px;">
+        <div class="card-kicker" style="color: var(--cobalt); margin-bottom: 2px;">Marketing</div>
+        <div class="card-text"><em>"Did our promo pay off net?"</em></div>
+      </div>
+      <div class="card" style="padding: 9px 12px;">
+        <div class="card-kicker" style="color: var(--amber); margin-bottom: 2px;">Inventory Ops</div>
+        <div class="card-text"><em>"When and how much to reorder?"</em></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>Sources: README.md · docs/VALIDATION.md (hard_event_confounded_12)</span>
+    <span>Slide 02 · Why / What / Value</span>
+  </div>
+</section>
+
+<!-- ==================== SLIDE 3: THE GAP ==================== -->
+<section class="slide">
+  <div class="topbar">
+    <span class="eyebrow">02 · COMPETITIVE GAP</span>
+    <div class="topbar-right">
+      <span class="pill teal">Accepts CSV exports from KiotViet, Sapo, Excel</span>
+      <span class="slide-num">03 / 15</span>
+    </div>
+  </div>
+  <h2 class="slide-title">Excel Sees Yesterday and Chatbots Guess — Only What-If AI Pairs Simulation With Provenance.</h2>
+
+  <div class="body" style="justify-content: space-between; gap: 14px;">
+    <div class="card" style="padding: 10px 14px; flex: 1; justify-content: center;">
+      <table class="compact">
+        <thead>
+          <tr>
+            <th style="width: 24%;">Decision Capability</th>
+            <th style="width: 22%;">Excel / Static BI</th>
+            <th style="width: 24%;">Generic LLM Chat</th>
+            <th style="width: 30%; color: var(--teal);">What-If AI</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Forward Risk Simulation</strong></td>
+            <td>Single fixed formula</td>
+            <td>Unverified prose estimate</td>
+            <td><span class="badge-inline b-green">5,000 draws</span> P5–P95 range</td>
+          </tr>
+          <tr>
+            <td><strong>Zero Fabricated Numbers</strong></td>
+            <td>Manual sheet audit</td>
+            <td><span class="badge-inline b-red">Hallucination risk</span></td>
+            <td><span class="badge-inline b-green">Fail-closed check</span> discards mismatch</td>
+          </tr>
+          <tr>
+            <td><strong>VN Holiday Confounding</strong></td>
+            <td>Manual cleanup</td>
+            <td>Uncontrolled guesses</td>
+            <td>Calendar GLM <span class="badge-inline b-amber">SYNTHETIC −5.9 → −1.8</span></td>
+          </tr>
+          <tr>
+            <td><strong>Target-Price Search</strong></td>
+            <td>Slow 1-cell Goal Seek</td>
+            <td>Cannot optimize constraints</td>
+            <td><span class="badge-inline b-blue">38.8 ms</span> across 101 constrained prices</td>
+          </tr>
+          <tr>
+            <td><strong>Raw CSV Privacy</strong></td>
+            <td>Local workbook</td>
+            <td>Prompts expose raw rows</td>
+            <td>RAM-only CSV · <span class="badge-inline b-green">≤5 masked fields</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card" style="padding: 13px 16px; background: #FFFFFF; flex-shrink: 0;">
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 10px;">
+        <div style="border-left: 4px solid #64748B; padding-left: 10px;">
+          <div style="font-size: 11pt; font-weight: 800; color: #475569; text-transform: uppercase;">1. Historical Inputs</div>
+          <div class="card-text">Observed sales, price &amp; unit cost</div>
+        </div>
+        <div style="border-left: 4px solid var(--cobalt); padding-left: 10px;">
+          <div style="font-size: 11pt; font-weight: 800; color: var(--cobalt); text-transform: uppercase;">2. Model Estimates</div>
+          <div class="card-text">Controlled buyer reaction + CI range</div>
+        </div>
+        <div style="border-left: 4px solid var(--amber); padding-left: 10px;">
+          <div style="font-size: 11pt; font-weight: 800; color: var(--amber); text-transform: uppercase;">3. User Assumptions</div>
+          <div class="card-text">Promo days, budget cap &amp; cash floor</div>
+        </div>
+      </div>
+      <div style="display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 8px; gap: 10px; flex-wrap: wrap;">
+        <span style="font-size: 13pt; font-weight: 700; color: var(--navy);">Mandatory Provenance Badges Across UI &amp; Deck:</span>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <span class="badge-inline b-green">YOUR DATA</span>
+          <span class="badge-inline b-amber">SYNTHETIC</span>
+          <span class="badge-inline b-blue">PUBLIC (M5)</span>
+          <span class="badge-inline b-blue">PUBLIC (DUNNHUMBY)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>Zero competitor claims beyond observed CSV compatibility</span>
+    <span>Slide 03 · Competitive Gap</span>
+  </div>
+</section>
+
+<!-- ==================== SLIDE 4: HOW IT WORKS ==================== -->
+<section class="slide">
+  <div class="topbar">
+    <span class="eyebrow">03 · HOW IT WORKS</span>
+    <div class="topbar-right">
+      <span class="pill teal">Fail-Closed AI Architecture</span>
+      <span class="slide-num">04 / 15</span>
+    </div>
+  </div>
+  <h2 class="slide-title">A Hard Shield Keeps Language AI Out of Every Calculation Step.</h2>
+
+  <div class="body" style="justify-content: space-between; gap: 12px;">
+    <!-- Larger crisp flow shield diagram -->
+    <div class="card" style="padding: 16px 18px; flex: 1; justify-content: center;">
+      <svg viewBox="0 0 1160 225" style="width: 100%; height: auto; display: block;">
+        <defs>
+          <marker id="arrTeal" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+            <path d="M0,1 L7,4 L0,7 Z" fill="#0F766E"/>
+          </marker>
+        </defs>
+        <rect x="6" y="18" width="225" height="184" rx="14" fill="#EFF6FF" stroke="#93C5FD" stroke-width="2.2"/>
+        <text x="118" y="54" text-anchor="middle" font-size="16" font-weight="800" fill="#1E40AF">1. Question / CSV</text>
+        <text x="118" y="88" text-anchor="middle" font-size="14" fill="#1E293B">Parses DecisionSpec JSON</text>
+        <text x="118" y="116" text-anchor="middle" font-size="14" fill="#1E293B">Guards: [−50%, +100%]</text>
+        <text x="118" y="144" text-anchor="middle" font-size="14" fill="#1E293B">Horizon: 7–90 days</text>
+        <text x="118" y="176" text-anchor="middle" font-size="13.5" font-weight="800" fill="#1D4ED8">Unknown SKU → Blocked</text>
+
+        <path d="M 236 110 L 274 110" stroke="#0F766E" stroke-width="3.2" marker-end="url(#arrTeal)"/>
+
+        <rect x="280" y="10" width="98" height="200" rx="14" fill="#FEF3C7" stroke="#D97706" stroke-width="2.5"/>
+        <text x="329" y="88" text-anchor="middle" font-size="16" font-weight="900" fill="#92400E">HARD</text>
+        <text x="329" y="114" text-anchor="middle" font-size="16" font-weight="900" fill="#92400E">SHIELD</text>
+        <text x="329" y="148" text-anchor="middle" font-size="12.5" font-weight="800" fill="#B45309">0 LLM Math</text>
+
+        <path d="M 382 110 L 420 110" stroke="#0F766E" stroke-width="3.2" marker-end="url(#arrTeal)"/>
+
+        <rect x="426" y="18" width="320" height="184" rx="14" fill="#ECFDF5" stroke="#0F766E" stroke-width="2.5"/>
+        <text x="586" y="54" text-anchor="middle" font-size="16" font-weight="800" fill="#065F46">2. Python ML + Go Engine</text>
+        <text x="586" y="90" text-anchor="middle" font-size="14.5" fill="#0F172A">Deterministic econometrics, Monte Carlo,</text>
+        <text x="586" y="118" text-anchor="middle" font-size="14.5" fill="#0F172A">profit waterfall, EOQ &amp; cash runway math</text>
+        <rect x="466" y="146" width="240" height="34" rx="8" fill="#DCFCE7"/>
+        <text x="586" y="168" text-anchor="middle" font-size="13.5" font-weight="800" fill="#166534">Outputs Verified JSON Numbers</text>
+
+        <path d="M 750 110 L 788 110" stroke="#0F766E" stroke-width="3.2" marker-end="url(#arrTeal)"/>
+
+        <rect x="794" y="18" width="360" height="184" rx="14" fill="#FFFFFF" stroke="#0F766E" stroke-width="2.2"/>
+        <text x="974" y="54" text-anchor="middle" font-size="16" font-weight="800" fill="#0B1526">3. Explainer + Numeric Check</text>
+        <text x="974" y="88" text-anchor="middle" font-size="14" fill="#1E293B">Drafts plain VI/EN summary from JSON</text>
+        <text x="974" y="120" text-anchor="middle" font-size="14" font-weight="800" fill="#B91C1C">Any invented digit? Instant discard →</text>
+        <rect x="826" y="146" width="296" height="34" rx="8" fill="#EFF6FF"/>
+        <text x="974" y="168" text-anchor="middle" font-size="13.5" font-weight="800" fill="#1E40AF">Deterministic Code Template Fallback</text>
+      </svg>
+    </div>
+
+    <!-- Compact proof cards with zero excess whitespace -->
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; flex-shrink: 0;">
+      <div class="card teal-tint" style="padding: 13px 16px;">
+        <div class="card-kicker">Offline Column Mapping</div>
+        <div class="stat-num" style="font-size: 20pt;">33 / 33 (100%)</div>
+        <div class="card-text" style="margin-top: 4px;">Messy CSV headers mapped at <strong>≥ 0.55</strong> confidence offline.</div>
+      </div>
+      <div class="card cobalt-tint" style="padding: 13px 16px;">
+        <div class="card-kicker" style="color: var(--cobalt);">NLQ Safety Guardrails</div>
+        <div class="stat-num" style="font-size: 20pt; color: var(--cobalt);">30/30 · 15/15</div>
+        <div class="card-text" style="margin-top: 4px;"><strong>30/30</strong> valid specs parsed · <strong>15/15</strong> unsafe prompts blocked.</div>
+      </div>
+      <div class="card amber-tint" style="padding: 13px 16px;">
+        <div class="card-kicker" style="color: var(--amber);">Zero Cloud Lock-In</div>
+        <div class="stat-num" style="font-size: 20pt; color: var(--amber);">No API Key Needed</div>
+        <div class="card-text" style="margin-top: 4px;">Rule-based parser &amp; template advisor run fully offline.</div>
+      </div>
+    </div>
+
+    <div class="tech-footnote">
+      Methodology footnote: Column matching uses Hungarian assignment; NLQ parses against strict Pydantic bounds and runs <code>verify_explanation_numbers()</code> before rendering.
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>Sources: phases/PHASE_6_llm_layer.md · ml-py/app/llm/explain.py</span>
+    <span>Slide 04 · Hard Shield Architecture</span>
+  </div>
+</section>
+
+<!-- ==================== SLIDE 5: ARCHITECTURE ==================== -->
+<section class="slide">
+  <div class="topbar">
+    <span class="eyebrow">04 · SYSTEM ARCHITECTURE</span>
+    <div class="topbar-right">
+      <span class="pill teal">docker compose up</span>
+      <span class="slide-num">05 / 15</span>
+    </div>
+  </div>
+  <h2 class="slide-title">Three Clean Tiers Separate UI Presentation, Fast Simulation, and Statistical Storage.</h2>
+
+  <div class="body" style="justify-content: space-evenly; gap: 10px;">
+    <!-- Larger horizontal topology diagram at top -->
+    <div class="card" style="padding: 14px 16px; flex-shrink: 0;">
+      <svg viewBox="0 0 1160 104" style="width: 100%; height: auto; display: block;">
+        <defs>
+          <marker id="arrArch" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+            <path d="M0,1 L7,4 L0,7 Z" fill="#1D4ED8"/>
+          </marker>
+        </defs>
+        <rect x="10" y="10" width="310" height="84" rx="12" fill="#EFF6FF" stroke="#93C5FD" stroke-width="2"/>
+        <text x="165" y="42" text-anchor="middle" font-size="15.5" font-weight="800" fill="#1E40AF">1. Browser UI (:3000 / :5173)</text>
+        <text x="165" y="68" text-anchor="middle" font-size="13.5" font-weight="700" fill="#334155">React 18 · TypeScript · Recharts · VI | EN</text>
+
+        <path d="M 326 52 L 404 52" stroke="#1D4ED8" stroke-width="2.8" marker-end="url(#arrArch)"/>
+        <text x="365" y="41" text-anchor="middle" font-size="12" font-weight="800" fill="#1E40AF">REST /api/*</text>
+
+        <rect x="410" y="10" width="340" height="84" rx="12" fill="#ECFDF5" stroke="#0F766E" stroke-width="2.2"/>
+        <text x="580" y="42" text-anchor="middle" font-size="15.5" font-weight="800" fill="#065F46">2. Go Gateway &amp; Engine (:8080)</text>
+        <text x="580" y="68" text-anchor="middle" font-size="13.5" font-weight="700" fill="#0F766E">Monte Carlo · Reverse Search · EOQ / Runway</text>
+
+        <path d="M 756 52 L 834 52" stroke="#1D4ED8" stroke-width="2.8" marker-end="url(#arrArch)"/>
+        <text x="795" y="41" text-anchor="middle" font-size="12" font-weight="800" fill="#1E40AF">Proxy</text>
+
+        <rect x="840" y="10" width="310" height="84" rx="12" fill="#FFFBEB" stroke="#F59E0B" stroke-width="2"/>
+        <text x="995" y="42" text-anchor="middle" font-size="15.5" font-weight="800" fill="#92400E">3. Python ML &amp; SQLite (:8000)</text>
+        <text x="995" y="68" text-anchor="middle" font-size="13.5" font-weight="700" fill="#92400E">Econometrics · Monitor · Journal DB</text>
+      </svg>
+    </div>
+
+    <!-- 3 tight auto-height responsibility cards -->
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; flex-shrink: 0;">
+      <div class="card cobalt-tint top-align" style="justify-content: space-between; gap: 10px; padding: 14px 16px;">
+        <div>
+          <div class="card-kicker" style="color: var(--cobalt);">Tier 1 · Presentation Only</div>
+          <ul class="clean" style="margin-top: 6px;">
+            <li><strong>Zero math in browser:</strong> Renders engine JSON &amp; formats VND display.</li>
+            <li><strong>Privacy guarantee:</strong> Never persists raw sales rows in <code>localStorage</code>.</li>
+          </ul>
+        </div>
+        <span class="badge-inline b-blue" style="align-self: flex-start;">Static Vite + Nginx Container</span>
+      </div>
+
+      <div class="card teal-tint top-align" style="justify-content: space-between; gap: 10px; padding: 14px 16px;">
+        <div>
+          <div class="card-kicker">Tier 2 · Go 1.22+ (go1.27.3 tested)</div>
+          <ul class="clean" style="margin-top: 6px;">
+            <li>Parallel price optimization, Monte Carlo &amp; cash planning kernels.</li>
+            <li>Unified gateway strips duplicate upstream CORS headers.</li>
+          </ul>
+        </div>
+        <span class="badge-inline b-green" style="align-self: flex-start;">Deterministic Parallel Kernel</span>
+      </div>
+
+      <div class="card amber-tint top-align" style="justify-content: space-between; gap: 10px; padding: 14px 16px;">
+        <div>
+          <div class="card-kicker" style="color: var(--amber);">Tier 3 · Python 3.10+ (Docker 3.12-slim)</div>
+          <ul class="clean" style="margin-top: 6px;">
+            <li>POS CSV normalization, seasonality control &amp; holdout backtesting.</li>
+            <li>Drift alarms, causal lift &amp; persistent local <code>decisions.db</code>.</li>
+          </ul>
+        </div>
+        <span class="badge-inline b-amber" style="align-self: flex-start;">FastAPI 0.110+ · Statsmodels</span>
+      </div>
+    </div>
+
+    <div class="card" style="padding: 13px 16px; background: #FFFFFF; flex-shrink: 0;">
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; text-align: center;">
+        <div>
+          <div class="stat-num" style="font-size: 19pt;">0.0057% – 0.0219%</div>
+          <div class="stat-label">Go vs Python P50 parity (&lt; 0.5% gate)</div>
+        </div>
+        <div>
+          <div class="stat-num" style="font-size: 19pt; color: var(--cobalt);">GOMAXPROCS 1 = 8+</div>
+          <div class="stat-label">Bit-identical seeded JSON output</div>
+        </div>
+        <div>
+          <div class="stat-num" style="font-size: 19pt; color: var(--amber);">docker compose up</div>
+          <div class="stat-label">Single-command laptop startup</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tech-footnote">
+      Methodology footnote: Parallel Monte Carlo draws stay deterministic across thread counts via counter-based SplitMix64 indexed per simulation run.
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>Sources: docker-compose.yml · ml-py/Dockerfile · docs/ENGINE.md · e2e/cross_check_py_go.py</span>
+    <span>Slide 05 · System Architecture</span>
+  </div>
+</section>
+
+<!-- ==================== SLIDE 6: DEMO WORKFLOW ==================== -->
+<section class="slide">
+  <div class="topbar">
+    <span class="eyebrow">05 · LIVE PRODUCT WORKFLOW</span>
+    <div class="topbar-right">
+      <span class="pill">One Scenario: CSV → P01 +10% → Target Price</span>
+      <span class="pill synthetic">Sample Snapshot UI Crops</span>
+      <span class="slide-num">06 / 15</span>
+    </div>
+  </div>
+  <h2 class="slide-title">One Consistent Flow Turns Raw Sales CSVs Into Recommended Prices in Four Clear Screens.</h2>
+
+  <div class="body" style="gap: 10px;">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 12px; flex: 1; min-height: 0;">
+      <div class="img-frame">
+        <img src="screens/crops/crop_01_csv_upload.png" alt="Step 1 Upload CSV or Pick Sample Shop" />
+        <div class="img-caption">
+          <span>1. Drop messy CSV or choose sample</span>
+          <span class="badge-inline b-green">No Browser Storage</span>
+        </div>
+      </div>
+
+      <div class="img-frame">
+        <img src="screens/crops/crop_02_column_map.png" alt="Step 2 Confirm Mapped CSV Columns" />
+        <div class="img-caption">
+          <span>2. Auto-match 12,420 POS rows with confidence</span>
+          <span class="badge-inline b-blue">95% / 72% Match</span>
+        </div>
+      </div>
+
+      <div class="img-frame">
+        <img src="screens/crops/crop_03_advice_card.png" alt="Step 3 P01 +10% Profit Outcome and Advice" />
+        <div class="img-caption">
+          <span>3. P01 +10%: clear verdict, P5–P95 range &amp; −2.42 cutoff</span>
+          <span class="badge-inline b-amber">100% Odds</span>
+        </div>
+      </div>
+
+      <div class="img-frame">
+        <img src="screens/crops/crop_05_reverse_top.png" alt="Step 4 Reverse Target Price Curve and Ranked Table" />
+        <div class="img-caption">
+          <span>4. Reverse search ranks safe candidate prices</span>
+          <span class="badge-inline b-green">Rank #1 Verified</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>Zoomed UI crops from What-If AI live React build (runs offline or backed by Go + Python APIs)</span>
+    <span>Slide 06 · Unified Workflow</span>
+  </div>
+</section>
+
+<!-- ==================== SLIDE 7: GOLDEN CASE PROOF ==================== -->
+<section class="slide">
+  <div class="topbar">
+    <span class="eyebrow">06 · GOLDEN MATHEMATICAL PROOF</span>
+    <div class="topbar-right">
+      <span class="pill teal">configs/golden · Analytical Benchmark</span>
+      <span class="slide-num">07 / 15</span>
+    </div>
+  </div>
+  <h2 class="slide-title">Deterministic Engine Formulas Match Exact Analytical Reference Math Digit-for-Digit.</h2>
+
+  <div class="body">
+    <div style="display: grid; grid-template-columns: 0.94fr 1.06fr; gap: 16px; flex: 1; min-height: 0; align-items: stretch;">
+      <div style="display: flex; flex-direction: column; justify-content: space-between; gap: 10px;">
+        <div class="card cobalt-tint" style="padding: 13px 16px;">
+          <div class="card-kicker" style="color: var(--cobalt);">Baseline Setup (0% Price Move)</div>
+          <div class="card-text">
+            <strong>Price P0 = 100.000 ₫</strong> · <strong>Cost C = 60.000 ₫</strong> · <strong>Qty Q0 = 10.000</strong><br />
+            Base Profit = <strong>400,0M ₫</strong> · Test Hike: <strong>+10% (110.000 ₫)</strong>
+          </div>
+        </div>
+
+        <div class="card" style="padding: 6px 12px;">
+          <table class="compact">
+            <thead>
+              <tr>
+                <th>Scenario</th>
+                <th>Reaction e</th>
+                <th>Gross Profit</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Pessimistic</strong></td>
+                <td>−2.0</td>
+                <td><strong>413,2M ₫</strong> <span style="font-size: 11pt; color: var(--muted);">(413.223.141)</span></td>
+              </tr>
+              <tr style="background: #EFF6FF;">
+                <td><strong>Expected</strong></td>
+                <td>−1.0</td>
+                <td style="color: var(--cobalt);"><strong>454,5M ₫</strong> <span style="font-size: 11pt; color: var(--muted);">(454.545.455)</span></td>
+              </tr>
+              <tr>
+                <td><strong>Optimistic</strong></td>
+                <td>−0.5</td>
+                <td style="color: var(--teal);"><strong>476,7M ₫</strong> <span style="font-size: 11pt; color: var(--muted);">(476.731.295)</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card teal-tint" style="padding: 13px 16px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+            <div>
+              <div class="card-kicker">Safety Break-Even Elasticity</div>
+              <div class="stat-num">e* = −2.3412</div>
+            </div>
+            <span class="badge-inline b-green" style="font-size: 11pt; padding: 5px 10px;">Exact match with<br/>reference formula</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="img-frame">
+        <img src="charts/chart_golden_profit.png" alt="Golden Case Exact Reference Profit Bar Chart" />
+        <div class="img-caption">
+          <span>Verified in Go &amp; Python golden unit suites</span>
+          <span class="badge-inline b-blue">Zero Floating Drift</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>Sources: README.md · engine-go/internal/sim/simulate_test.go · e2e/cross_check_py_go.py</span>
+    <span>Slide 07 · Golden Reference Proof</span>
+  </div>
+</section>
+
+<!-- ==================== SLIDE 8: PRICING WORKSPACES ==================== -->
+<section class="slide">
+  <div class="topbar">
+    <span class="eyebrow">07 · PRICING WORKSPACES</span>
+    <div class="topbar-right">
+      <span class="pill synthetic">E2E P01 Numbers: SYNTHETIC</span>
+      <span class="pill">38.8 ms Optimization</span>
+      <span class="slide-num">08 / 15</span>
+    </div>
+  </div>
+  <h2 class="slide-title">Simulate Profit Tails, Launch Multi-Phase Playbooks, or Search Target Prices in 38.8 ms.</h2>
+
+  <div class="body">
+    <div style="display: grid; grid-template-columns: 1.08fr 0.92fr; gap: 16px; flex: 1; min-height: 0; align-items: stretch;">
+      <div class="img-frame">
+        <img src="charts/chart_montecarlo_hist.png" alt="Monte Carlo 5000 Draws Profit Histogram SYNTHETIC E2E" />
+        <div class="img-caption">
+          <span>P01 +10% (30d): Base <strong>88,88M</strong> → P5 <strong>97,56M</strong> · Exp <strong>99,26M</strong> · P95 <strong>101,07M ₫</strong></span>
+          <span class="badge-inline b-amber">SYNTHETIC · e* = −2.425</span>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; justify-content: center; gap: 14px;">
+        <div class="card top-align" style="padding: 16px 18px;">
+          <div class="card-kicker">6 Pre-Built Playbook Templates</div>
+          <div class="card-title">Editable Business Assumptions</div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px;">
+            <span class="pill" style="justify-content: center; font-size: 12pt; padding: 6px 10px;">1. 7d Flash Sale</span>
+            <span class="pill" style="justify-content: center; font-size: 12pt; padding: 6px 10px;">2. Tết Clearance</span>
+            <span class="pill" style="justify-content: center; font-size: 12pt; padding: 6px 10px;">3. Marketing Push</span>
+            <span class="pill" style="justify-content: center; font-size: 12pt; padding: 6px 10px;">4. Stock Expansion</span>
+            <span class="pill" style="justify-content: center; font-size: 12pt; padding: 6px 10px;">5. Cash Preservation</span>
+            <span class="pill" style="justify-content: center; font-size: 12pt; padding: 6px 10px;">6. New SKU Ramp</span>
+          </div>
+        </div>
+
+        <div class="card teal-tint top-align" style="justify-content: space-between; gap: 12px; padding: 16px 18px;">
+          <div>
+            <div class="card-kicker">Reverse Target-Price Finder</div>
+            <div class="card-title">101 Prices × 5,000 Draws in 38.8 ms</div>
+            <ul class="clean" style="margin-top: 8px; gap: 9px;">
+              <li>Ranks highest expected or safest floor price automatically.</li>
+              <li>Enforces minimum margin &amp; stock cap constraints.</li>
+              <li>Live E2E P01 +10% passes with <span class="badge-inline b-amber">SYNTHETIC e* = −2.425</span> safety margin.</li>
+            </ul>
+          </div>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap; border-top: 1px solid var(--teal-border); padding-top: 9px;">
+            <span class="badge-inline b-green">Profit Goal</span>
+            <span class="badge-inline b-blue">Safe Floor P5</span>
+            <span class="badge-inline b-slate">Zero Constraint Violations</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>Sources: e2e/demo_path.py (P01 +10% live run) · docs/ENGINE.md (38.8 ms) · web/src/data/scenarioTemplates.ts</span>
+    <span>Slide 08 · Pricing Workspaces</span>
+  </div>
+</section>
+
+<!-- ==================== SLIDE 9: CAPITAL, INVENTORY & CASH ==================== -->
+<section class="slide">
+  <div class="topbar">
+    <span class="eyebrow">08 · CAPITAL, INVENTORY &amp; CASH</span>
+    <div class="topbar-right">
+      <span class="pill teal">Deterministic Go Planners</span>
+      <span class="pill">ILLUSTRATIVE · USER ASSUMPTIONS</span>
+      <span class="slide-num">09 / 15</span>
+    </div>
+  </div>
+  <h2 class="slide-title">Keep Cash Above Your Safety Buffer While Balancing Stockout Risk Across SKUs.</h2>
+
+  <div class="body">
+    <div style="display: grid; grid-template-columns: 0.96fr 1.04fr; gap: 16px; flex: 1; min-height: 0; align-items: stretch;">
+      <div style="display: grid; grid-template-rows: repeat(4, 1fr); gap: 9px;">
+        <div class="card teal-tint" style="padding: 10px 14px;">
+          <div class="card-title" style="font-size: 14.5pt; margin-bottom: 2px;">1. Reorder Quantity &amp; Timing</div>
+          <div class="card-text">Compute exact batch sizes and reorder alerts under capital limits.</div>
+        </div>
+        <div class="card cobalt-tint" style="padding: 10px 14px;">
+          <div class="card-title" style="font-size: 14.5pt; margin-bottom: 2px;">2. Cash Safety Protection</div>
+          <div class="card-text">Model payment delays so cash never dips below your safety buffer.</div>
+        </div>
+        <div class="card amber-tint" style="padding: 10px 14px;">
+          <div class="card-title" style="font-size: 14.5pt; margin-bottom: 2px;">3. Multi-SKU Capital Split</div>
+          <div class="card-text">Allocate tight cash &amp; shelf space toward risk-adjusted profit.</div>
+        </div>
+        <div class="card" style="padding: 10px 14px;">
+          <div class="card-title" style="font-size: 14.5pt; margin-bottom: 2px;">4. Test Before Committing</div>
+          <div class="card-text">Decide whether to test a price on a small slice before scaling storewide.</div>
+        </div>
+      </div>
+
+      <div class="img-frame">
+        <img src="charts/chart_cash_runway.png" alt="Cash Runway Illustrative Chart" />
+        <div class="img-caption">
+          <span>60-day cash trajectory under user supplier/payment lag assumptions</span>
+          <span class="badge-inline b-amber">ILLUSTRATIVE · USER ASSUMPTIONS</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tech-footnote">
+      Methodology footnote: EOQ + safety stock (Acklam inverse-normal quantile z) · Cash Conversion Cycle (DIO + DSO − DPO) · 250-bucket DP knapsack with P5 downside penalty · Bayesian EVPI / EVSI (200 × 40 trials).
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>Sources: engine-go/internal/planning/{replenish,runway,portfolio,voi}.go</span>
+    <span>Slide 09 · Capital &amp; Cash Runway</span>
+  </div>
+</section>
+
+<!-- ==================== SLIDE 10: MONITOR, AUDIT & JOURNAL ==================== -->
+<section class="slide">
+  <div class="topbar">
+    <span class="eyebrow">09 · MONITOR, AUDIT &amp; JOURNAL</span>
+    <div class="topbar-right">
+      <span class="pill teal">SQLite Persistent Loop</span>
+      <span class="slide-num">10 / 15</span>
+    </div>
+  </div>
+  <h2 class="slide-title">Know When Predictions Drift, Measure Real Promo Lift, and Audit Every Past Call.</h2>
+
+  <div class="body">
+    <div style="display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 16px; flex: 1; min-height: 0; align-items: stretch;">
+      <div style="display: flex; flex-direction: column; gap: 11px; justify-content: space-between;">
+        <div class="card teal-tint" style="flex: 1;">
+          <div class="card-title">Know When Predictions Drift</div>
+          <p class="card-text">Flags shifting shopper behavior, seasonal turning points &amp; rising forecast errors before bad margins compound.</p>
+        </div>
+        <div class="card cobalt-tint" style="flex: 1;">
+          <div class="card-title">Audit True Promo Impact</div>
+          <p class="card-text">Compares promoted SKUs against steady control items to report real incremental profit, not raw volume.</p>
+        </div>
+        <div class="card amber-tint" style="flex: 1;">
+          <div class="card-title">Track Realized Profit Over Time</div>
+          <p class="card-text">Saves every simulated range and logs actual post-launch profit to verify prediction reliability.</p>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 10px; min-height: 0;">
+        <div class="img-frame" style="flex: 1;">
+          <img src="charts/chart_monitoring_regimes.png" alt="Method Diagram of Regime Shifts and Causal Counterfactual" />
+          <div class="img-caption">
+            <span>Demand shift alerts + forecast bands + control baseline</span>
+            <span class="badge-inline b-blue">METHOD DIAGRAM</span>
+          </div>
+        </div>
+
+        <div class="card" style="padding: 10px 14px; flex-shrink: 0;">
+          <div class="card-kicker" style="margin-bottom: 4px;">4-Step Decision Feedback Loop (Local SQLite)</div>
+          <svg viewBox="0 0 660 62" style="width: 100%; height: auto; display: block;">
+            <defs>
+              <marker id="arrLoop" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+                <path d="M0,0.5 L6.5,3.5 L0,6.5 Z" fill="#0F766E"/>
+              </marker>
+            </defs>
+            <rect x="2" y="10" width="136" height="42" rx="8" fill="#EFF6FF" stroke="#93C5FD" stroke-width="1.8"/>
+            <text x="70" y="36" text-anchor="middle" font-size="13" font-weight="800" fill="#1E40AF">1. Decision</text>
+            <path d="M 140 31 L 160 31" stroke="#0F766E" stroke-width="2.2" marker-end="url(#arrLoop)"/>
+
+            <rect x="166" y="10" width="146" height="42" rx="8" fill="#ECFDF5" stroke="#5EEAD4" stroke-width="1.8"/>
+            <text x="239" y="36" text-anchor="middle" font-size="13" font-weight="800" fill="#065F46">2. Actual Outcome</text>
+            <path d="M 314 31 L 334 31" stroke="#0F766E" stroke-width="2.2" marker-end="url(#arrLoop)"/>
+
+            <rect x="340" y="10" width="146" height="42" rx="8" fill="#FEF3C7" stroke="#F59E0B" stroke-width="1.8"/>
+            <text x="413" y="36" text-anchor="middle" font-size="13" font-weight="800" fill="#92400E">3. Audit vs P5–95</text>
+            <path d="M 488 31 L 508 31" stroke="#0F766E" stroke-width="2.2" marker-end="url(#arrLoop)"/>
+
+            <rect x="514" y="10" width="144" height="42" rx="8" fill="#F1F5F9" stroke="#64748B" stroke-width="1.8"/>
+            <text x="586" y="36" text-anchor="middle" font-size="13" font-weight="800" fill="#0F172A">4. Update SQLite</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="tech-footnote">
+      Methodology footnote: Rolling PICP@50/80/90, MPIW, Pinball Loss &amp; Bracher WIS · BIC binary-segmentation regimes · PSI (8 bins) / KS / Durbin-Watson drift · HAC DiD (maxlags 2–3) &amp; Segmented ITS · SQLite <code>decisions.db</code>.
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>Sources: docs/DECISION_INTELLIGENCE_AUDIT.md · ml-py/app/{monitoring,causal,journal}</span>
+    <span>Slide 10 · Monitoring &amp; Journal</span>
+  </div>
+</section>
+
+<!-- ==================== SLIDE 11: VALIDATION - ELASTICITY ==================== -->
+<section class="slide">
+  <div class="topbar">
+    <span class="eyebrow">10 · VALIDATION — ELASTICITY RECOVERY</span>
+    <div class="topbar-right">
+      <span class="pill synthetic">ALL RESULTS: SYNTHETIC STORES (81 SKUs)</span>
+      <span class="slide-num">11 / 15</span>
+    </div>
+  </div>
+  <h2 class="slide-title">Calendar-Controlled Modeling Cuts Elasticity Error Below 0.12 and Blocks Flat-Price Guesses.</h2>
+
+  <div class="body">
+    <div style="display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 16px; flex: 1; min-height: 0; align-items: stretch;">
+      <div class="img-frame">
+        <img src="charts/chart_spec_c_mae.png" alt="Spec-C MAE Comparison Across 5 Synthetic Stores" />
+        <div class="img-caption">
+          <span>5 stores (81 SKUs): Spec-C cuts error 2–3× vs naive</span>
+          <span class="badge-inline b-amber">SYNTHETIC</span>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 10px; justify-content: space-between;">
+        <div class="card teal-tint">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div class="card-kicker">Standard 5-Store Accuracy</div>
+            <span class="badge-inline b-amber">SYNTHETIC</span>
+          </div>
+          <ul class="clean" style="margin-top: 4px;">
+            <li><strong>MAE 0.048 – 0.118</strong> across 81 SKUs (target ≤ 0.15).</li>
+            <li><strong>90% CI covers 80.0% – 100.0%</strong>; Spearman rank <strong>0.791 – 1.000</strong>.</li>
+          </ul>
+        </div>
+
+        <div class="card cobalt-tint">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div class="card-kicker" style="color: var(--cobalt);">11.11 / Tết Confounding Stress</div>
+            <span class="badge-inline b-amber">SYNTHETIC</span>
+          </div>
+          <p class="card-text">Reduces naive distortion <strong>−5.9</strong> down to <strong>−1.8</strong> vs true <strong>−1.5</strong> (12 hard SKUs).</p>
+        </div>
+
+        <div class="card amber-tint">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div class="card-kicker" style="color: var(--amber);">Honest Flat-Price Guard</div>
+            <span class="badge-inline b-amber">SYNTHETIC</span>
+          </div>
+          <p class="card-text"><strong>8 / 8 (100%)</strong> steady-price SKUs flagged instead of guessing certainty.</p>
+        </div>
+
+        <div style="padding: 9px 12px; border-radius: 8px; background: #FFFBEB; border: 1px solid #F59E0B; font-size: 12pt; font-weight: 700; color: #92400E;">
+          Disclosure: Ground-truth sensitivity tests run on synthetic stores — never presented as live VN receipts.
+        </div>
+      </div>
+    </div>
+
+    <div class="tech-footnote">
+      Methodology footnote: Spec-C Poisson GLM controls Tết peaks, double-day events (11.11/12.12), paydays &amp; promos; flat-price guard fires when <code>sd(ln P) &lt; 0.03</code> (test fixture sd=0.013).
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>Sources: docs/VALIDATION.md · ml-py/app/elasticity/fit.py (LOW_PRICE_SD_THRESHOLD = 0.03)</span>
+    <span>Slide 11 · Elasticity Validation</span>
+  </div>
+</section>
+
+<!-- ==================== SLIDE 12: VALIDATION - BACKTEST & TESTS ==================== -->
+<section class="slide">
+  <div class="topbar">
+    <span class="eyebrow">11 · VALIDATION — BACKTEST &amp; SUITES</span>
+    <div class="topbar-right">
+      <span class="pill synthetic">19-Event Panel: SYNTHETIC</span>
+      <span class="pill public">Walmart M5 &amp; Dunnhumby: PUBLIC</span>
+      <span class="slide-num">12 / 15</span>
+    </div>
+  </div>
+  <h2 class="slide-title">18 of 19 Historical Holdouts Beat Baseline — Including Open Disclosure of Our 11.11 Miss.</h2>
+
+  <div class="body">
+    <div style="display: grid; grid-template-columns: 1.06fr 0.94fr; gap: 16px; flex: 1; min-height: 0; align-items: stretch;">
+      <div class="img-frame">
+        <img src="charts/chart_backtest_19.png" alt="19 Out-of-Time Historical Backtest WAPE Results SYNTHETIC" />
+        <div class="img-caption">
+          <span>Zero future leakage · t &lt; split → 14d forecast</span>
+          <span class="badge-inline b-amber">SYNTHETIC · 18/19 (94.7%)</span>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 11px; justify-content: space-between;">
+        <div class="card teal-tint">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div class="card-kicker">Holdout Accuracy</div>
+            <span class="badge-inline b-amber">SYNTHETIC</span>
+          </div>
+          <div class="stat-num" style="font-size: 19pt;">18 / 19 (94.7%) · 88.7% Cov</div>
+          <div class="card-text" style="margin-top: 3px;">Beats trailing 14-day baseline; 80% uncertainty band captures <strong>88.7%</strong> of real holdout days.</div>
+        </div>
+
+        <div class="card red-tint">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div class="card-kicker" style="color: var(--red);">Honest Failure Disclosure</div>
+            <span class="badge-inline b-amber">SYNTHETIC</span>
+          </div>
+          <div class="card-text"><strong>grocery_fmcg_15 P04 (11.11, −28.7%):</strong> model WAPE <strong>20.6%</strong> vs naive <strong>17.5%</strong> (100% band coverage). Saturation cap shifted response mid-promo.</div>
+        </div>
+
+        <div class="card cobalt-tint">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div class="card-kicker" style="color: var(--cobalt);">Public Method Check &amp; Automated Suites</div>
+            <span class="badge-inline b-blue">PUBLIC</span>
+          </div>
+          <div class="card-text"><strong>M5 &amp; Dunnhumby</strong> verify noisy external ingestion (<code>25.000 ₫/$</code> illustrative). Verified today: <strong>39 Pytest · 23 Go (-race) · 17 Vitest · 8/8 E2E · 3/3 Cross-Check</strong>.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>Sources: docs/VALIDATION.md · live pytest/go test/vitest/E2E runs (13 Nov 2026)</span>
+    <span>Slide 12 · Backtest &amp; Test Evidence</span>
+  </div>
+</section>
+
+<!-- ==================== SLIDE 13: BUSINESS IMPACT & DEPLOYMENT MODEL ==================== -->
+<section class="slide">
+  <div class="topbar">
+    <span class="eyebrow">12 · BUSINESS IMPACT &amp; DEPLOYMENT</span>
+    <div class="topbar-right">
+      <span class="pill teal">Laptop CSV-First · Zero ERP Lock-In</span>
+      <span class="slide-num">13 / 15</span>
+    </div>
+  </div>
+  <h2 class="slide-title">Role-Ready Decision Clarity With Zero Lock-In and Local-Only CSV Privacy.</h2>
+
+  <div class="body" style="justify-content: space-evenly; gap: 12px;">
+    <!-- 4 compact Role Benefit cards across top row -->
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; flex-shrink: 0;">
+      <div class="card teal-tint" style="padding: 13px 14px;">
+        <div class="card-kicker">Shop Owner</div>
+        <div class="card-text">Protects cash buffer before PO commitments.</div>
+      </div>
+      <div class="card cobalt-tint" style="padding: 13px 14px;">
+        <div class="card-kicker" style="color: var(--cobalt);">Merchandiser</div>
+        <div class="card-text">Ranks safe prices in <strong>38.8 ms</strong>.</div>
+      </div>
+      <div class="card amber-tint" style="padding: 13px 14px;">
+        <div class="card-kicker" style="color: var(--amber);">Marketing</div>
+        <div class="card-text">Audits true promo lift beyond hype.</div>
+      </div>
+      <div class="card" style="padding: 13px 14px;">
+        <div class="card-kicker" style="color: var(--navy);">Inventory Ops</div>
+        <div class="card-text">Balances reorder batch vs stockout risk.</div>
+      </div>
+    </div>
+
+    <!-- Middle 2 auto-fitted dense cards (zero vertical voids) -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; flex-shrink: 0;">
+      <div class="card top-align" style="justify-content: space-between; gap: 14px; padding: 18px 20px;">
+        <div>
+          <div class="card-kicker" style="color: var(--cobalt);">Safer, Faster Decisions</div>
+          <ul class="clean" style="margin-top: 8px; gap: 10px;">
+            <li>Replaces slow backward spreadsheets with <strong>P5–P95</strong> risk bands.</li>
+            <li>Blocks flat-price illusions via strict variation guards.</li>
+            <li>Audits realized outcomes vs plan to reduce repeat mistakes.</li>
+          </ul>
+        </div>
+        <span class="badge-inline b-green" style="align-self: flex-start;">Zero LLM Hallucinated Figures</span>
+      </div>
+
+      <div class="card top-align" style="justify-content: space-between; gap: 14px; padding: 18px 20px;">
+        <div>
+          <div class="card-kicker">Laptop &amp; Privacy Deployment</div>
+          <ul class="clean" style="margin-top: 8px; gap: 10px;">
+            <li>Reads POS CSV exports directly — zero ERP lock-in.</li>
+            <li>Runs completely offline on laptop (<code>docker compose up</code>).</li>
+            <li>Raw CSV rows never leave RAM, hit <code>localStorage</code>, or enter LLM prompts.</li>
+          </ul>
+        </div>
+        <span class="badge-inline b-blue" style="align-self: flex-start;">Local Memory Only · Bilingual VI | EN</span>
+      </div>
+    </div>
+
+    <!-- Bottom compact Pilot Metrics & Deployment Readiness strip -->
+    <div class="card amber-tint" style="padding: 14px 18px; flex-shrink: 0;">
+      <div style="display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap;">
+        <div style="flex: 1; min-width: 300px;">
+          <div class="card-kicker" style="color: var(--amber);">Pilot KPIs &amp; Commercial Rollout</div>
+          <div class="card-text">Weekly prep turnaround, stockout prevention, P5–P95 hit rate &amp; gross margin stability — <strong>to be measured in the 60-day pilot</strong>; packaging validated with pilot partners.</div>
+        </div>
+        <span class="badge-inline b-amber" style="font-size: 10.5pt; padding: 5px 10px;">Zero Upfront Software Lock-In</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>Zero fabricated ROI/revenue stats — pilot metrics verified live during SME deployment</span>
+    <span>Slide 13 · Business Impact &amp; Deployment</span>
+  </div>
+</section>
+
+<!-- ==================== SLIDE 14: HONEST LIMITS & ROADMAP ==================== -->
+<section class="slide">
+  <div class="topbar">
+    <span class="eyebrow">13 · LIMITS &amp; ROADMAP</span>
+    <div class="topbar-right">
+      <span class="pill red">Scientific Honesty</span>
+      <span class="slide-num">14 / 15</span>
+    </div>
+  </div>
+  <h2 class="slide-title">Clear Model Boundaries Protect Owners Today While Guiding Schema v2.</h2>
+
+  <div class="body" style="justify-content: space-evenly; gap: 12px;">
+    <div style="display: grid; grid-template-columns: 1.08fr 0.92fr; gap: 16px; flex-shrink: 0;">
+      <div class="card red-tint top-align" style="justify-content: space-between; gap: 14px; padding: 18px 20px;">
+        <div>
+          <div class="card-kicker" style="color: var(--red);">Current Guarded Boundaries (docs/LIMITS.md)</div>
+          <ul class="clean" style="margin-top: 8px; gap: 10px;">
+            <li><strong>Controlled observational estimate:</strong> Not A/B price-test certainty; unobserved shocks remain possible.</li>
+            <li><strong>Single-SKU scope today:</strong> Cross-product cannibalization waits for basket <code>order_id</code> history.</li>
+            <li><strong>No competitor reaction model:</strong> Automated rivalry awaits <code>competitor_price_vnd</code> feeds.</li>
+            <li><strong>Hard safety boundaries:</strong> Flags flat prices (<code>sd(ln P) &lt; 0.03</code>), zero-stock censoring &amp; enforces <strong>[−50%, +100%] / 7–90d</strong>.</li>
+          </ul>
+        </div>
+        <span class="badge-inline b-red" style="align-self: flex-start;">Flags Uncertainty Instead of Guessing</span>
+      </div>
+
+      <div class="card cobalt-tint top-align" style="justify-content: space-between; gap: 14px; padding: 18px 20px;">
+        <div>
+          <div class="card-kicker" style="color: var(--cobalt);">Schema v2 &amp; Post-Hackathon Roadmap</div>
+          <ul class="clean" style="margin-top: 8px; gap: 10px;">
+            <li><strong>Phase A — Basket Bundles:</strong> Ingest <code>order_id</code> receipts for cross-elasticity &amp; Buy-X-Get-Y bundles.</li>
+            <li><strong>Phase B — Rival Price Tracking:</strong> Ingest <code>competitor_price_vnd</code> for live price-gap simulation.</li>
+            <li><strong>Phase C — Read-Only POS Adapters:</strong> Optional scheduled connectors while keeping CSV upload instant.</li>
+          </ul>
+        </div>
+        <span class="badge-inline b-blue" style="align-self: flex-start;">Only Ships Models Supported by Store Data</span>
+      </div>
+    </div>
+
+    <!-- Bottom visual Schema Evolution comparison bar -->
+    <div class="card" style="padding: 13px 18px; flex-shrink: 0;">
+      <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 16px; align-items: center;">
+        <div>
+          <div class="card-kicker" style="margin-bottom: 2px;">MVP CSV Scope Today</div>
+          <div class="card-text"><code>date · sku · price · qty · unit_cost · promo · stock</code></div>
+        </div>
+        <span class="badge-inline b-amber" style="font-size: 11.5pt; padding: 5px 12px;">Schema v2 Upgrade →</span>
+        <div>
+          <div class="card-kicker" style="color: var(--cobalt); margin-bottom: 2px;">Next Fields Unlocked</div>
+          <div class="card-text"><code>order_id</code> (bundles) · <code>competitor_price_vnd</code> (rivals)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>Sources: docs/LIMITS.md · docs/DECISION_INTELLIGENCE_AUDIT.md · ml-py/app/elasticity/fit.py</span>
+    <span>Slide 14 · Limits &amp; Roadmap</span>
+  </div>
+</section>
+
+<!-- ==================== SLIDE 15: NEXT STEPS & TEAM ==================== -->
+<section class="slide">
+  <div class="topbar">
+    <span class="eyebrow">14 · PILOT PLAN &amp; TEAM</span>
+    <div class="topbar-right">
+      <span class="pill teal">60-Day Field Trial</span>
+      <span class="slide-num">15 / 15</span>
+    </div>
+  </div>
+  <h2 class="slide-title">Next Step: Validate Real-World Profit Lift With 3 Vietnamese Retail SMEs Over 60 Days.</h2>
+
+  <div class="body" style="justify-content: space-evenly; gap: 14px;">
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; flex-shrink: 0;">
+      <div class="card cobalt-tint top-align" style="padding: 16px 18px;">
+        <div class="card-kicker" style="color: var(--cobalt);">Weeks 1–2 · Onboarding</div>
+        <div class="card-title">CSV Setup &amp; Calibration</div>
+        <p class="card-text">Clean store exports, verify margins &amp; flag flat-price SKUs before touching live prices.</p>
+      </div>
+      <div class="card teal-tint top-align" style="padding: 16px 18px;">
+        <div class="card-kicker">Weeks 3–6 · Shadow Runs</div>
+        <div class="card-title">Simulate Before Action</div>
+        <p class="card-text">Run weekly price, promo &amp; restock plans alongside ops; log calls to local SQLite.</p>
+      </div>
+      <div class="card amber-tint top-align" style="padding: 16px 18px;">
+        <div class="card-kicker" style="color: var(--amber);">Weeks 7–8 · Realized Audit</div>
+        <div class="card-title">Outcome Proof &amp; Sign-Off</div>
+        <p class="card-text">Measure realized profit vs P5–P95 bands, stockout avoidance &amp; prep time saved.</p>
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 0.94fr 1.06fr; gap: 14px; flex-shrink: 0;">
+      <div class="card top-align" style="justify-content: space-between; gap: 14px; padding: 18px 20px;">
+        <div>
+          <div class="card-kicker">Our Ask for Pilot Partners</div>
+          <ul class="clean" style="margin-top: 8px; gap: 10px;">
+            <li><strong>3 Vietnamese Retail SMEs</strong> (20–300 SKUs, fashion / FMCG / home).</li>
+            <li><strong>≥ 90 days POS CSV exports</strong> with unit cost &amp; promo calendar dates.</li>
+            <li><strong>30 minutes / week</strong> owner check-in to record realized outcomes.</li>
+          </ul>
+        </div>
+        <span class="badge-inline b-green" style="align-self: flex-start;">Gate: Exit Pilot if Realized Accuracy Misses Expectations</span>
+      </div>
+
+      <div class="card teal-tint" style="justify-content: space-between; gap: 14px; padding: 18px 20px;">
+        <div>
+          <div class="card-kicker">Team Ngọa Hổ Tàng Long</div>
+          <div class="card-title" style="font-size: 16pt; margin-top: 4px;">Built End-to-End with Zero LLM Math</div>
+          <p class="card-text" style="line-height: 1.62; margin-top: 8px;">
+            • <strong>Nguyễn Hoàng Tùng</strong> — Team Leader<br />
+            • <strong>Phạm Viết Trường</strong> — Core Member<br />
+            • <strong>Ngô Thanh Tùng</strong> — Core Member
+          </p>
+        </div>
+        <div style="display: flex; align-items: center; justify-content: space-between; padding-top: 10px; border-top: 1px solid var(--teal-border);">
+          <span style="font-size: 16.5pt; font-weight: 800; color: var(--teal);">Thank you · Ready for Q&amp;A</span>
+          <span class="badge-inline b-green" style="font-size: 10.5pt; padding: 4px 10px;">What-If AI · 2026</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>What-If AI · Team Ngọa Hổ Tàng Long · Hackathon AI for Business Innovation 2026</span>
+    <span>Slide 15 / 15</span>
+  </div>
+</section>
+
+</body>
+</html>

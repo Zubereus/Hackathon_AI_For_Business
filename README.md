@@ -227,7 +227,7 @@ Hackathon_AI_For_Business/
 ├── e2e/                             # Kiểm thử tích hợp 3 tầng (demo_path.py, cross_check_py_go.py)
 ├── evaluation/                      # Hệ thống chấm điểm đa tác tử black-box (3 persona retail)
 ├── phases/                          # Đặc tả & Status Log P0 -> P8
-└── slides/                          # Dàn ý slide (DECK_OUTLINE.md), Q&A (QA_PREP.md), Notes & screenshots
+└── slides/                          # Pitch deck 15 slide v2 (PDF/HTML), Speaker Notes, Q&A, Changes & screenshots
 ```
 
 ---
@@ -238,7 +238,7 @@ Hackathon_AI_For_Business/
 | :---: | :--- | :---: | :--- |
 | **P0 – P7** | Foundation, Data Layer, Ingestion & Hungarian Mapping, Spec-C GLM & Backtest, Go Engine, React UI, NLQ Guardrails, E2E Integration | ✅ Hoàn thành | [`phases/`](phases/) |
 | **Mở rộng DI** | Business Decision Intelligence: EOQ Replenishment, Cash Runway, Portfolio Knapsack DP, EVPI/EVSI, Calibration/Regime/Drift, DiD/ITS Causal, Scenario Templates, SQLite Journal | ✅ Hoàn thành | [`WHATIF_AI_MASTER_GUIDE.md`](docs/WHATIF_AI_MASTER_GUIDE.md) |
-| **P8** | Dàn ý 13 slide, 10 câu Q&A phản biện & storyboard video 2 phút | 📝 Sẵn sàng xuất PDF | [`slides/DECK_OUTLINE.md`](slides/DECK_OUTLINE.md) |
+| **P8** | Pitch deck 15 slide tiếng Anh (`16:9` PDF), Speaker Notes, 10 câu Q&A phản biện & storyboard video 2 phút | ✅ Hoàn thành | [`WhatIfAI_Pitch_EN_v2.pdf`](slides/WhatIfAI_Pitch_EN_v2.pdf) · [`QA_PREP.md`](slides/QA_PREP.md) |
 
 ---
 
