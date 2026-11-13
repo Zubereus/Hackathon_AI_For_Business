@@ -124,7 +124,7 @@ def compute_value_score(profile: ColumnProfile, canonical_field: str) -> float:
             return 0.40
         return 0.0
 
-    if canonical_field == "stock":
+    if canonical_field in ("stock", "marketing_cost", "labor_cost", "operating_cost", "fixed_cost"):
         if profile.num_rate >= 0.80:
             if profile.min_val is not None and profile.min_val >= 0.0:
                 return 0.90
@@ -141,10 +141,12 @@ def compute_value_score(profile: ColumnProfile, canonical_field: str) -> float:
 
     if canonical_field == "product_id":
         if profile.dtype_guess in ("string", "numeric") and profile.date_rate < 0.50:
-            # Product IDs are repeated across rows
-            if 1 < profile.n_unique <= profile.n_rows:
+            # Product IDs typically repeat across rows (including single-SKU history files)
+            if 1 <= profile.n_unique < profile.n_rows:
                 return 0.90
-            return 0.50
+            if profile.n_rows < 3 and profile.n_unique >= 1:
+                return 0.75
+            return 0.45
         return 0.0
 
     if canonical_field == "product_name":

@@ -35,7 +35,7 @@ except ImportError:
     HAS_STATSMODELS = False
 
 from app.features.build import build_econometric_design_matrix
-from app.schemas.contracts import ElasticityResult
+from app.schemas.contracts import BusinessContext, CostBreakdown, ElasticityResult
 
 
 DEFAULT_N_BOOTSTRAP: int = 300
@@ -255,6 +255,61 @@ def fit_product_elasticity(
             f"positive_elasticity: Độ co giãn ({elasticity_point:.2f}) không mang dấu âm (vi phạm quy luật cầu)."
         )
 
+    # Current business situation snapshot (computed deterministically from historical data)
+    base_margin_pct = round((recent_price - recent_cost) / recent_price * 100.0, 2) if recent_price > 0 else 0.0
+    recent_14d_avg = round(float(np.mean(hist_quantities[-14:])), 2) if len(hist_quantities) > 0 else None
+    demand_trend_pct: Optional[float] = None
+    if len(hist_quantities) >= 28:
+        prev_14d = float(np.mean(hist_quantities[-28:-14]))
+        last_14d = float(np.mean(hist_quantities[-14:]))
+        if prev_14d > 1e-6:
+            demand_trend_pct = round((last_14d - prev_14d) / prev_14d * 100.0, 1)
+
+    daily_base_rate = max(baseline_qty, 1) / float(max(period_days, 1))
+    stock_days_cover = round(float(stock_avail) / max(daily_base_rate, 1e-6), 1) if stock_avail is not None else None
+    stockout_days_pct: Optional[float] = None
+    if stock_col in df_prod.columns and len(df_prod) > 0:
+        stockout_days_pct = round(float((df_prod[stock_col].fillna(0) <= 0).mean() * 100.0), 1)
+
+    promo_col = "promo" if "promo" in df_clean.columns else "promo_flag"
+    promo_share_pct = round(float((df_clean[promo_col].fillna(0) > 0).mean() * 100.0), 1) if promo_col in df_clean.columns and len(df_clean) > 0 else 0.0
+
+    def _period_external_cost(col_candidates: Tuple[str, ...]) -> int:
+        for col in col_candidates:
+            if col in df_prod.columns:
+                vals = pd.to_numeric(df_prod[col], errors="coerce").dropna()
+                if len(vals) > 0:
+                    daily_mean = max(float(vals.mean()), 0.0)
+                    return int(round(daily_mean * period_days))
+        return 0
+
+    mkt_vnd = _period_external_cost(("marketing_cost", "marketing_cost_vnd"))
+    labor_vnd = _period_external_cost(("labor_cost", "labor_cost_vnd"))
+    op_vnd = _period_external_cost(("operating_cost", "operating_cost_vnd"))
+    other_fixed_vnd = _period_external_cost(("fixed_cost", "fixed_cost_vnd"))
+    total_fixed_vnd = mkt_vnd + labor_vnd + op_vnd + other_fixed_vnd
+    cost_breakdown = (
+        CostBreakdown(
+            marketing_vnd=mkt_vnd,
+            labor_vnd=labor_vnd,
+            operating_vnd=op_vnd,
+            other_fixed_vnd=other_fixed_vnd,
+        )
+        if total_fixed_vnd > 0
+        else None
+    )
+
+    biz_ctx = BusinessContext(
+        base_margin_pct=base_margin_pct,
+        recent_14d_avg_qty=recent_14d_avg,
+        demand_trend_pct=demand_trend_pct,
+        stock_days_cover=stock_days_cover,
+        stockout_days_pct=stockout_days_pct,
+        promo_share_pct=promo_share_pct,
+        significant=is_significant,
+        warnings=warnings,
+    )
+
     return ElasticityResult(
         product_id=str(product_id),
         product_name=p_name,
@@ -262,10 +317,13 @@ def fit_product_elasticity(
         unit_cost_vnd=recent_cost,
         baseline_qty_per_period=max(baseline_qty, 1),
         stock_available=stock_avail,
+        fixed_cost_vnd=total_fixed_vnd,
+        cost_breakdown=cost_breakdown,
         elasticity_median=round(float(np.median(samples)), 4),
         elasticity_se=round(elasticity_se, 4),
         elasticity_samples=[round(float(s), 4) for s in samples.tolist()],
         significant=is_significant,
         price_variation_sd=round(price_sd, 4),
         warnings=warnings,
+        business_context=biz_ctx,
     )

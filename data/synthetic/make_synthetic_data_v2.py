@@ -65,6 +65,18 @@ ELECTRONICS = [("Tai nghe Bluetooth", "Điện tử", 250_000, 0.60, 30, -2.0), 
 LARGE_CATEGORIES = [("Thời trang", -2.0, -1.0, 80_000, 450_000), ("Mỹ phẩm", -1.2, -0.5, 90_000, 400_000),
                     ("Gia dụng", -1.5, -0.6, 60_000, 800_000), ("Điện tử", -2.4, -1.4, 100_000, 900_000),
                     ("Thực phẩm", -1.0, -0.3, 30_000, 200_000)]
+SMB_FULL_OPS = [
+    ("Áo sơ mi lụa công sở", "Thời trang", 240_000, 0.50, 32, -1.4),
+    ("Váy maxi dạo phố", "Thời trang", 320_000, 0.48, 22, -1.6),
+    ("Chân váy chữ A", "Thời trang", 190_000, 0.52, 38, -1.3),
+    ("Quần âu nam slim", "Thời trang", 360_000, 0.53, 24, -1.5),
+    ("Áo khoác cardigan len", "Thời trang", 280_000, 0.55, 20, -1.3),
+    ("Serum Vitamin C 30ml", "Mỹ phẩm", 290_000, 0.42, 28, -0.8),
+    ("Kem chống nắng 50ml", "Mỹ phẩm", 210_000, 0.46, 40, -0.7),
+    ("Túi đeo chéo da PU", "Phụ kiện", 220_000, 0.45, 30, -1.2),
+    ("Giày cao gót 5cm", "Giày dép", 390_000, 0.54, 16, -1.7),
+    ("Bình đun siêu tốc 1.8L", "Gia dụng", 260_000, 0.62, 25, -1.1),
+]
 
 
 def random_products(rng, per_category):
@@ -171,6 +183,50 @@ def simulate_product(rng, product, cal, cfg):
     return sales, daily_truth
 
 
+def generate_operating_costs(cost_rng, product, cal, price, sold, promo, ops_profile="standard"):
+    """Synthesize daily external expenses (marketing, labor, operating/platform overhead).
+
+    Uses an independent RNG so adding expense columns never perturbs simulated demand or prices.
+    """
+    n = len(cal)
+    base_rev = float(product["base_price"]) * float(product["base_qty"])
+    rev = price.astype(float) * sold.astype(float)
+    is_weekend = cal["is_weekend"].to_numpy() == 1
+    is_holiday = cal["holiday_flag"].to_numpy() == 1
+    is_promo = promo == 1
+
+    if ops_profile == "full_ops":
+        mkt_share, mkt_promo, mkt_event = 0.085, 1.85, 1.45
+        labor_fixed_share, labor_per_unit = 0.040, 3500.0
+        rent_fixed_share, op_rev_fee, op_per_unit = 0.035, 0.065, 3500.0
+    else:
+        mkt_share, mkt_promo, mkt_event = 0.048, 1.65, 1.35
+        labor_fixed_share, labor_per_unit = 0.024, 2000.0
+        rent_fixed_share, op_rev_fee, op_per_unit = 0.020, 0.045, 2500.0
+
+    mkt_raw = (
+        base_rev * mkt_share
+        * np.where(is_promo, mkt_promo, 1.0)
+        * np.where(is_holiday, mkt_event, 1.0)
+        * cost_rng.lognormal(0.0, 0.08, n)
+    )
+    labor_raw = (
+        base_rev * labor_fixed_share * np.where(is_weekend, 1.15, 1.0)
+        + labor_per_unit * sold.astype(float)
+    ) * cost_rng.lognormal(0.0, 0.04, n)
+    op_raw = (
+        base_rev * rent_fixed_share
+        + rev * op_rev_fee
+        + op_per_unit * sold.astype(float)
+    ) * cost_rng.lognormal(0.0, 0.03, n)
+
+    return (
+        (np.round(np.maximum(mkt_raw, 0.0) / 1000.0) * 1000).astype(int),
+        (np.round(np.maximum(labor_raw, 0.0) / 1000.0) * 1000).astype(int),
+        (np.round(np.maximum(op_raw, 0.0) / 1000.0) * 1000).astype(int),
+    )
+
+
 def build_dataset(rows, overrides):
     cfg = {**DEFAULTS, **overrides}
     rng = np.random.default_rng(cfg["seed"])
@@ -179,6 +235,24 @@ def build_dataset(rows, overrides):
                      unit_cost=int(round(price * cr / 500) * 500), base_qty=bq, true_elasticity=e)
                 for i, (nm, cat, price, cr, bq, e) in enumerate(rows, start=1)]
     sims = [simulate_product(rng, p, cal, cfg) for p in products]
+
+    ops_profile = cfg.get("operating_costs_profile")
+    if ops_profile:
+        cost_rng = np.random.default_rng(int(cfg["seed"]) + 9000)
+        for p, (s_df, _) in zip(products, sims):
+            mkt, labor, op = generate_operating_costs(
+                cost_rng,
+                p,
+                cal,
+                s_df["price_vnd"].to_numpy(),
+                s_df["quantity_sold"].to_numpy(),
+                s_df["promo_flag"].to_numpy(),
+                ops_profile=ops_profile,
+            )
+            s_df["marketing_cost_vnd"] = mkt
+            s_df["labor_cost_vnd"] = labor
+            s_df["operating_cost_vnd"] = op
+
     sales = pd.concat([s for s, _ in sims], ignore_index=True)
     daily = pd.concat([d for _, d in sims], ignore_index=True)
     truth = pd.DataFrame([{"product_id": p["product_id"], "product_name": p["product_name"], "category": p["category"],
@@ -249,8 +323,9 @@ def make_messy_variants(sales, out_root):
 def main(out="out"):
     large = random_products(np.random.default_rng(2024), per_category=8)
     datasets = [
-        ("starter_4_products", STARTER, dict(seed=42)),
-        ("fashion_shop_12", FASHION, dict(seed=101)),
+        ("starter_4_products", STARTER, dict(seed=42, operating_costs_profile="standard")),
+        ("fashion_shop_12", FASHION, dict(seed=101, operating_costs_profile="standard")),
+        ("smb_retail_full_ops_10", SMB_FULL_OPS, dict(seed=151, operating_costs_profile="full_ops")),
         ("grocery_fmcg_15", GROCERY, dict(seed=202, price_steps=[0.94, 0.97, 1.00, 1.03, 1.06])),
         ("electronics_home_10", ELECTRONICS, dict(seed=303, noise_sigma=0.14)),
         ("marketplace_large_40", large, dict(seed=404)),

@@ -1,0 +1,1422 @@
+{
+  "agent_id": "skeptical_owner",
+  "seed": 42,
+  "use_llm_users": false,
+  "generated_at": "2026-11-12T17:02:22.604298+00:00",
+  "sessions": [
+    {
+      "agent_id": "skeptical_owner",
+      "agent_display_name": "Demanding and Skeptical Business Owner",
+      "scenario_id": "sk_audit_math_and_assumptions",
+      "dataset_id": "fashion_shop_12",
+      "intent_category": "numerical_verification_and_assumptions",
+      "ground_truth_notes": "Verify profit = (P1 - cost)*qty - fixed_cost and scenario ordering opt >= exp >= pess.",
+      "active_product_id": "P01",
+      "final_action": "accept",
+      "turns": [
+        {
+          "turn_index": 1,
+          "user_action": "opening_question",
+          "question": "Nếu tăng giá P01 lên 10% trong 30 ngày thì lợi nhuận ra sao?",
+          "agent_thought": "Cần so sánh đối xứng +10% với -10% để xem kết luận có nhất quán không.",
+          "response_status": "answered",
+          "latency_ms": 6.7,
+          "parsed_spec": {
+            "product_id": "P01",
+            "change_type": "price_pct",
+            "change_value": 10.0,
+            "horizon_days": 30,
+            "start_date": null,
+            "schedule": null,
+            "detected_language": "vi",
+            "question_type": "what_if_scenario",
+            "baseline_period_days": null,
+            "event_context": null,
+            "target_uplift_pct": null,
+            "assumptions_summary": null
+          },
+          "simulation_summary": {
+            "scenarios": {
+              "base": {
+                "price_vnd": 97500,
+                "qty": 154,
+                "revenue": 15015000,
+                "profit": 5775000,
+                "spend": 9240000
+              },
+              "expected": {
+                "price_vnd": 107250.00000000001,
+                "qty": 154,
+                "revenue": 16516500.000000002,
+                "profit": 7276500.000000002,
+                "spend": 9240000
+              },
+              "optimistic": {
+                "price_vnd": 107250.00000000001,
+                "qty": 154,
+                "revenue": 16516500.000000002,
+                "profit": 7276500.000000002,
+                "spend": 9240000
+              },
+              "pessimistic": {
+                "price_vnd": 107250.00000000001,
+                "qty": 154,
+                "revenue": 16516500.000000002,
+                "profit": 7276500.000000002,
+                "spend": 9240000
+              }
+            },
+            "profit_distribution": {
+              "p5": 7276500.000000002,
+              "p50": 7276500.000000002,
+              "p95": 7276500.000000002
+            },
+            "break_even_elasticity": -2.4248377396608345,
+            "prob_beat_base": 1,
+            "advisory": {
+              "verdict_code": "STRONGLY_RECOMMENDED",
+              "base_margin_pct": 38.46153846153847,
+              "min_margin_pct_in_plan": 44.05594405594406,
+              "expected_profit_delta_vnd": 1501500.0000000019,
+              "expected_profit_delta_pct": 26.000000000000036,
+              "prob_beat_base": 1,
+              "p5_beats_base": true,
+              "stockout_risk": true,
+              "stock_utilization_pct": 1363.037585923807,
+              "elasticity_regime": "elastic",
+              "risk_flags": [
+                "stockout_risk"
+              ]
+            },
+            "schedule_trace_days": 0,
+            "schedule_trace_endpoints": []
+          },
+          "optimization_summary": null,
+          "explanation": {
+            "text": "• Nếu giữ nguyên giá cũ (97.500 VND): bán khoảng 154 món. tiền lãi 5.775.000 VND.\n• Nếu đổi giá sang 107.250 VND: dự kiến bán 154 món. tiền lãi khoảng 7.276.500 VND.\n• Khi tính cả trường hợp thuận lợi và lúc khách ngại giá, 90% khả năng tiền lãi nằm từ 7.276.500 VND đến 7.276.500 VND.\n• Gợi ý chính: Dự kiến tổng tiền lãi đạt 7.276.500 VND (+26.0% so với giữ giá cũ 5.775.000 VND) (cơ hội lãi cao hơn giá cũ là 100.0%); theo dõi lượng bán quanh 154 món.",
+            "direct_answer": null,
+            "action_verdict": "NÊN ÁP DỤNG THỬ (KHẢ QUAN)",
+            "verdict_level": "go",
+            "situation_summary": "Tiền lời hiện chiếm 38.5% trên mỗi đồng bán ra. Sức mua gần đây đang tăng 21.2%. Hàng trong kho hiện đủ bán khoảng 1.9 ngày. Khách phản ứng khá nhạy nếu bạn tăng giá mạnh.",
+            "recommendations": [
+              "Dự kiến tổng tiền lãi đạt 7.276.500 VND (+26.0% so với giữ giá cũ 5.775.000 VND) (cơ hội lãi cao hơn giá cũ là 100.0%); theo dõi lượng bán quanh 154 món.",
+              "Coi chừng cháy hàng sớm (lượng mua dự kiến bằng 1363.0% số hàng đang có): không nên giảm giá sâu khi kho đang ít; bạn nên giữ nguyên giá hoặc nhập thêm hàng trước.",
+              "Giới hạn an toàn: nếu thấy khách phản ứng mạnh quá mức -2.425% cho mỗi 1% đổi giá trong vài ngày đầu, hãy dừng lại và quay về giá cũ 97.500 VND."
+            ]
+          },
+          "fallback_reason": null,
+          "error_detail": null,
+          "persona_observations": []
+        },
+        {
+          "turn_index": 2,
+          "user_action": "challenge_assumption",
+          "question": "Tại sao bạn kết luận mức lợi nhuận đó? Hãy kiểm tra phương án ngược lại là giảm giá P01 10% trong 30 ngày để tôi so sánh hai kịch bản.",
+          "agent_thought": "Kiểm tra tính đơn điệu / nhất quán khi giảm biên độ tăng từ +10% xuống +5%.",
+          "response_status": "answered",
+          "latency_ms": 34.2,
+          "parsed_spec": {
+            "product_id": "P01",
+            "change_type": "price_pct",
+            "change_value": -10.0,
+            "horizon_days": 30,
+            "start_date": null,
+            "schedule": null,
+            "detected_language": "vi",
+            "question_type": "what_if_scenario",
+            "baseline_period_days": null,
+            "event_context": null,
+            "target_uplift_pct": null,
+            "assumptions_summary": null
+          },
+          "simulation_summary": {
+            "scenarios": {
+              "base": {
+                "price_vnd": 97500,
+                "qty": 154,
+                "revenue": 15015000,
+                "profit": 5775000,
+                "spend": 9240000
+              },
+              "expected": {
+                "price_vnd": 87750,
+                "qty": 154,
+                "revenue": 13513500,
+                "profit": 4273500,
+                "spend": 9240000
+              },
+              "optimistic": {
+                "price_vnd": 87750,
+                "qty": 154,
+                "revenue": 13513500,
+                "profit": 4273500,
+                "spend": 9240000
+              },
+              "pessimistic": {
+                "price_vnd": 87750,
+                "qty": 154,
+                "revenue": 13513500,
+                "profit": 4273500,
+                "spend": 9240000
+              }
+            },
+            "profit_distribution": {
+              "p5": 4273500,
+              "p50": 4273500,
+              "p95": 4273500
+            },
+            "break_even_elasticity": -2.8578551547887687,
+            "prob_beat_base": 0,
+            "advisory": {
+              "verdict_code": "STOCK_CONSTRAINED_HOLD_OR_RAISE",
+              "base_margin_pct": 38.46153846153847,
+              "min_margin_pct_in_plan": 31.62393162393162,
+              "expected_profit_delta_vnd": -1501500,
+              "expected_profit_delta_pct": -26,
+              "prob_beat_base": 0,
+              "p5_beats_base": false,
+              "stockout_risk": true,
+              "stock_utilization_pct": 1759.9756249414888,
+              "elasticity_regime": "elastic",
+              "risk_flags": [
+                "stockout_risk",
+                "downside_below_base"
+              ]
+            },
+            "schedule_trace_days": 0,
+            "schedule_trace_endpoints": []
+          },
+          "optimization_summary": null,
+          "explanation": {
+            "text": "• Nếu giữ nguyên giá cũ (97.500 VND): bán khoảng 154 món. tiền lãi 5.775.000 VND.\n• Nếu đổi giá sang 87.750 VND: dự kiến bán 154 món. tiền lãi khoảng 4.273.500 VND.\n• Khi tính cả trường hợp thuận lợi và lúc khách ngại giá, 90% khả năng tiền lãi nằm từ 4.273.500 VND đến 4.273.500 VND.\n• Gợi ý chính: Phương án này làm tiền lãi dự kiến giảm xuống 4.273.500 VND (thấp hơn giữ giá cũ 5.775.000 VND) — hãy mở mục \"Tìm giá đạt mục tiêu lãi\" để máy gợi ý mức giá có lời hơn.",
+            "direct_answer": null,
+            "action_verdict": "CẢNH BÁO THIẾU HÀNG — KHÔNG NÊN GIẢM GIÁ SÂU",
+            "verdict_level": "stop",
+            "situation_summary": "Tiền lời hiện chiếm 38.5% trên mỗi đồng bán ra. Sức mua gần đây đang tăng 21.2%. Hàng trong kho hiện đủ bán khoảng 1.9 ngày. Khách phản ứng khá nhạy nếu bạn tăng giá mạnh.",
+            "recommendations": [
+              "Phương án này làm tiền lãi dự kiến giảm xuống 4.273.500 VND (thấp hơn giữ giá cũ 5.775.000 VND) — hãy mở mục \"Tìm giá đạt mục tiêu lãi\" để máy gợi ý mức giá có lời hơn.",
+              "Coi chừng cháy hàng sớm (lượng mua dự kiến bằng 1760.0% số hàng đang có): không nên giảm giá sâu khi kho đang ít; bạn nên giữ nguyên giá hoặc nhập thêm hàng trước.",
+              "Giới hạn an toàn: nếu thấy khách phản ứng mạnh quá mức -2.858% cho mỗi 1% đổi giá trong vài ngày đầu, hãy dừng lại và quay về giá cũ 97.500 VND."
+            ]
+          },
+          "fallback_reason": null,
+          "error_detail": null,
+          "persona_observations": []
+        },
+        {
+          "turn_index": 3,
+          "user_action": "follow_up",
+          "question": "Nếu giữ nguyên thời gian 30 ngày nhưng chỉ tăng giá P01 5% thì có an toàn hơn 10% không?",
+          "agent_thought": "Đã thu thập đủ dữ liệu đối chiếu tính nhất quán.",
+          "response_status": "answered",
+          "latency_ms": 8.8,
+          "parsed_spec": {
+            "product_id": "P01",
+            "change_type": "price_pct",
+            "change_value": 5.0,
+            "horizon_days": 30,
+            "start_date": null,
+            "schedule": null,
+            "detected_language": "vi",
+            "question_type": "what_if_scenario",
+            "baseline_period_days": null,
+            "event_context": null,
+            "target_uplift_pct": null,
+            "assumptions_summary": null
+          },
+          "simulation_summary": {
+            "scenarios": {
+              "base": {
+                "price_vnd": 97500,
+                "qty": 154,
+                "revenue": 15015000,
+                "profit": 5775000,
+                "spend": 9240000
+              },
+              "expected": {
+                "price_vnd": 102375,
+                "qty": 154,
+                "revenue": 15765750,
+                "profit": 6525750,
+                "spend": 9240000
+              },
+              "optimistic": {
+                "price_vnd": 102375,
+                "qty": 154,
+                "revenue": 15765750,
+                "profit": 6525750,
+                "spend": 9240000
+              },
+              "pessimistic": {
+                "price_vnd": 102375,
+                "qty": 154,
+                "revenue": 15765750,
+                "profit": 6525750,
+                "spend": 9240000
+              }
+            },
+            "profit_distribution": {
+              "p5": 6525750,
+              "p50": 6525750,
+              "p95": 6525750
+            },
+            "break_even_elasticity": -2.504964572363968,
+            "prob_beat_base": 1,
+            "advisory": {
+              "verdict_code": "STRONGLY_RECOMMENDED",
+              "base_margin_pct": 38.46153846153847,
+              "min_margin_pct_in_plan": 41.39194139194139,
+              "expected_profit_delta_vnd": 750750,
+              "expected_profit_delta_pct": 13,
+              "prob_beat_base": 1,
+              "p5_beats_base": true,
+              "stockout_risk": true,
+              "stock_utilization_pct": 1446.2383528191103,
+              "elasticity_regime": "elastic",
+              "risk_flags": [
+                "stockout_risk"
+              ]
+            },
+            "schedule_trace_days": 0,
+            "schedule_trace_endpoints": []
+          },
+          "optimization_summary": null,
+          "explanation": {
+            "text": "• Nếu giữ nguyên giá cũ (97.500 VND): bán khoảng 154 món. tiền lãi 5.775.000 VND.\n• Nếu đổi giá sang 102.375 VND: dự kiến bán 154 món. tiền lãi khoảng 6.525.750 VND.\n• Khi tính cả trường hợp thuận lợi và lúc khách ngại giá, 90% khả năng tiền lãi nằm từ 6.525.750 VND đến 6.525.750 VND.\n• Gợi ý chính: Dự kiến tổng tiền lãi đạt 6.525.750 VND (+13.0% so với giữ giá cũ 5.775.000 VND) (cơ hội lãi cao hơn giá cũ là 100.0%); theo dõi lượng bán quanh 154 món.",
+            "direct_answer": null,
+            "action_verdict": "NÊN ÁP DỤNG THỬ (KHẢ QUAN)",
+            "verdict_level": "go",
+            "situation_summary": "Tiền lời hiện chiếm 38.5% trên mỗi đồng bán ra. Sức mua gần đây đang tăng 21.2%. Hàng trong kho hiện đủ bán khoảng 1.9 ngày. Khách phản ứng khá nhạy nếu bạn tăng giá mạnh.",
+            "recommendations": [
+              "Dự kiến tổng tiền lãi đạt 6.525.750 VND (+13.0% so với giữ giá cũ 5.775.000 VND) (cơ hội lãi cao hơn giá cũ là 100.0%); theo dõi lượng bán quanh 154 món.",
+              "Coi chừng cháy hàng sớm (lượng mua dự kiến bằng 1446.2% số hàng đang có): không nên giảm giá sâu khi kho đang ít; bạn nên giữ nguyên giá hoặc nhập thêm hàng trước.",
+              "Giới hạn an toàn: nếu thấy khách phản ứng mạnh quá mức -2.505% cho mỗi 1% đổi giá trong vài ngày đầu, hãy dừng lại và quay về giá cũ 97.500 VND."
+            ]
+          },
+          "fallback_reason": null,
+          "error_detail": null,
+          "persona_observations": []
+        }
+      ],
+      "raw_responses": [
+        {
+          "turn": 1,
+          "status": "answered",
+          "parsed_spec": {
+            "product_id": "P01",
+            "change_type": "price_pct",
+            "change_value": 10.0,
+            "horizon_days": 30,
+            "start_date": null,
+            "schedule": null,
+            "detected_language": "vi",
+            "question_type": "what_if_scenario",
+            "baseline_period_days": null,
+            "event_context": null,
+            "target_uplift_pct": null,
+            "assumptions_summary": null
+          },
+          "simulation": {
+            "scenarios": {
+              "base": {
+                "price_vnd": 97500,
+                "qty": 154,
+                "revenue": 15015000,
+                "profit": 5775000,
+                "spend": 9240000
+              },
+              "expected": {
+                "price_vnd": 107250.00000000001,
+                "qty": 154,
+                "revenue": 16516500.000000002,
+                "profit": 7276500.000000002,
+                "spend": 9240000
+              },
+              "optimistic": {
+                "price_vnd": 107250.00000000001,
+                "qty": 154,
+                "revenue": 16516500.000000002,
+                "profit": 7276500.000000002,
+                "spend": 9240000
+              },
+              "pessimistic": {
+                "price_vnd": 107250.00000000001,
+                "qty": 154,
+                "revenue": 16516500.000000002,
+                "profit": 7276500.000000002,
+                "spend": 9240000
+              }
+            },
+            "profit_distribution": {
+              "p5": 7276500.000000002,
+              "p50": 7276500.000000002,
+              "p95": 7276500.000000002
+            },
+            "break_even_elasticity": -2.4248377396608345,
+            "prob_beat_base": 1,
+            "advisory": {
+              "verdict_code": "STRONGLY_RECOMMENDED",
+              "base_margin_pct": 38.46153846153847,
+              "min_margin_pct_in_plan": 44.05594405594406,
+              "expected_profit_delta_vnd": 1501500.0000000019,
+              "expected_profit_delta_pct": 26.000000000000036,
+              "prob_beat_base": 1,
+              "p5_beats_base": true,
+              "stockout_risk": true,
+              "stock_utilization_pct": 1363.037585923807,
+              "elasticity_regime": "elastic",
+              "risk_flags": [
+                "stockout_risk"
+              ]
+            },
+            "schedule_trace_days": 0,
+            "schedule_trace_endpoints": []
+          },
+          "explanation": {
+            "text": "• Nếu giữ nguyên giá cũ (97.500 VND): bán khoảng 154 món. tiền lãi 5.775.000 VND.\n• Nếu đổi giá sang 107.250 VND: dự kiến bán 154 món. tiền lãi khoảng 7.276.500 VND.\n• Khi tính cả trường hợp thuận lợi và lúc khách ngại giá, 90% khả năng tiền lãi nằm từ 7.276.500 VND đến 7.276.500 VND.\n• Gợi ý chính: Dự kiến tổng tiền lãi đạt 7.276.500 VND (+26.0% so với giữ giá cũ 5.775.000 VND) (cơ hội lãi cao hơn giá cũ là 100.0%); theo dõi lượng bán quanh 154 món.",
+            "direct_answer": null,
+            "action_verdict": "NÊN ÁP DỤNG THỬ (KHẢ QUAN)",
+            "verdict_level": "go",
+            "situation_summary": "Tiền lời hiện chiếm 38.5% trên mỗi đồng bán ra. Sức mua gần đây đang tăng 21.2%. Hàng trong kho hiện đủ bán khoảng 1.9 ngày. Khách phản ứng khá nhạy nếu bạn tăng giá mạnh.",
+            "recommendations": [
+              "Dự kiến tổng tiền lãi đạt 7.276.500 VND (+26.0% so với giữ giá cũ 5.775.000 VND) (cơ hội lãi cao hơn giá cũ là 100.0%); theo dõi lượng bán quanh 154 món.",
+              "Coi chừng cháy hàng sớm (lượng mua dự kiến bằng 1363.0% số hàng đang có): không nên giảm giá sâu khi kho đang ít; bạn nên giữ nguyên giá hoặc nhập thêm hàng trước.",
+              "Giới hạn an toàn: nếu thấy khách phản ứng mạnh quá mức -2.425% cho mỗi 1% đổi giá trong vài ngày đầu, hãy dừng lại và quay về giá cũ 97.500 VND."
+            ]
+          },
+          "fallback_reason": null,
+          "error_detail": null
+        },
+        {
+          "turn": 2,
+          "status": "answered",
+          "parsed_spec": {
+            "product_id": "P01",
+            "change_type": "price_pct",
+            "change_value": -10.0,
+            "horizon_days": 30,
+            "start_date": null,
+            "schedule": null,
+            "detected_language": "vi",
+            "question_type": "what_if_scenario",
+            "baseline_period_days": null,
+            "event_context": null,
+            "target_uplift_pct": null,
+            "assumptions_summary": null
+          },
+          "simulation": {
+            "scenarios": {
+              "base": {
+                "price_vnd": 97500,
+                "qty": 154,
+                "revenue": 15015000,
+                "profit": 5775000,
+                "spend": 9240000
+              },
+              "expected": {
+                "price_vnd": 87750,
+                "qty": 154,
+                "revenue": 13513500,
+                "profit": 4273500,
+                "spend": 9240000
+              },
+              "optimistic": {
+                "price_vnd": 87750,
+                "qty": 154,
+                "revenue": 13513500,
+                "profit": 4273500,
+                "spend": 9240000
+              },
+              "pessimistic": {
+                "price_vnd": 87750,
+                "qty": 154,
+                "revenue": 13513500,
+                "profit": 4273500,
+                "spend": 9240000
+              }
+            },
+            "profit_distribution": {
+              "p5": 4273500,
+              "p50": 4273500,
+              "p95": 4273500
+            },
+            "break_even_elasticity": -2.8578551547887687,
+            "prob_beat_base": 0,
+            "advisory": {
+              "verdict_code": "STOCK_CONSTRAINED_HOLD_OR_RAISE",
+              "base_margin_pct": 38.46153846153847,
+              "min_margin_pct_in_plan": 31.62393162393162,
+              "expected_profit_delta_vnd": -1501500,
+              "expected_profit_delta_pct": -26,
+              "prob_beat_base": 0,
+              "p5_beats_base": false,
+              "stockout_risk": true,
+              "stock_utilization_pct": 1759.9756249414888,
+              "elasticity_regime": "elastic",
+              "risk_flags": [
+                "stockout_risk",
+                "downside_below_base"
+              ]
+            },
+            "schedule_trace_days": 0,
+            "schedule_trace_endpoints": []
+          },
+          "explanation": {
+            "text": "• Nếu giữ nguyên giá cũ (97.500 VND): bán khoảng 154 món. tiền lãi 5.775.000 VND.\n• Nếu đổi giá sang 87.750 VND: dự kiến bán 154 món. tiền lãi khoảng 4.273.500 VND.\n• Khi tính cả trường hợp thuận lợi và lúc khách ngại giá, 90% khả năng tiền lãi nằm từ 4.273.500 VND đến 4.273.500 VND.\n• Gợi ý chính: Phương án này làm tiền lãi dự kiến giảm xuống 4.273.500 VND (thấp hơn giữ giá cũ 5.775.000 VND) — hãy mở mục \"Tìm giá đạt mục tiêu lãi\" để máy gợi ý mức giá có lời hơn.",
+            "direct_answer": null,
+            "action_verdict": "CẢNH BÁO THIẾU HÀNG — KHÔNG NÊN GIẢM GIÁ SÂU",
+            "verdict_level": "stop",
+            "situation_summary": "Tiền lời hiện chiếm 38.5% trên mỗi đồng bán ra. Sức mua gần đây đang tăng 21.2%. Hàng trong kho hiện đủ bán khoảng 1.9 ngày. Khách phản ứng khá nhạy nếu bạn tăng giá mạnh.",
+            "recommendations": [
+              "Phương án này làm tiền lãi dự kiến giảm xuống 4.273.500 VND (thấp hơn giữ giá cũ 5.775.000 VND) — hãy mở mục \"Tìm giá đạt mục tiêu lãi\" để máy gợi ý mức giá có lời hơn.",
+              "Coi chừng cháy hàng sớm (lượng mua dự kiến bằng 1760.0% số hàng đang có): không nên giảm giá sâu khi kho đang ít; bạn nên giữ nguyên giá hoặc nhập thêm hàng trước.",
+              "Giới hạn an toàn: nếu thấy khách phản ứng mạnh quá mức -2.858% cho mỗi 1% đổi giá trong vài ngày đầu, hãy dừng lại và quay về giá cũ 97.500 VND."
+            ]
+          },
+          "fallback_reason": null,
+          "error_detail": null
+        },
+        {
+          "turn": 3,
+          "status": "answered",
+          "parsed_spec": {
+            "product_id": "P01",
+            "change_type": "price_pct",
+            "change_value": 5.0,
+            "horizon_days": 30,
+            "start_date": null,
+            "schedule": null,
+            "detected_language": "vi",
+            "question_type": "what_if_scenario",
+            "baseline_period_days": null,
+            "event_context": null,
+            "target_uplift_pct": null,
+            "assumptions_summary": null
+          },
+          "simulation": {
+            "scenarios": {
+              "base": {
+                "price_vnd": 97500,
+                "qty": 154,
+                "revenue": 15015000,
+                "profit": 5775000,
+                "spend": 9240000
+              },
+              "expected": {
+                "price_vnd": 102375,
+                "qty": 154,
+                "revenue": 15765750,
+                "profit": 6525750,
+                "spend": 9240000
+              },
+              "optimistic": {
+                "price_vnd": 102375,
+                "qty": 154,
+                "revenue": 15765750,
+                "profit": 6525750,
+                "spend": 9240000
+              },
+              "pessimistic": {
+                "price_vnd": 102375,
+                "qty": 154,
+                "revenue": 15765750,
+                "profit": 6525750,
+                "spend": 9240000
+              }
+            },
+            "profit_distribution": {
+              "p5": 6525750,
+              "p50": 6525750,
+              "p95": 6525750
+            },
+            "break_even_elasticity": -2.504964572363968,
+            "prob_beat_base": 1,
+            "advisory": {
+              "verdict_code": "STRONGLY_RECOMMENDED",
+              "base_margin_pct": 38.46153846153847,
+              "min_margin_pct_in_plan": 41.39194139194139,
+              "expected_profit_delta_vnd": 750750,
+              "expected_profit_delta_pct": 13,
+              "prob_beat_base": 1,
+              "p5_beats_base": true,
+              "stockout_risk": true,
+              "stock_utilization_pct": 1446.2383528191103,
+              "elasticity_regime": "elastic",
+              "risk_flags": [
+                "stockout_risk"
+              ]
+            },
+            "schedule_trace_days": 0,
+            "schedule_trace_endpoints": []
+          },
+          "explanation": {
+            "text": "• Nếu giữ nguyên giá cũ (97.500 VND): bán khoảng 154 món. tiền lãi 5.775.000 VND.\n• Nếu đổi giá sang 102.375 VND: dự kiến bán 154 món. tiền lãi khoảng 6.525.750 VND.\n• Khi tính cả trường hợp thuận lợi và lúc khách ngại giá, 90% khả năng tiền lãi nằm từ 6.525.750 VND đến 6.525.750 VND.\n• Gợi ý chính: Dự kiến tổng tiền lãi đạt 6.525.750 VND (+13.0% so với giữ giá cũ 5.775.000 VND) (cơ hội lãi cao hơn giá cũ là 100.0%); theo dõi lượng bán quanh 154 món.",
+            "direct_answer": null,
+            "action_verdict": "NÊN ÁP DỤNG THỬ (KHẢ QUAN)",
+            "verdict_level": "go",
+            "situation_summary": "Tiền lời hiện chiếm 38.5% trên mỗi đồng bán ra. Sức mua gần đây đang tăng 21.2%. Hàng trong kho hiện đủ bán khoảng 1.9 ngày. Khách phản ứng khá nhạy nếu bạn tăng giá mạnh.",
+            "recommendations": [
+              "Dự kiến tổng tiền lãi đạt 6.525.750 VND (+13.0% so với giữ giá cũ 5.775.000 VND) (cơ hội lãi cao hơn giá cũ là 100.0%); theo dõi lượng bán quanh 154 món.",
+              "Coi chừng cháy hàng sớm (lượng mua dự kiến bằng 1446.2% số hàng đang có): không nên giảm giá sâu khi kho đang ít; bạn nên giữ nguyên giá hoặc nhập thêm hàng trước.",
+              "Giới hạn an toàn: nếu thấy khách phản ứng mạnh quá mức -2.505% cho mỗi 1% đổi giá trong vài ngày đầu, hãy dừng lại và quay về giá cũ 97.500 VND."
+            ]
+          },
+          "fallback_reason": null,
+          "error_detail": null
+        }
+      ]
+    },
+    {
+      "agent_id": "skeptical_owner",
+      "agent_display_name": "Demanding and Skeptical Business Owner",
+      "scenario_id": "sk_low_variation_uncertainty",
+      "dataset_id": "hard_low_price_variation_8",
+      "intent_category": "uncertainty_disclosure_audit",
+      "ground_truth_notes": "hard_low_price_variation_8 has flat historical prices; expects explicit uncertainty warning.",
+      "active_product_id": "P01",
+      "final_action": "accept",
+      "turns": [
+        {
+          "turn_index": 1,
+          "user_action": "opening_question",
+          "question": "Tăng giá P01 thêm 12% trong 30 ngày có được không?",
+          "agent_thought": "Tôi chất vấn thêm khi dữ liệu gốc yếu.",
+          "response_status": "answered",
+          "latency_ms": 10.2,
+          "parsed_spec": {
+            "product_id": "P01",
+            "change_type": "price_pct",
+            "change_value": 12.0,
+            "horizon_days": 30,
+            "start_date": null,
+            "schedule": null,
+            "detected_language": "vi",
+            "question_type": "yes_no_feasibility",
+            "baseline_period_days": null,
+            "event_context": null,
+            "target_uplift_pct": null,
+            "assumptions_summary": null
+          },
+          "simulation_summary": {
+            "scenarios": {
+              "base": {
+                "price_vnd": 106500,
+                "qty": 120,
+                "revenue": 12780000,
+                "profit": 5580000,
+                "spend": 7200000
+              },
+              "expected": {
+                "price_vnd": 119280.00000000001,
+                "qty": 120,
+                "revenue": 14313600.000000002,
+                "profit": 7113600.000000002,
+                "spend": 7200000
+              },
+              "optimistic": {
+                "price_vnd": 119280.00000000001,
+                "qty": 120,
+                "revenue": 14313600.000000002,
+                "profit": 7113600.000000002,
+                "spend": 7200000
+              },
+              "pessimistic": {
+                "price_vnd": 119280.00000000001,
+                "qty": 120,
+                "revenue": 14313600.000000002,
+                "profit": 7113600.000000002,
+                "spend": 7200000
+              }
+            },
+            "profit_distribution": {
+              "p5": 7113600.000000002,
+              "p50": 7113600.000000002,
+              "p95": 7113600.000000002
+            },
+            "break_even_elasticity": -2.1426143587277258,
+            "prob_beat_base": 1,
+            "advisory": {
+              "verdict_code": "STRONGLY_RECOMMENDED",
+              "base_margin_pct": 43.66197183098591,
+              "min_margin_pct_in_plan": 49.69818913480886,
+              "expected_profit_delta_vnd": 1533600.0000000019,
+              "expected_profit_delta_pct": 27.483870967741968,
+              "prob_beat_base": 1,
+              "p5_beats_base": true,
+              "stockout_risk": true,
+              "stock_utilization_pct": 1591.9312648056534,
+              "elasticity_regime": "elastic",
+              "risk_flags": [
+                "stockout_risk",
+                "low_price_variation: std(ln(price))=0.023 < 0.03. Ước lượng độ co giãn có thể kém tin cậy do giá ít thay đổi."
+              ]
+            },
+            "schedule_trace_days": 0,
+            "schedule_trace_endpoints": []
+          },
+          "optimization_summary": {
+            "total_candidates": 61,
+            "top_feasible": {
+              "price_vnd": 138450,
+              "price_change_pct": 30,
+              "expected_profit": 9414000,
+              "p5_profit": 9414000,
+              "prob_hit_target": 1,
+              "feasible": true,
+              "violated": []
+            },
+            "top_overall": {
+              "price_vnd": 138450,
+              "price_change_pct": 30,
+              "expected_profit": 9414000,
+              "p5_profit": 9414000,
+              "prob_hit_target": 1,
+              "feasible": true,
+              "violated": []
+            }
+          },
+          "explanation": {
+            "text": "• Nếu giữ nguyên giá cũ (106.500 VND): bán khoảng 120 món. tiền lãi 5.580.000 VND.\n• Nếu đổi giá sang 119.280 VND: dự kiến bán 120 món. tiền lãi khoảng 7.113.600 VND.\n• Khi tính cả trường hợp thuận lợi và lúc khách ngại giá, 90% khả năng tiền lãi nằm từ 7.113.600 VND đến 7.113.600 VND.\n• Gợi ý chính: Dự kiến tổng tiền lãi đạt 7.113.600 VND (+27.5% so với giữ giá cũ 5.580.000 VND) (cơ hội lãi cao hơn giá cũ là 100.0%); theo dõi lượng bán quanh 120 món.",
+            "direct_answer": "CÓ, NÊN THỰC HIỆN: phương án này giúp tổng tiền lãi dự kiến đạt 7.113.600 VND (tăng 1.533.600 VND so với giữ giá cũ 5.580.000 VND) với 100.0% cơ hội lãi hơn giá cũ. Mức giá tối ưu máy tìm được là +30.0% (138.450 VND), cho lãi dự kiến 9.414.000 VND.",
+            "action_verdict": "NÊN ÁP DỤNG THỬ (KHẢ QUAN)",
+            "verdict_level": "go",
+            "situation_summary": "Tiền lời hiện chiếm 43.7% trên mỗi đồng bán ra. Sức mua gần đây đang tăng 8.7%. Hàng trong kho hiện đủ bán khoảng 1.7 ngày. Khách phản ứng khá nhạy nếu bạn tăng giá mạnh. Trước đây món này ít đổi giá nên độ chắc chắn chưa cao.",
+            "recommendations": [
+              "Dự kiến tổng tiền lãi đạt 7.113.600 VND (+27.5% so với giữ giá cũ 5.580.000 VND) (cơ hội lãi cao hơn giá cũ là 100.0%); theo dõi lượng bán quanh 120 món.",
+              "Coi chừng cháy hàng sớm (lượng mua dự kiến bằng 1591.9% số hàng đang có): không nên giảm giá sâu khi kho đang ít; bạn nên giữ nguyên giá hoặc nhập thêm hàng trước.",
+              "Vì dữ liệu đổi giá cũ còn ít, bạn nên thử trước 1 tuần hoặc thử riêng ở 1 kênh bán trước khi áp dụng rộng rãi.",
+              "Giới hạn an toàn: nếu thấy khách phản ứng mạnh quá mức -2.143% cho mỗi 1% đổi giá trong vài ngày đầu, hãy dừng lại và quay về giá cũ 106.500 VND."
+            ]
+          },
+          "fallback_reason": null,
+          "error_detail": null,
+          "persona_observations": [
+            "Hệ thống có ghi nhận sự thiếu chắc chắn của dữ liệu cũ."
+          ]
+        },
+        {
+          "turn_index": 2,
+          "user_action": "challenge_assumption",
+          "question": "Nếu dữ liệu P01 không đủ chắc chắn thì tại sao bạn vẫn đưa ra khuyến nghị — hãy cho tôi biết ngưỡng hòa vốn và mức đổi giá -10% thì sao?",
+          "agent_thought": "Đã kiểm tra xử lý bất định.",
+          "response_status": "answered",
+          "latency_ms": 6.0,
+          "parsed_spec": {
+            "product_id": "P01",
+            "change_type": "price_pct",
+            "change_value": -10.0,
+            "horizon_days": 30,
+            "start_date": null,
+            "schedule": null,
+            "detected_language": "vi",
+            "question_type": "what_if_scenario",
+            "baseline_period_days": null,
+            "event_context": null,
+            "target_uplift_pct": null,
+            "assumptions_summary": null
+          },
+          "simulation_summary": {
+            "scenarios": {
+              "base": {
+                "price_vnd": 106500,
+                "qty": 120,
+                "revenue": 12780000,
+                "profit": 5580000,
+                "spend": 7200000
+              },
+              "expected": {
+                "price_vnd": 95850,
+                "qty": 120,
+                "revenue": 11502000,
+                "profit": 4302000,
+                "spend": 7200000
+              },
+              "optimistic": {
+                "price_vnd": 95850,
+                "qty": 120,
+                "revenue": 11502000,
+                "profit": 4302000,
+                "spend": 7200000
+              },
+              "pessimistic": {
+                "price_vnd": 95850,
+                "qty": 120,
+                "revenue": 11502000,
+                "profit": 4302000,
+                "spend": 7200000
+              }
+            },
+            "profit_distribution": {
+              "p5": 4302000,
+              "p50": 4302000,
+              "p95": 4302000
+            },
+            "break_even_elasticity": -2.468749739156768,
+            "prob_beat_base": 0,
+            "advisory": {
+              "verdict_code": "STOCK_CONSTRAINED_HOLD_OR_RAISE",
+              "base_margin_pct": 43.66197183098591,
+              "min_margin_pct_in_plan": 37.40219092331768,
+              "expected_profit_delta_vnd": -1278000,
+              "expected_profit_delta_pct": -22.903225806451612,
+              "prob_beat_base": 0,
+              "p5_beats_base": false,
+              "stockout_risk": true,
+              "stock_utilization_pct": 2019.5642327238677,
+              "elasticity_regime": "elastic",
+              "risk_flags": [
+                "stockout_risk",
+                "downside_below_base",
+                "low_price_variation: std(ln(price))=0.023 < 0.03. Ước lượng độ co giãn có thể kém tin cậy do giá ít thay đổi."
+              ]
+            },
+            "schedule_trace_days": 0,
+            "schedule_trace_endpoints": []
+          },
+          "optimization_summary": null,
+          "explanation": {
+            "text": "• Nếu giữ nguyên giá cũ (106.500 VND): bán khoảng 120 món. tiền lãi 5.580.000 VND.\n• Nếu đổi giá sang 95.850 VND: dự kiến bán 120 món. tiền lãi khoảng 4.302.000 VND.\n• Khi tính cả trường hợp thuận lợi và lúc khách ngại giá, 90% khả năng tiền lãi nằm từ 4.302.000 VND đến 4.302.000 VND.\n• Gợi ý chính: Phương án này làm tiền lãi dự kiến giảm xuống 4.302.000 VND (thấp hơn giữ giá cũ 5.580.000 VND) — hãy mở mục \"Tìm giá đạt mục tiêu lãi\" để máy gợi ý mức giá có lời hơn.",
+            "direct_answer": null,
+            "action_verdict": "CẢNH BÁO THIẾU HÀNG — KHÔNG NÊN GIẢM GIÁ SÂU",
+            "verdict_level": "stop",
+            "situation_summary": "Tiền lời hiện chiếm 43.7% trên mỗi đồng bán ra. Sức mua gần đây đang tăng 8.7%. Hàng trong kho hiện đủ bán khoảng 1.7 ngày. Khách phản ứng khá nhạy nếu bạn tăng giá mạnh. Trước đây món này ít đổi giá nên độ chắc chắn chưa cao.",
+            "recommendations": [
+              "Phương án này làm tiền lãi dự kiến giảm xuống 4.302.000 VND (thấp hơn giữ giá cũ 5.580.000 VND) — hãy mở mục \"Tìm giá đạt mục tiêu lãi\" để máy gợi ý mức giá có lời hơn.",
+              "Coi chừng cháy hàng sớm (lượng mua dự kiến bằng 2019.6% số hàng đang có): không nên giảm giá sâu khi kho đang ít; bạn nên giữ nguyên giá hoặc nhập thêm hàng trước.",
+              "Vì dữ liệu đổi giá cũ còn ít, bạn nên thử trước 1 tuần hoặc thử riêng ở 1 kênh bán trước khi áp dụng rộng rãi.",
+              "Giới hạn an toàn: nếu thấy khách phản ứng mạnh quá mức -2.469% cho mỗi 1% đổi giá trong vài ngày đầu, hãy dừng lại và quay về giá cũ 106.500 VND."
+            ]
+          },
+          "fallback_reason": null,
+          "error_detail": null,
+          "persona_observations": [
+            "Hệ thống có ghi nhận sự thiếu chắc chắn của dữ liệu cũ."
+          ]
+        }
+      ],
+      "raw_responses": [
+        {
+          "turn": 1,
+          "status": "answered",
+          "parsed_spec": {
+            "product_id": "P01",
+            "change_type": "price_pct",
+            "change_value": 12.0,
+            "horizon_days": 30,
+            "start_date": null,
+            "schedule": null,
+            "detected_language": "vi",
+            "question_type": "yes_no_feasibility",
+            "baseline_period_days": null,
+            "event_context": null,
+            "target_uplift_pct": null,
+            "assumptions_summary": null
+          },
+          "simulation": {
+            "scenarios": {
+              "base": {
+                "price_vnd": 106500,
+                "qty": 120,
+                "revenue": 12780000,
+                "profit": 5580000,
+                "spend": 7200000
+              },
+              "expected": {
+                "price_vnd": 119280.00000000001,
+                "qty": 120,
+                "revenue": 14313600.000000002,
+                "profit": 7113600.000000002,
+                "spend": 7200000
+              },
+              "optimistic": {
+                "price_vnd": 119280.00000000001,
+                "qty": 120,
+                "revenue": 14313600.000000002,
+                "profit": 7113600.000000002,
+                "spend": 7200000
+              },
+              "pessimistic": {
+                "price_vnd": 119280.00000000001,
+                "qty": 120,
+                "revenue": 14313600.000000002,
+                "profit": 7113600.000000002,
+                "spend": 7200000
+              }
+            },
+            "profit_distribution": {
+              "p5": 7113600.000000002,
+              "p50": 7113600.000000002,
+              "p95": 7113600.000000002
+            },
+            "break_even_elasticity": -2.1426143587277258,
+            "prob_beat_base": 1,
+            "advisory": {
+              "verdict_code": "STRONGLY_RECOMMENDED",
+              "base_margin_pct": 43.66197183098591,
+              "min_margin_pct_in_plan": 49.69818913480886,
+              "expected_profit_delta_vnd": 1533600.0000000019,
+              "expected_profit_delta_pct": 27.483870967741968,
+              "prob_beat_base": 1,
+              "p5_beats_base": true,
+              "stockout_risk": true,
+              "stock_utilization_pct": 1591.9312648056534,
+              "elasticity_regime": "elastic",
+              "risk_flags": [
+                "stockout_risk",
+                "low_price_variation: std(ln(price))=0.023 < 0.03. Ước lượng độ co giãn có thể kém tin cậy do giá ít thay đổi."
+              ]
+            },
+            "schedule_trace_days": 0,
+            "schedule_trace_endpoints": []
+          },
+          "explanation": {
+            "text": "• Nếu giữ nguyên giá cũ (106.500 VND): bán khoảng 120 món. tiền lãi 5.580.000 VND.\n• Nếu đổi giá sang 119.280 VND: dự kiến bán 120 món. tiền lãi khoảng 7.113.600 VND.\n• Khi tính cả trường hợp thuận lợi và lúc khách ngại giá, 90% khả năng tiền lãi nằm từ 7.113.600 VND đến 7.113.600 VND.\n• Gợi ý chính: Dự kiến tổng tiền lãi đạt 7.113.600 VND (+27.5% so với giữ giá cũ 5.580.000 VND) (cơ hội lãi cao hơn giá cũ là 100.0%); theo dõi lượng bán quanh 120 món.",
+            "direct_answer": "CÓ, NÊN THỰC HIỆN: phương án này giúp tổng tiền lãi dự kiến đạt 7.113.600 VND (tăng 1.533.600 VND so với giữ giá cũ 5.580.000 VND) với 100.0% cơ hội lãi hơn giá cũ. Mức giá tối ưu máy tìm được là +30.0% (138.450 VND), cho lãi dự kiến 9.414.000 VND.",
+            "action_verdict": "NÊN ÁP DỤNG THỬ (KHẢ QUAN)",
+            "verdict_level": "go",
+            "situation_summary": "Tiền lời hiện chiếm 43.7% trên mỗi đồng bán ra. Sức mua gần đây đang tăng 8.7%. Hàng trong kho hiện đủ bán khoảng 1.7 ngày. Khách phản ứng khá nhạy nếu bạn tăng giá mạnh. Trước đây món này ít đổi giá nên độ chắc chắn chưa cao.",
+            "recommendations": [
+              "Dự kiến tổng tiền lãi đạt 7.113.600 VND (+27.5% so với giữ giá cũ 5.580.000 VND) (cơ hội lãi cao hơn giá cũ là 100.0%); theo dõi lượng bán quanh 120 món.",
+              "Coi chừng cháy hàng sớm (lượng mua dự kiến bằng 1591.9% số hàng đang có): không nên giảm giá sâu khi kho đang ít; bạn nên giữ nguyên giá hoặc nhập thêm hàng trước.",
+              "Vì dữ liệu đổi giá cũ còn ít, bạn nên thử trước 1 tuần hoặc thử riêng ở 1 kênh bán trước khi áp dụng rộng rãi.",
+              "Giới hạn an toàn: nếu thấy khách phản ứng mạnh quá mức -2.143% cho mỗi 1% đổi giá trong vài ngày đầu, hãy dừng lại và quay về giá cũ 106.500 VND."
+            ]
+          },
+          "fallback_reason": null,
+          "error_detail": null
+        },
+        {
+          "turn": 2,
+          "status": "answered",
+          "parsed_spec": {
+            "product_id": "P01",
+            "change_type": "price_pct",
+            "change_value": -10.0,
+            "horizon_days": 30,
+            "start_date": null,
+            "schedule": null,
+            "detected_language": "vi",
+            "question_type": "what_if_scenario",
+            "baseline_period_days": null,
+            "event_context": null,
+            "target_uplift_pct": null,
+            "assumptions_summary": null
+          },
+          "simulation": {
+            "scenarios": {
+              "base": {
+                "price_vnd": 106500,
+                "qty": 120,
+                "revenue": 12780000,
+                "profit": 5580000,
+                "spend": 7200000
+              },
+              "expected": {
+                "price_vnd": 95850,
+                "qty": 120,
+                "revenue": 11502000,
+                "profit": 4302000,
+                "spend": 7200000
+              },
+              "optimistic": {
+                "price_vnd": 95850,
+                "qty": 120,
+                "revenue": 11502000,
+                "profit": 4302000,
+                "spend": 7200000
+              },
+              "pessimistic": {
+                "price_vnd": 95850,
+                "qty": 120,
+                "revenue": 11502000,
+                "profit": 4302000,
+                "spend": 7200000
+              }
+            },
+            "profit_distribution": {
+              "p5": 4302000,
+              "p50": 4302000,
+              "p95": 4302000
+            },
+            "break_even_elasticity": -2.468749739156768,
+            "prob_beat_base": 0,
+            "advisory": {
+              "verdict_code": "STOCK_CONSTRAINED_HOLD_OR_RAISE",
+              "base_margin_pct": 43.66197183098591,
+              "min_margin_pct_in_plan": 37.40219092331768,
+              "expected_profit_delta_vnd": -1278000,
+              "expected_profit_delta_pct": -22.903225806451612,
+              "prob_beat_base": 0,
+              "p5_beats_base": false,
+              "stockout_risk": true,
+              "stock_utilization_pct": 2019.5642327238677,
+              "elasticity_regime": "elastic",
+              "risk_flags": [
+                "stockout_risk",
+                "downside_below_base",
+                "low_price_variation: std(ln(price))=0.023 < 0.03. Ước lượng độ co giãn có thể kém tin cậy do giá ít thay đổi."
+              ]
+            },
+            "schedule_trace_days": 0,
+            "schedule_trace_endpoints": []
+          },
+          "explanation": {
+            "text": "• Nếu giữ nguyên giá cũ (106.500 VND): bán khoảng 120 món. tiền lãi 5.580.000 VND.\n• Nếu đổi giá sang 95.850 VND: dự kiến bán 120 món. tiền lãi khoảng 4.302.000 VND.\n• Khi tính cả trường hợp thuận lợi và lúc khách ngại giá, 90% khả năng tiền lãi nằm từ 4.302.000 VND đến 4.302.000 VND.\n• Gợi ý chính: Phương án này làm tiền lãi dự kiến giảm xuống 4.302.000 VND (thấp hơn giữ giá cũ 5.580.000 VND) — hãy mở mục \"Tìm giá đạt mục tiêu lãi\" để máy gợi ý mức giá có lời hơn.",
+            "direct_answer": null,
+            "action_verdict": "CẢNH BÁO THIẾU HÀNG — KHÔNG NÊN GIẢM GIÁ SÂU",
+            "verdict_level": "stop",
+            "situation_summary": "Tiền lời hiện chiếm 43.7% trên mỗi đồng bán ra. Sức mua gần đây đang tăng 8.7%. Hàng trong kho hiện đủ bán khoảng 1.7 ngày. Khách phản ứng khá nhạy nếu bạn tăng giá mạnh. Trước đây món này ít đổi giá nên độ chắc chắn chưa cao.",
+            "recommendations": [
+              "Phương án này làm tiền lãi dự kiến giảm xuống 4.302.000 VND (thấp hơn giữ giá cũ 5.580.000 VND) — hãy mở mục \"Tìm giá đạt mục tiêu lãi\" để máy gợi ý mức giá có lời hơn.",
+              "Coi chừng cháy hàng sớm (lượng mua dự kiến bằng 2019.6% số hàng đang có): không nên giảm giá sâu khi kho đang ít; bạn nên giữ nguyên giá hoặc nhập thêm hàng trước.",
+              "Vì dữ liệu đổi giá cũ còn ít, bạn nên thử trước 1 tuần hoặc thử riêng ở 1 kênh bán trước khi áp dụng rộng rãi.",
+              "Giới hạn an toàn: nếu thấy khách phản ứng mạnh quá mức -2.469% cho mỗi 1% đổi giá trong vài ngày đầu, hãy dừng lại và quay về giá cũ 106.500 VND."
+            ]
+          },
+          "fallback_reason": null,
+          "error_detail": null
+        }
+      ]
+    },
+    {
+      "agent_id": "skeptical_owner",
+      "agent_display_name": "Demanding and Skeptical Business Owner",
+      "scenario_id": "sk_contradictory_marketing_shock",
+      "dataset_id": "fashion_shop_12",
+      "intent_category": "contradictory_non_price_input",
+      "ground_truth_notes": "Prompt specifies revenue +20% and marketing cost +35% — NOT a unit price change. Must not silently confuse +20% as a +20% price hike.",
+      "active_product_id": "P01",
+      "final_action": "stop",
+      "turns": [
+        {
+          "turn_index": 1,
+          "user_action": "opening_question",
+          "question": "Nếu doanh thu P01 tăng 20% nhưng chi phí marketing tăng 35%, kết luận của bạn có còn đúng không?",
+          "agent_thought": "Đã kiểm tra phản ứng của hệ thống với biến chi phí marketing không thuộc giá bán.",
+          "response_status": "answered",
+          "latency_ms": 7.0,
+          "parsed_spec": {
+            "product_id": "P01",
+            "change_type": "price_pct",
+            "change_value": 20.0,
+            "horizon_days": 30,
+            "start_date": null,
+            "schedule": null,
+            "detected_language": "vi",
+            "question_type": "what_if_scenario",
+            "baseline_period_days": null,
+            "event_context": null,
+            "target_uplift_pct": null,
+            "assumptions_summary": null
+          },
+          "simulation_summary": {
+            "scenarios": {
+              "base": {
+                "price_vnd": 97500,
+                "qty": 154,
+                "revenue": 15015000,
+                "profit": 5775000,
+                "spend": 9240000
+              },
+              "expected": {
+                "price_vnd": 117000,
+                "qty": 154,
+                "revenue": 18018000,
+                "profit": 8778000,
+                "spend": 9240000
+              },
+              "optimistic": {
+                "price_vnd": 117000,
+                "qty": 154,
+                "revenue": 18018000,
+                "profit": 8778000,
+                "spend": 9240000
+              },
+              "pessimistic": {
+                "price_vnd": 117000,
+                "qty": 154,
+                "revenue": 18018000,
+                "profit": 8778000,
+                "spend": 9240000
+              }
+            },
+            "profit_distribution": {
+              "p5": 8778000,
+              "p50": 8778000,
+              "p95": 8778000
+            },
+            "break_even_elasticity": -2.296548703406357,
+            "prob_beat_base": 1,
+            "advisory": {
+              "verdict_code": "STRONGLY_RECOMMENDED",
+              "base_margin_pct": 38.46153846153847,
+              "min_margin_pct_in_plan": 48.717948717948715,
+              "expected_profit_delta_vnd": 3003000,
+              "expected_profit_delta_pct": 52,
+              "prob_beat_base": 1,
+              "p5_beats_base": true,
+              "stockout_risk": true,
+              "stock_utilization_pct": 1220.0522527011356,
+              "elasticity_regime": "elastic",
+              "risk_flags": [
+                "stockout_risk"
+              ]
+            },
+            "schedule_trace_days": 0,
+            "schedule_trace_endpoints": []
+          },
+          "optimization_summary": null,
+          "explanation": {
+            "text": "• Nếu giữ nguyên giá cũ (97.500 VND): bán khoảng 154 món. tiền lãi 5.775.000 VND.\n• Nếu đổi giá sang 117.000 VND: dự kiến bán 154 món. tiền lãi khoảng 8.778.000 VND.\n• Khi tính cả trường hợp thuận lợi và lúc khách ngại giá, 90% khả năng tiền lãi nằm từ 8.778.000 VND đến 8.778.000 VND.\n• Gợi ý chính: Dự kiến tổng tiền lãi đạt 8.778.000 VND (+52.0% so với giữ giá cũ 5.775.000 VND) (cơ hội lãi cao hơn giá cũ là 100.0%); theo dõi lượng bán quanh 154 món.",
+            "direct_answer": null,
+            "action_verdict": "NÊN ÁP DỤNG THỬ (KHẢ QUAN)",
+            "verdict_level": "go",
+            "situation_summary": "Tiền lời hiện chiếm 38.5% trên mỗi đồng bán ra. Sức mua gần đây đang tăng 21.2%. Hàng trong kho hiện đủ bán khoảng 1.9 ngày. Khách phản ứng khá nhạy nếu bạn tăng giá mạnh.",
+            "recommendations": [
+              "Dự kiến tổng tiền lãi đạt 8.778.000 VND (+52.0% so với giữ giá cũ 5.775.000 VND) (cơ hội lãi cao hơn giá cũ là 100.0%); theo dõi lượng bán quanh 154 món.",
+              "Coi chừng cháy hàng sớm (lượng mua dự kiến bằng 1220.1% số hàng đang có): không nên giảm giá sâu khi kho đang ít; bạn nên giữ nguyên giá hoặc nhập thêm hàng trước.",
+              "Giới hạn an toàn: nếu thấy khách phản ứng mạnh quá mức -2.297% cho mỗi 1% đổi giá trong vài ngày đầu, hãy dừng lại và quay về giá cũ 97.500 VND."
+            ]
+          },
+          "fallback_reason": null,
+          "error_detail": null,
+          "persona_observations": [
+            "CẢNH BÁO NGỮ NGHĨA: Câu hỏi nói về doanh thu +20% và chi phí marketing +35%, nhưng hệ thống lại tự diễn giải thành đổi giá 20.0%!"
+          ]
+        }
+      ],
+      "raw_responses": [
+        {
+          "turn": 1,
+          "status": "answered",
+          "parsed_spec": {
+            "product_id": "P01",
+            "change_type": "price_pct",
+            "change_value": 20.0,
+            "horizon_days": 30,
+            "start_date": null,
+            "schedule": null,
+            "detected_language": "vi",
+            "question_type": "what_if_scenario",
+            "baseline_period_days": null,
+            "event_context": null,
+            "target_uplift_pct": null,
+            "assumptions_summary": null
+          },
+          "simulation": {
+            "scenarios": {
+              "base": {
+                "price_vnd": 97500,
+                "qty": 154,
+                "revenue": 15015000,
+                "profit": 5775000,
+                "spend": 9240000
+              },
+              "expected": {
+                "price_vnd": 117000,
+                "qty": 154,
+                "revenue": 18018000,
+                "profit": 8778000,
+                "spend": 9240000
+              },
+              "optimistic": {
+                "price_vnd": 117000,
+                "qty": 154,
+                "revenue": 18018000,
+                "profit": 8778000,
+                "spend": 9240000
+              },
+              "pessimistic": {
+                "price_vnd": 117000,
+                "qty": 154,
+                "revenue": 18018000,
+                "profit": 8778000,
+                "spend": 9240000
+              }
+            },
+            "profit_distribution": {
+              "p5": 8778000,
+              "p50": 8778000,
+              "p95": 8778000
+            },
+            "break_even_elasticity": -2.296548703406357,
+            "prob_beat_base": 1,
+            "advisory": {
+              "verdict_code": "STRONGLY_RECOMMENDED",
+              "base_margin_pct": 38.46153846153847,
+              "min_margin_pct_in_plan": 48.717948717948715,
+              "expected_profit_delta_vnd": 3003000,
+              "expected_profit_delta_pct": 52,
+              "prob_beat_base": 1,
+              "p5_beats_base": true,
+              "stockout_risk": true,
+              "stock_utilization_pct": 1220.0522527011356,
+              "elasticity_regime": "elastic",
+              "risk_flags": [
+                "stockout_risk"
+              ]
+            },
+            "schedule_trace_days": 0,
+            "schedule_trace_endpoints": []
+          },
+          "explanation": {
+            "text": "• Nếu giữ nguyên giá cũ (97.500 VND): bán khoảng 154 món. tiền lãi 5.775.000 VND.\n• Nếu đổi giá sang 117.000 VND: dự kiến bán 154 món. tiền lãi khoảng 8.778.000 VND.\n• Khi tính cả trường hợp thuận lợi và lúc khách ngại giá, 90% khả năng tiền lãi nằm từ 8.778.000 VND đến 8.778.000 VND.\n• Gợi ý chính: Dự kiến tổng tiền lãi đạt 8.778.000 VND (+52.0% so với giữ giá cũ 5.775.000 VND) (cơ hội lãi cao hơn giá cũ là 100.0%); theo dõi lượng bán quanh 154 món.",
+            "direct_answer": null,
+            "action_verdict": "NÊN ÁP DỤNG THỬ (KHẢ QUAN)",
+            "verdict_level": "go",
+            "situation_summary": "Tiền lời hiện chiếm 38.5% trên mỗi đồng bán ra. Sức mua gần đây đang tăng 21.2%. Hàng trong kho hiện đủ bán khoảng 1.9 ngày. Khách phản ứng khá nhạy nếu bạn tăng giá mạnh.",
+            "recommendations": [
+              "Dự kiến tổng tiền lãi đạt 8.778.000 VND (+52.0% so với giữ giá cũ 5.775.000 VND) (cơ hội lãi cao hơn giá cũ là 100.0%); theo dõi lượng bán quanh 154 món.",
+              "Coi chừng cháy hàng sớm (lượng mua dự kiến bằng 1220.1% số hàng đang có): không nên giảm giá sâu khi kho đang ít; bạn nên giữ nguyên giá hoặc nhập thêm hàng trước.",
+              "Giới hạn an toàn: nếu thấy khách phản ứng mạnh quá mức -2.297% cho mỗi 1% đổi giá trong vài ngày đầu, hãy dừng lại và quay về giá cũ 97.500 VND."
+            ]
+          },
+          "fallback_reason": null,
+          "error_detail": null
+        }
+      ]
+    },
+    {
+      "agent_id": "skeptical_owner",
+      "agent_display_name": "Demanding and Skeptical Business Owner",
+      "scenario_id": "sk_extreme_bounds_rejection",
+      "dataset_id": "fashion_shop_12",
+      "intent_category": "edge_case_bounds",
+      "ground_truth_notes": "Out-of-bounds discount (-80% < -50%) and horizon (400 > 90); MUST fail closed.",
+      "active_product_id": "P01",
+      "final_action": "stop",
+      "turns": [
+        {
+          "turn_index": 1,
+          "user_action": "opening_question",
+          "question": "Giảm giá P01 80% trong 400 ngày thì sao?",
+          "agent_thought": "Guardrail hoạt động chuẩn khi bị ép biên cực đoan.",
+          "response_status": "fallback",
+          "latency_ms": 13.8,
+          "parsed_spec": {
+            "error": "Horizon 400 days is outside permitted range [7, 90] days.",
+            "fallback": "manual_form"
+          },
+          "simulation_summary": null,
+          "optimization_summary": null,
+          "explanation": null,
+          "fallback_reason": "Horizon 400 days is outside permitted range [7, 90] days.",
+          "error_detail": null,
+          "persona_observations": [
+            "Hệ thống đã chặn đúng ngưỡng vượt biên (-80% / 400 ngày)."
+          ]
+        }
+      ],
+      "raw_responses": [
+        {
+          "turn": 1,
+          "status": "fallback",
+          "parsed_spec": {
+            "error": "Horizon 400 days is outside permitted range [7, 90] days.",
+            "fallback": "manual_form"
+          },
+          "simulation": null,
+          "explanation": null,
+          "fallback_reason": "Horizon 400 days is outside permitted range [7, 90] days.",
+          "error_detail": null
+        }
+      ]
+    },
+    {
+      "agent_id": "skeptical_owner",
+      "agent_display_name": "Demanding and Skeptical Business Owner",
+      "scenario_id": "sk_zero_noop_check",
+      "dataset_id": "fashion_shop_12",
+      "intent_category": "zero_change_identity",
+      "ground_truth_notes": "At 0% price change, expected profit must match baseline profit and break-even must be null.",
+      "active_product_id": "P01",
+      "final_action": "stop",
+      "turns": [
+        {
+          "turn_index": 1,
+          "user_action": "opening_question",
+          "question": "Nếu giữ nguyên giá P01 tăng 0% trong 30 ngày thì lợi nhuận thế nào?",
+          "agent_thought": "Xác minh xong điểm gốc 0%.",
+          "response_status": "answered",
+          "latency_ms": 29.8,
+          "parsed_spec": {
+            "product_id": "P01",
+            "change_type": "price_pct",
+            "change_value": 0.0,
+            "horizon_days": 30,
+            "start_date": null,
+            "schedule": null,
+            "detected_language": "vi",
+            "question_type": "what_if_scenario",
+            "baseline_period_days": null,
+            "event_context": null,
+            "target_uplift_pct": null,
+            "assumptions_summary": null
+          },
+          "simulation_summary": {
+            "scenarios": {
+              "base": {
+                "price_vnd": 97500,
+                "qty": 154,
+                "revenue": 15015000,
+                "profit": 5775000,
+                "spend": 9240000
+              },
+              "expected": {
+                "price_vnd": 97500,
+                "qty": 154,
+                "revenue": 15015000,
+                "profit": 5775000,
+                "spend": 9240000
+              },
+              "optimistic": {
+                "price_vnd": 97500,
+                "qty": 154,
+                "revenue": 15015000,
+                "profit": 5775000,
+                "spend": 9240000
+              },
+              "pessimistic": {
+                "price_vnd": 97500,
+                "qty": 154,
+                "revenue": 15015000,
+                "profit": 5775000,
+                "spend": 9240000
+              }
+            },
+            "profit_distribution": {
+              "p5": 5775000,
+              "p50": 5775000,
+              "p95": 5775000
+            },
+            "break_even_elasticity": null,
+            "prob_beat_base": 0,
+            "advisory": {
+              "verdict_code": "CAUTIOUS_TRIAL_RECOMMENDED",
+              "base_margin_pct": 38.46153846153847,
+              "min_margin_pct_in_plan": 38.46153846153847,
+              "expected_profit_delta_vnd": 0,
+              "expected_profit_delta_pct": 0,
+              "prob_beat_base": 0,
+              "p5_beats_base": true,
+              "stockout_risk": true,
+              "stock_utilization_pct": 1538.9610389610389,
+              "elasticity_regime": "elastic",
+              "risk_flags": [
+                "stockout_risk"
+              ]
+            },
+            "schedule_trace_days": 0,
+            "schedule_trace_endpoints": []
+          },
+          "optimization_summary": null,
+          "explanation": {
+            "text": "• Nếu giữ nguyên giá cũ (97.500 VND): bán khoảng 154 món. tiền lãi 5.775.000 VND.\n• Nếu đổi giá sang 97.500 VND: dự kiến bán 154 món. tiền lãi khoảng 5.775.000 VND.\n• Khi tính cả trường hợp thuận lợi và lúc khách ngại giá, 90% khả năng tiền lãi nằm từ 5.775.000 VND đến 5.775.000 VND.\n• Gợi ý chính: Dự kiến tổng tiền lãi đạt 5.775.000 VND (+0.0% so với giữ giá cũ 5.775.000 VND) (cơ hội lãi cao hơn giá cũ là 0.0%); theo dõi lượng bán quanh 154 món.",
+            "direct_answer": null,
+            "action_verdict": "CÓ THỂ THỬ NGHIỆM NHỎ TRƯỚC",
+            "verdict_level": "caution",
+            "situation_summary": "Tiền lời hiện chiếm 38.5% trên mỗi đồng bán ra. Sức mua gần đây đang tăng 21.2%. Hàng trong kho hiện đủ bán khoảng 1.9 ngày. Khách phản ứng khá nhạy nếu bạn tăng giá mạnh.",
+            "recommendations": [
+              "Dự kiến tổng tiền lãi đạt 5.775.000 VND (+0.0% so với giữ giá cũ 5.775.000 VND) (cơ hội lãi cao hơn giá cũ là 0.0%); theo dõi lượng bán quanh 154 món.",
+              "Coi chừng cháy hàng sớm (lượng mua dự kiến bằng 1539.0% số hàng đang có): không nên giảm giá sâu khi kho đang ít; bạn nên giữ nguyên giá hoặc nhập thêm hàng trước."
+            ]
+          },
+          "fallback_reason": null,
+          "error_detail": null,
+          "persona_observations": [
+            "Chuẩn xác: mức 0% khớp hoàn toàn giữa expected và baseline."
+          ]
+        }
+      ],
+      "raw_responses": [
+        {
+          "turn": 1,
+          "status": "answered",
+          "parsed_spec": {
+            "product_id": "P01",
+            "change_type": "price_pct",
+            "change_value": 0.0,
+            "horizon_days": 30,
+            "start_date": null,
+            "schedule": null,
+            "detected_language": "vi",
+            "question_type": "what_if_scenario",
+            "baseline_period_days": null,
+            "event_context": null,
+            "target_uplift_pct": null,
+            "assumptions_summary": null
+          },
+          "simulation": {
+            "scenarios": {
+              "base": {
+                "price_vnd": 97500,
+                "qty": 154,
+                "revenue": 15015000,
+                "profit": 5775000,
+                "spend": 9240000
+              },
+              "expected": {
+                "price_vnd": 97500,
+                "qty": 154,
+                "revenue": 15015000,
+                "profit": 5775000,
+                "spend": 9240000
+              },
+              "optimistic": {
+                "price_vnd": 97500,
+                "qty": 154,
+                "revenue": 15015000,
+                "profit": 5775000,
+                "spend": 9240000
+              },
+              "pessimistic": {
+                "price_vnd": 97500,
+                "qty": 154,
+                "revenue": 15015000,
+                "profit": 5775000,
+                "spend": 9240000
+              }
+            },
+            "profit_distribution": {
+              "p5": 5775000,
+              "p50": 5775000,
+              "p95": 5775000
+            },
+            "break_even_elasticity": null,
+            "prob_beat_base": 0,
+            "advisory": {
+              "verdict_code": "CAUTIOUS_TRIAL_RECOMMENDED",
+              "base_margin_pct": 38.46153846153847,
+              "min_margin_pct_in_plan": 38.46153846153847,
+              "expected_profit_delta_vnd": 0,
+              "expected_profit_delta_pct": 0,
+              "prob_beat_base": 0,
+              "p5_beats_base": true,
+              "stockout_risk": true,
+              "stock_utilization_pct": 1538.9610389610389,
+              "elasticity_regime": "elastic",
+              "risk_flags": [
+                "stockout_risk"
+              ]
+            },
+            "schedule_trace_days": 0,
+            "schedule_trace_endpoints": []
+          },
+          "explanation": {
+            "text": "• Nếu giữ nguyên giá cũ (97.500 VND): bán khoảng 154 món. tiền lãi 5.775.000 VND.\n• Nếu đổi giá sang 97.500 VND: dự kiến bán 154 món. tiền lãi khoảng 5.775.000 VND.\n• Khi tính cả trường hợp thuận lợi và lúc khách ngại giá, 90% khả năng tiền lãi nằm từ 5.775.000 VND đến 5.775.000 VND.\n• Gợi ý chính: Dự kiến tổng tiền lãi đạt 5.775.000 VND (+0.0% so với giữ giá cũ 5.775.000 VND) (cơ hội lãi cao hơn giá cũ là 0.0%); theo dõi lượng bán quanh 154 món.",
+            "direct_answer": null,
+            "action_verdict": "CÓ THỂ THỬ NGHIỆM NHỎ TRƯỚC",
+            "verdict_level": "caution",
+            "situation_summary": "Tiền lời hiện chiếm 38.5% trên mỗi đồng bán ra. Sức mua gần đây đang tăng 21.2%. Hàng trong kho hiện đủ bán khoảng 1.9 ngày. Khách phản ứng khá nhạy nếu bạn tăng giá mạnh.",
+            "recommendations": [
+              "Dự kiến tổng tiền lãi đạt 5.775.000 VND (+0.0% so với giữ giá cũ 5.775.000 VND) (cơ hội lãi cao hơn giá cũ là 0.0%); theo dõi lượng bán quanh 154 món.",
+              "Coi chừng cháy hàng sớm (lượng mua dự kiến bằng 1539.0% số hàng đang có): không nên giảm giá sâu khi kho đang ít; bạn nên giữ nguyên giá hoặc nhập thêm hàng trước."
+            ]
+          },
+          "fallback_reason": null,
+          "error_detail": null
+        }
+      ]
+    }
+  ]
+}

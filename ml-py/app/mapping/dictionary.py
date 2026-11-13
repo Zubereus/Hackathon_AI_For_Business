@@ -40,7 +40,7 @@ CANONICAL_DICTIONARY: Dict[str, List[str]] = {
     "product_id": [
         "product id", "ma san pham", "ma sp", "ma hang", "ma mat hang", "sku",
         "sku id", "item id", "item code", "product code", "prod id", "material id",
-        "sku cd", "item cd", "prod cd", "part no", "barcode", "upc", "ean",
+        "sku cd", "item cd", "prod cd", "part no", "barcode", "upc", "ean", "stock code",
     ],
     "product_name": [
         "product name", "ten san pham", "ten sp", "ten hang", "ten mat hang",
@@ -78,6 +78,26 @@ CANONICAL_DICTIONARY: Dict[str, List[str]] = {
         "promo", "khuyen mai", "km", "giam gia", "chuong trinh khuyen mai",
         "uu dai", "promotion", "discount", "discount flag", "is promo",
         "promo flag", "promotion flag", "promo flg", "disc flg",
+    ],
+    "marketing_cost": [
+        "marketing cost", "marketing cost vnd", "chi phi marketing", "chi phi mkt",
+        "chi phi quang cao", "quang cao", "ngan sach quang cao", "ads", "ads cost",
+        "ad spend", "mkt cost", "mkt", "marketing", "phi quang cao", "tien quang cao",
+    ],
+    "labor_cost": [
+        "labor cost", "labor cost vnd", "nhan cong", "chi phi nhan cong",
+        "tien luong", "luong nhan vien", "chi phi nhan su", "nhan su",
+        "staff cost", "payroll", "wages", "tien cong",
+    ],
+    "operating_cost": [
+        "operating cost", "operating cost vnd", "chi phi van hanh", "van hanh",
+        "mat bang", "thue mat bang", "phi san", "dong goi", "chi phi dong goi",
+        "overhead", "operating expense", "opex", "platform fee",
+        "fulfillment cost", "packaging cost", "rent", "phi van hanh",
+    ],
+    "fixed_cost": [
+        "fixed cost", "fixed cost vnd", "chi phi co dinh", "chi phi ngoai",
+        "chi phi khac", "other cost", "fixed overhead", "other expenses",
     ],
 }
 

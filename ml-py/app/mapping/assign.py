@@ -20,7 +20,12 @@ import numpy as np
 from scipy.optimize import linear_sum_assignment
 
 from app.ingest.profile import ColumnProfile
-from app.mapping.scoring import combine_scores, compute_name_score, compute_value_score
+from app.mapping.scoring import (
+    clean_header_tokens,
+    combine_scores,
+    compute_name_score,
+    compute_value_score,
+)
 
 
 CANONICAL_FIELDS: List[str] = [
@@ -33,9 +38,45 @@ CANONICAL_FIELDS: List[str] = [
     "quantity",
     "stock",
     "promo",
+    "marketing_cost",
+    "labor_cost",
+    "operating_cost",
+    "fixed_cost",
 ]
 
 REQUIRED_FIELDS: List[str] = ["date", "quantity", "price"]
+EXPENSE_FIELDS = {"marketing_cost", "labor_cost", "operating_cost", "fixed_cost"}
+TRANSACTION_ID_TOKENS = {
+    "order",
+    "orderid",
+    "invoice",
+    "invoiceid",
+    "receipt",
+    "receiptid",
+    "txn",
+    "txnid",
+    "transaction",
+    "bill",
+    "voucher",
+    "madon",
+    "hoadon",
+    "donhang",
+    "phieu",
+}
+PRODUCT_KEY_HINTS = {"product", "sku", "item", "sp", "san", "mathang"}
+
+
+def _is_transaction_id_header(header: str) -> bool:
+    """Return True when header identifies an order/receipt/invoice rather than a SKU."""
+    cleaned = clean_header_tokens(header)
+    tokens = set(cleaned.split())
+    compact = cleaned.replace(" ", "")
+    if any(p in tokens for p in PRODUCT_KEY_HINTS) or "mathang" in compact or "sanpham" in compact:
+        return False
+    return bool(
+        tokens.intersection(TRANSACTION_ID_TOKENS)
+        or any(k in compact for k in ("orderid", "invoice", "receipt", "txn", "hoadon", "donhang", "madon"))
+    )
 
 AUTO_THRESHOLD: float = 0.55
 CONFIRM_THRESHOLD: float = 0.35
@@ -78,7 +119,14 @@ def resolve_column_mappings(
             name_s = compute_name_score(col, field)
             val_s = compute_value_score(prof, field)
             emb_s = embed_scores.get((field, col)) if embed_scores else None
-            score_matrix[i, j] = combine_scores(name_s, val_s, emb_s)
+            combined = combine_scores(name_s, val_s, emb_s)
+            # Prevent unrelated numeric columns (e.g. order_id) from auto-mapping to external expense fields
+            if field in EXPENSE_FIELDS and name_s < 0.45:
+                combined = min(combined, 0.25)
+            # Prevent order/receipt/invoice IDs from hijacking product_id / product_name
+            if field in ("product_id", "product_name") and _is_transaction_id_header(col):
+                combined = min(combined, 0.20)
+            score_matrix[i, j] = combined
 
     # 2. Hungarian assignment maximizing total confidence
     # linear_sum_assignment minimizes cost, so cost = 1.0 - score

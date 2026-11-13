@@ -138,6 +138,10 @@ def transform_to_canonical(
     stock_col = mapping.get("stock")
     promo_col = mapping.get("promo")
     cat_col = mapping.get("category")
+    mkt_col = mapping.get("marketing_cost")
+    labor_col = mapping.get("labor_cost")
+    op_col = mapping.get("operating_cost")
+    fixed_col = mapping.get("fixed_cost")
 
     if not date_col or not price_col or not qty_col:
         raise ValueError("Missing mandatory fields: 'date', 'price', and 'quantity' must be mapped.")
@@ -229,6 +233,25 @@ def transform_to_canonical(
     else:
         df_clean["promo"] = 0
 
+    # Optional external operating cost columns (marketing, labor, operating, other fixed)
+    expense_col_map = {
+        "marketing_cost": mkt_col,
+        "labor_cost": labor_col,
+        "operating_cost": op_col,
+        "fixed_cost": fixed_col,
+    }
+    present_expense_cols: List[str] = []
+    for canon_name, src_name in expense_col_map.items():
+        if src_name:
+            exp_mult = (
+                1000.0
+                if (price_multiplier != 1.0 or any(kw in strip_accents(str(src_name)).lower() for kw in ("nghin", "ngan", "(k)", "k vnd")))
+                else 1.0
+            )
+            parsed_exp = parse_numeric_series(df[src_name], locale=locale) * exp_mult
+            df_clean[canon_name] = np.maximum(parsed_exp.fillna(0.0), 0.0)
+            present_expense_cols.append(canon_name)
+
     # Drop invalid rows (e.g. unparsable dates)
     valid_mask = df_clean["date"].notna() & (df_clean["price"] > 0)
     df_clean = df_clean[valid_mask].copy()
@@ -253,6 +276,8 @@ def transform_to_canonical(
         }
         if stock_col:
             agg_dict["stock"] = "last"
+        for exp_c in present_expense_cols:
+            agg_dict[exp_c] = "sum"
 
         grouped = df_clean.groupby(["date", "product_id"], as_index=False).agg(agg_dict)
         # Recompute weighted unit price and unit cost
@@ -274,6 +299,8 @@ def transform_to_canonical(
     canonical["price"] = canonical["price"].round().astype(int)
     canonical["unit_cost"] = canonical["unit_cost"].round().astype(int)
     canonical["quantity"] = canonical["quantity"].round().astype(int)
+    for exp_c in present_expense_cols:
+        canonical[exp_c] = canonical[exp_c].round().astype(int)
 
     # Sort canonically
     canonical = canonical.sort_values(by=["date", "product_id"]).reset_index(drop=True)
@@ -282,10 +309,11 @@ def transform_to_canonical(
     n_prods = int(canonical["product_id"].nunique())
     price_sds = (
         canonical.groupby("product_id")["price"]
-        .agg(lambda p: float(np.log(p[p > 0]).std()))
+        .agg(lambda p: float(np.log(p[p > 0]).std()) if len(p[p > 0]) >= 2 else np.nan)
         .tolist()
     )
-    mean_price_sd = float(np.nanmean(price_sds)) if price_sds else 0.0
+    valid_price_sds = [sd for sd in price_sds if not np.isnan(sd)]
+    mean_price_sd = float(np.mean(valid_price_sds)) if valid_price_sds else 0.0
 
     quality_report = {
         "n_rows": len(canonical),

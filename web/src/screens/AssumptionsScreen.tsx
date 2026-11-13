@@ -1,15 +1,25 @@
 import React from 'react';
 import { Notice, PageHeader } from '../components/Page';
-import { describeWarning, formatInt, formatNum, formatVND, STRINGS } from '../i18n';
+import {
+  describeWarning,
+  formatCompactVND,
+  formatInt,
+  formatNum,
+  formatVND,
+  getStrings,
+  Lang,
+} from '../i18n';
 import { ProductElasticity } from '../types';
 
 interface AssumptionsScreenProps {
+  lang?: Lang;
+  compact?: boolean;
   products: ProductElasticity[];
   onUpdateProduct: (productId: string, patch: Partial<ProductElasticity>) => void;
-  onProceedToWhatIf: () => void;
+  onProceedToWhatIf?: () => void;
 }
 
-function sampleQuantile(samples: number[], q: number): number | null {
+export function sampleQuantile(samples: number[], q: number): number | null {
   if (!samples || samples.length === 0) return null;
   const sorted = [...samples].sort((a, b) => a - b);
   const idx = Math.min(sorted.length - 1, Math.max(0, Math.round(q * (sorted.length - 1))));
@@ -26,12 +36,12 @@ function scalePct(v: number): number {
   return Math.min(100, Math.max(0, ((v - SCALE_MIN) / (SCALE_MAX - SCALE_MIN)) * 100));
 }
 
-const RangePlot: React.FC<{ low: number; high: number; median: number; label: string }> = ({
-  low,
-  high,
-  median,
-  label,
-}) => {
+export const RangePlot: React.FC<{
+  low: number;
+  high: number;
+  median: number;
+  label: string;
+}> = ({ low, high, median, label }) => {
   const left = scalePct(Math.min(low, high));
   const right = scalePct(Math.max(low, high));
   return (
@@ -54,37 +64,55 @@ const RangePlot: React.FC<{ low: number; high: number; median: number; label: st
 };
 
 export const AssumptionsScreen: React.FC<AssumptionsScreenProps> = ({
+  lang = 'en',
+  compact = false,
   products,
   onUpdateProduct,
   onProceedToWhatIf,
 }) => {
+  const isVi = lang === 'vi';
+  const strings = getStrings(lang);
+
   return (
     <div>
-      <PageHeader title="Assumptions">
-        Check how sensitive each product is to price, and correct costs and stock where the data
-        is wrong. Your edits carry into the simulation.
-      </PageHeader>
+      {!compact && (
+        <PageHeader
+          title={isVi ? 'Chỉnh giá nhập, chi phí & tồn kho từng món' : 'Product costs & inventory'}
+        >
+          {isVi
+            ? 'Kiểm tra lại xem giá nhập vốn và số hàng tồn trong kho đã đúng thực tế shop chưa. Mọi chỉnh sửa sẽ áp dụng thẳng vào kết quả tính thử.'
+            : 'Check unit costs and stock caps for each item. Any edits carry straight into your simulation.'}
+        </PageHeader>
+      )}
 
       <Notice>
-        {STRINGS.disclaimers.observational} Sensitivity (elasticity) of −1.2 means a 1% price rise
-        lowers units sold by about 1.2%.
+        {strings.disclaimers.observational}{' '}
+        {isVi
+          ? 'Mẹo đọc cột "Phản ứng khách": −1,2 nghĩa là khi tăng giá 1%, lượng khách mua sẽ giảm khoảng 1,2%.'
+          : 'How to read "Buyer reaction": −1.2 means a 1% price hike lowers units sold by about 1.2%.'}
       </Notice>
 
       {products.length === 0 ? (
-        <p className="mt-8 text-muted">
-          No products yet. Go back to Upload data and load a file or a sample dataset.
+        <p className="mt-6 text-muted">
+          {isVi
+            ? 'Chưa có sản phẩm nào. Hãy bấm "Nạp file bán hàng (CSV)" ở thanh trên.'
+            : 'No products yet. Open Load Sales Data (CSV) above to start.'}
         </p>
       ) : (
-        <div className="panel mt-8 overflow-hidden">
+        <div className="panel mt-5 overflow-hidden">
           <div className="relative overflow-x-auto">
             <table className="data-table min-w-[980px]">
               <thead className="bg-sunken">
                 <tr>
                   <th scope="col" className="pl-5">
-                    Product
+                    {isVi ? 'Món hàng & Giá bán' : 'Product'}
                   </th>
                   <th scope="col" className="w-[260px]">
-                    <div>Price sensitivity, median and 90% range</div>
+                    <div>
+                      {isVi
+                        ? 'Phản ứng khách khi tăng 1% giá (khoảng 90%)'
+                        : 'Buyer reaction per +1% price (90% range)'}
+                    </div>
                     <div className="relative mt-1 h-4 font-normal">
                       {SCALE_TICKS.map((t) => (
                         <span
@@ -92,20 +120,20 @@ export const AssumptionsScreen: React.FC<AssumptionsScreenProps> = ({
                           className="absolute -translate-x-1/2 text-[12px]"
                           style={{ left: `${scalePct(t)}%` }}
                         >
-                          {formatNum(t, 0)}
+                          {formatNum(t, 0)}%
                         </span>
                       ))}
                     </div>
                   </th>
-                  <th scope="col">Data checks</th>
-                  <th scope="col" className="w-[130px]">
-                    Unit cost (₫)
+                  <th scope="col">{isVi ? 'Độ tin cậy số liệu' : 'Data reliability'}</th>
+                  <th scope="col" className="w-[140px]">
+                    {isVi ? 'Giá nhập 1 món (₫)' : 'Unit cost (₫)'}
                   </th>
-                  <th scope="col" className="w-[130px]">
-                    Fixed cost (₫)
+                  <th scope="col" className="w-[175px]">
+                    {isVi ? 'Chi phí ngoài / kỳ (₫)' : 'Operating overhead (₫)'}
                   </th>
-                  <th scope="col" className="w-[150px] pr-5">
-                    Stock limit (units)
+                  <th scope="col" className="w-[155px] pr-5">
+                    {isVi ? 'Giới hạn tồn kho' : 'Stock cap (units)'}
                   </th>
                 </tr>
               </thead>
@@ -122,8 +150,12 @@ export const AssumptionsScreen: React.FC<AssumptionsScreenProps> = ({
                   ];
                   const rangeText =
                     low !== null && high !== null
-                      ? `${formatNum(low)} to ${formatNum(high)}`
-                      : 'range unavailable';
+                      ? isVi
+                        ? `${formatNum(low)}% đến ${formatNum(high)}%`
+                        : `${formatNum(low)}% to ${formatNum(high)}%`
+                      : isVi
+                        ? 'chưa có dải dao động'
+                        : 'range unavailable';
 
                   return (
                     <tr key={prod.product_id}>
@@ -131,18 +163,36 @@ export const AssumptionsScreen: React.FC<AssumptionsScreenProps> = ({
                         <div className="font-semibold">{prod.product_name}</div>
                         <div className="hint">
                           {prod.product_id} · {formatVND(prod.current_price_vnd)} ·{' '}
-                          {formatInt(prod.baseline_qty_per_period)} units per period
+                          {formatInt(prod.baseline_qty_per_period)}{' '}
+                          {isVi ? 'món / kỳ' : 'units / period'}
                         </div>
                         {prod.price_variation_sd !== undefined && (
                           <div className="hint">
-                            Price variation {prod.price_variation_sd.toFixed(3)}
+                            {prod.business_context?.base_margin_pct !== undefined &&
+                              prod.business_context?.base_margin_pct !== null && (
+                                <>
+                                  {isVi ? 'Lãi gộp' : 'Margin'}{' '}
+                                  {prod.business_context.base_margin_pct.toFixed(1)}%
+                                </>
+                              )}
+                            {prod.business_context?.stock_days_cover !== undefined &&
+                              prod.business_context?.stock_days_cover !== null && (
+                                <>
+                                  {' · '}
+                                  {isVi ? 'Kho đủ bán' : 'Stock covers'}{' '}
+                                  {prod.business_context.stock_days_cover.toFixed(0)}{' '}
+                                  {isVi ? 'ngày' : 'd'}
+                                </>
+                              )}
                           </div>
                         )}
                       </td>
 
                       <td>
                         <div>
-                          <span className="font-semibold">{formatNum(prod.elasticity_median)}</span>{' '}
+                          <span className="font-semibold tabular-nums">
+                            {formatNum(prod.elasticity_median)}%
+                          </span>{' '}
                           <span className="text-muted">({rangeText})</span>
                         </div>
                         <RangePlot
@@ -153,14 +203,16 @@ export const AssumptionsScreen: React.FC<AssumptionsScreenProps> = ({
                         />
                       </td>
 
-                      <td className="min-w-[170px]">
+                      <td className="min-w-[180px]">
                         {checks.length === 0 ? (
-                          <span className="text-muted">No issues</span>
+                          <span className="text-good">
+                            {isVi ? 'Số liệu rõ ràng, đáng tin cậy' : 'Clean & reliable'}
+                          </span>
                         ) : (
                           <ul className="space-y-1">
                             {checks.map((w) => (
-                              <li key={w} className="text-warn">
-                                {describeWarning(w)}
+                              <li key={w} className="text-[13px] text-warn">
+                                {describeWarning(w, lang)}
                               </li>
                             ))}
                           </ul>
@@ -203,6 +255,13 @@ export const AssumptionsScreen: React.FC<AssumptionsScreenProps> = ({
                           }
                           className="field field-num"
                         />
+                        {prod.cost_breakdown && (
+                          <div className="hint mt-1 text-[11px] leading-tight">
+                            {isVi
+                              ? `MKT ${formatCompactVND(prod.cost_breakdown.marketing_vnd)} · Nhân công ${formatCompactVND(prod.cost_breakdown.labor_vnd)} · Vận hành ${formatCompactVND(prod.cost_breakdown.operating_vnd)}`
+                              : `Ads ${formatCompactVND(prod.cost_breakdown.marketing_vnd)} · Labor ${formatCompactVND(prod.cost_breakdown.labor_vnd)} · Ops ${formatCompactVND(prod.cost_breakdown.operating_vnd)}`}
+                          </div>
+                        )}
                       </td>
 
                       <td className="pr-5">
@@ -218,7 +277,7 @@ export const AssumptionsScreen: React.FC<AssumptionsScreenProps> = ({
                             }
                             className="h-3.5 w-3.5 accent-[rgb(var(--accent))]"
                           />
-                          <span>Limit sales</span>
+                          <span>{isVi ? 'Bán tối đa theo kho' : 'Cap by stock'}</span>
                         </label>
                         <label htmlFor={`stock-${prod.product_id}`} className="sr-only">
                           Stock limit for {prod.product_name}
@@ -229,7 +288,7 @@ export const AssumptionsScreen: React.FC<AssumptionsScreenProps> = ({
                           min={0}
                           disabled={!isCapped}
                           value={prod.stock_available ?? ''}
-                          placeholder="No limit"
+                          placeholder={isVi ? 'Không giới hạn' : 'No limit'}
                           onChange={(e) =>
                             onUpdateProduct(prod.product_id, {
                               stock_available:
@@ -250,16 +309,24 @@ export const AssumptionsScreen: React.FC<AssumptionsScreenProps> = ({
         </div>
       )}
 
-      <div className="mt-8 flex justify-end">
-        <button
-          type="button"
-          disabled={products.length === 0}
-          onClick={onProceedToWhatIf}
-          className="btn btn-primary"
-        >
-          Continue to simulation
-        </button>
-      </div>
+      {onProceedToWhatIf && (
+        <div className="mt-6 flex justify-end">
+          <button
+            type="button"
+            disabled={products.length === 0}
+            onClick={onProceedToWhatIf}
+            className="btn btn-primary"
+          >
+            {compact
+              ? isVi
+                ? 'Áp dụng & tính lại ngay'
+                : 'Done & re-simulate'
+              : isVi
+                ? 'Tiếp tục tính thử'
+                : 'Continue to simulation'}
+          </button>
+        </div>
+      )}
     </div>
   );
 };

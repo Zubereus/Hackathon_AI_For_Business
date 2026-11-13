@@ -4,10 +4,26 @@
   "type": "object",
   "properties": {
     "product_id": { "type": "string" },
-    "change_type": { "type": "string", "enum": ["price_pct"] },
+    "change_type": { "type": "string", "enum": ["price_pct", "price_schedule"] },
     "change_value": { "type": "number", "minimum": -50.0, "maximum": 100.0 },
     "horizon_days": { "type": "integer", "minimum": 7, "maximum": 90, "default": 30 },
-    "start_date": { "type": ["string", "null"] }
+    "start_date": { "type": ["string", "null"] },
+    "schedule": {
+      "type": ["array", "null"],
+      "items": {
+        "type": "object",
+        "properties": {
+          "days": { "type": "integer", "minimum": 1, "maximum": 90 },
+          "start_change_pct": { "type": "number", "minimum": -50.0, "maximum": 100.0 },
+          "daily_step_pct": { "type": "number", "minimum": -20.0, "maximum": 20.0 },
+          "relative_to_prev": { "type": "boolean" },
+          "compound_daily_step": { "type": "boolean" },
+          "step_on_first_day": { "type": "boolean" }
+        },
+        "required": ["days"]
+      }
+    },
+    "detected_language": { "type": ["string", "null"], "enum": ["en", "vi", null] }
   },
   "required": ["product_id", "change_type", "change_value"]
 }

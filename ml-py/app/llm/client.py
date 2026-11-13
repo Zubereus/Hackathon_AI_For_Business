@@ -29,6 +29,51 @@ DEFAULT_TIMEOUT_SEC: float = 10.0
 MAX_RETRIES: int = 1
 
 
+def _load_dotenv_if_present() -> None:
+    """Populate unset env vars from local .env outside pytest runs."""
+    if os.environ.get("PYTEST_CURRENT_TEST"):
+        return
+    here = os.path.dirname(os.path.abspath(__file__))
+    candidates = [
+        os.path.join(os.getcwd(), ".env"),
+        os.path.abspath(os.path.join(here, "..", "..", ".env")),
+        os.path.abspath(os.path.join(here, "..", "..", "..", ".env")),
+    ]
+    for path in candidates:
+        if not os.path.isfile(path):
+            continue
+        try:
+            with open(path, "r", encoding="utf-8") as fh:
+                for raw_line in fh:
+                    line = raw_line.strip()
+                    if not line or line.startswith("#") or "=" not in line:
+                        continue
+                    key, val = line.split("=", 1)
+                    key = key.strip()
+                    if key.startswith("export "):
+                        key = key[7:].strip()
+                    val = val.strip().strip('"').strip("'")
+                    if key and key not in os.environ and val:
+                        os.environ[key] = val
+        except OSError:
+            continue
+        break
+
+
+def _resolve_api_key_and_hint() -> tuple[str, str]:
+    """Return first configured API key and provider hint without logging values."""
+    for env_name, hint in (
+        ("LLM_API_KEY", ""),
+        ("AI_API_KEY", ""),
+        ("GEMINI_API_KEY", "gemini"),
+        ("OPENAI_API_KEY", "openai"),
+    ):
+        val = os.environ.get(env_name, "").strip()
+        if val:
+            return val, hint
+    return "", ""
+
+
 class LLMClient:
     """Provider-agnostic HTTP client for structured LLM inference."""
 
@@ -40,9 +85,23 @@ class LLMClient:
         base_url: Optional[str] = None,
         timeout: float = DEFAULT_TIMEOUT_SEC,
     ) -> None:
-        self.api_key = api_key if api_key is not None else os.environ.get("LLM_API_KEY", "").strip()
+        _load_dotenv_if_present()
+        env_key, hint_provider = _resolve_api_key_and_hint()
+        self.api_key = api_key.strip() if api_key is not None else env_key
+
         raw_provider = provider if provider is not None else os.environ.get("LLM_PROVIDER", "")
-        self.provider = raw_provider.strip().lower() if raw_provider else ("openai" if self.api_key else "none")
+        clean_provider = raw_provider.strip().lower()
+        if clean_provider:
+            self.provider = clean_provider
+        elif not self.api_key:
+            self.provider = "none"
+        elif hint_provider:
+            self.provider = hint_provider
+        elif self.api_key.startswith("AIza"):
+            self.provider = "gemini"
+        else:
+            self.provider = "openai"
+
         self.model = model or os.environ.get(
             "LLM_MODEL",
             "gemini-2.0-flash" if self.provider == "gemini" else "gpt-4o-mini",

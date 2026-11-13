@@ -22,6 +22,13 @@ export const SAMPLE_CSV_DATASETS: SampleCsvDataset[] = [
     group: 'sales',
   },
   {
+    id: 'smb_retail_full_ops_10',
+    title: 'SMB Retail with Operating Costs (Marketing, Labor & Overhead)',
+    description: 'Ten shop SKUs including daily ad spend, staff payroll, rent, platform & packaging costs.',
+    csvPath: 'out/smb_retail_full_ops_10/sales_synthetic_vn.csv',
+    group: 'sales',
+  },
+  {
     id: 'grocery_fmcg_15',
     title: 'Grocery & FMCG Dataset',
     description: 'Fifteen products with lower price sensitivity and strong Tết seasonality.',

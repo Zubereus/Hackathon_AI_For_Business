@@ -25,43 +25,59 @@
 
 /* Colour tokens as RGB triplets so Tailwind can apply opacity. */
 :root {
-  --paper: 244 245 246;
+  --paper: 251 248 243;
   --surface: 255 255 255;
-  --sunken: 237 239 241;
-  --ink: 20 24 28;
-  --muted: 86 96 105;
-  --rule: 217 221 225;
-  --rule-strong: 176 184 192;
-  --accent: 14 90 100;
+  --sunken: 243 239 231;
+  --ink: 23 28 38;
+  --muted: 82 96 113;
+  --rule: 228 221 208;
+  --rule-strong: 200 190 176;
+  --accent: 12 143 106;
+  --accent-bg: 220 246 236;
   --accent-ink: 255 255 255;
-  --good: 29 107 67;
-  --good-bg: 231 243 236;
-  --bad: 166 43 43;
-  --bad-bg: 248 233 232;
-  --warn: 138 90 0;
-  --warn-bg: 251 241 220;
-  --chart-above: 14 90 100;
-  --chart-below: 176 122 24;
+  --cobalt: 37 99 235;
+  --cobalt-bg: 224 237 255;
+  --coral: 229 86 53;
+  --coral-bg: 255 233 227;
+  --indigo: 79 70 229;
+  --violet: 124 58 237;
+  --violet-bg: 237 232 255;
+  --good: 14 131 84;
+  --good-bg: 220 252 231;
+  --bad: 201 42 55;
+  --bad-bg: 254 226 226;
+  --warn: 180 83 9;
+  --warn-bg: 254 243 199;
+  --chart-above: 12 143 106;
+  --chart-below: 217 119 6;
 }
 
 .dark {
-  --paper: 15 19 22;
-  --surface: 21 26 30;
-  --sunken: 27 33 38;
-  --ink: 231 234 236;
-  --muted: 152 162 171;
-  --rule: 38 45 51;
-  --rule-strong: 68 78 88;
-  --accent: 92 184 196;
-  --accent-ink: 11 20 23;
-  --good: 108 203 149;
-  --good-bg: 22 40 31;
-  --bad: 240 138 132;
-  --bad-bg: 48 26 26;
-  --warn: 227 182 90;
-  --warn-bg: 44 36 20;
-  --chart-above: 92 184 196;
-  --chart-below: 214 160 62;
+  --paper: 14 20 27;
+  --surface: 22 30 41;
+  --sunken: 30 41 55;
+  --ink: 243 246 250;
+  --muted: 158 173 192;
+  --rule: 43 55 72;
+  --rule-strong: 71 88 110;
+  --accent: 45 212 159;
+  --accent-bg: 16 54 45;
+  --accent-ink: 9 25 22;
+  --cobalt: 96 165 250;
+  --cobalt-bg: 23 45 79;
+  --coral: 251 133 103;
+  --coral-bg: 66 31 28;
+  --indigo: 129 140 248;
+  --violet: 167 139 250;
+  --violet-bg: 48 36 77;
+  --good: 52 211 153;
+  --good-bg: 16 52 40;
+  --bad: 248 113 113;
+  --bad-bg: 60 25 30;
+  --warn: 251 191 36;
+  --warn-bg: 56 42 18;
+  --chart-above: 45 212 159;
+  --chart-below: 251 191 36;
 }
 
 @layer base {
@@ -72,7 +88,7 @@
     color-scheme: dark;
   }
   body {
-    @apply bg-paper font-sans text-[15px] leading-[1.55] text-ink antialiased;
+    @apply bg-paper font-sans text-[15px] leading-[1.58] text-ink antialiased;
     min-height: 100vh;
   }
   h1,
@@ -101,54 +117,57 @@
   }
 
   .field {
-    @apply w-full rounded border border-rule-strong bg-surface px-2.5 py-1.5 text-[14px] text-ink placeholder:text-muted;
+    @apply w-full rounded-lg border border-rule-strong bg-surface px-3 py-2 text-[14px] text-ink placeholder:text-muted transition-colors focus:border-accent;
   }
   .field:disabled {
     @apply cursor-not-allowed bg-sunken text-muted;
   }
   .field-num {
-    @apply text-right;
+    @apply text-right tabular-nums;
   }
 
   .btn {
-    @apply inline-flex items-center justify-center rounded px-4 py-2 text-[14px] font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50;
+    @apply inline-flex items-center justify-center rounded-lg px-4 py-2 text-[14px] font-semibold transition-all duration-150 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50;
   }
   .btn-primary {
-    @apply bg-accent text-accent-ink hover:bg-accent/90;
+    @apply bg-accent text-accent-ink hover:bg-accent/90 shadow-sm;
   }
   .btn-secondary {
-    @apply border border-rule-strong bg-surface text-ink hover:bg-sunken;
+    @apply border border-rule-strong bg-surface text-ink hover:bg-sunken shadow-sm;
   }
   .btn-quiet {
-    @apply px-2 py-1 text-[13px] font-medium text-muted hover:text-ink;
+    @apply rounded-lg px-2.5 py-1.5 text-[13px] font-medium text-muted transition-colors hover:bg-sunken hover:text-ink;
   }
 
   .panel {
-    @apply rounded-md border border-rule bg-surface;
+    @apply rounded-xl border border-rule bg-surface shadow-[0_2px_8px_rgba(23,28,38,0.04)];
+  }
+  .panel-interactive {
+    @apply rounded-xl border border-rule bg-surface shadow-[0_2px_8px_rgba(23,28,38,0.04)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_6px_18px_rgba(23,28,38,0.07)];
   }
 
   .tag {
-    @apply inline-flex items-center gap-1 rounded border px-1.5 py-px text-[12px] font-medium leading-5;
+    @apply inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 text-[12px] font-medium leading-5;
   }
 
   .data-table {
     @apply w-full border-collapse text-[14px];
   }
   .data-table th {
-    @apply border-b border-rule-strong px-3 py-2 text-left text-[13px] font-medium text-muted;
+    @apply border-b border-rule-strong px-3 py-2.5 text-left text-[13px] font-medium text-muted;
   }
   .data-table td {
-    @apply border-b border-rule px-3 py-2.5 align-top;
+    @apply border-b border-rule px-3 py-3 align-top;
   }
   .data-table tbody th {
-    @apply border-b border-rule px-3 py-2.5 text-left align-top text-[14px] font-normal text-ink;
+    @apply border-b border-rule px-3 py-3 text-left align-top text-[14px] font-normal text-ink;
   }
   .data-table tbody tr:last-child td,
   .data-table tbody tr:last-child th {
     @apply border-b-0;
   }
   .data-table .num {
-    @apply text-right;
+    @apply text-right tabular-nums;
   }
 }
 
@@ -158,27 +177,27 @@ input[type='range'] {
   appearance: none;
   background: rgb(var(--rule-strong));
   border-radius: 9999px;
-  height: 3px;
+  height: 4px;
   outline-offset: 6px;
 }
 input[type='range']::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 16px;
-  height: 16px;
+  width: 17px;
+  height: 17px;
   border-radius: 50%;
   background: rgb(var(--accent));
   border: 2px solid rgb(var(--surface));
-  box-shadow: 0 0 0 1px rgb(var(--accent));
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), 0 0 0 1px rgb(var(--accent));
   cursor: pointer;
 }
 input[type='range']::-moz-range-thumb {
-  width: 14px;
-  height: 14px;
+  width: 15px;
+  height: 15px;
   border-radius: 50%;
   background: rgb(var(--accent));
   border: 2px solid rgb(var(--surface));
-  box-shadow: 0 0 0 1px rgb(var(--accent));
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), 0 0 0 1px rgb(var(--accent));
   cursor: pointer;
 }
 

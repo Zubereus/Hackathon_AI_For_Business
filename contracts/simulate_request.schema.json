@@ -25,7 +25,23 @@
     },
     "price_change_pct": { "type": "number" },
     "n_sims": { "type": "integer", "default": 10000 },
-    "seed": { "type": "integer", "default": 42 }
+    "seed": { "type": "integer", "default": 42 },
+    "schedule": {
+      "type": ["array", "null"],
+      "items": {
+        "type": "object",
+        "properties": {
+          "days": { "type": "integer", "minimum": 1, "maximum": 90 },
+          "start_change_pct": { "type": "number" },
+          "daily_step_pct": { "type": "number" },
+          "relative_to_prev": { "type": "boolean" },
+          "compound_daily_step": { "type": "boolean" },
+          "step_on_first_day": { "type": "boolean" }
+        },
+        "required": ["days"]
+      }
+    },
+    "business_context": { "type": ["object", "null"] }
   },
   "required": ["product", "price_change_pct"]
 }

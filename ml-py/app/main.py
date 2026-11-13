@@ -369,11 +369,29 @@ def backtest_decision(request: BacktestRequest) -> BacktestResponse:
 @app.post("/nlq/parse", response_model=Union[DecisionSpec, NLQParseFallback])
 def nlq_parse(request: NLQParseRequest) -> Union[DecisionSpec, NLQParseFallback]:
     """Parse natural language question into validated DecisionSpec JSON or manual fallback."""
-    return parse_question(question=request.question, catalog=request.catalog)
+    return parse_question(
+        question=request.question,
+        catalog=request.catalog,
+        active_product_id=request.active_product_id,
+    )
 
 
 @app.post("/nlq/explain", response_model=NLQExplainResponse)
 def nlq_explain(request: NLQExplainRequest) -> NLQExplainResponse:
-    """Synthesize factual narrative from computed figures with zero-hallucination verification."""
-    res = explain_scenario(scenario_result=request.scenario_result)
-    return NLQExplainResponse(text=res["text"])
+    """Synthesize factual narrative and actionable advice with zero-hallucination verification."""
+    res = explain_scenario(
+        scenario_result=request.scenario_result,
+        business_context=request.business_context,
+        language=request.language,
+        question=request.question,
+        decision_spec=request.decision_spec,
+        optimize_summary=request.optimize_summary,
+    )
+    return NLQExplainResponse(
+        text=res["text"],
+        direct_answer=res.get("direct_answer"),
+        action_verdict=res.get("action_verdict"),
+        verdict_level=res.get("verdict_level"),
+        situation_summary=res.get("situation_summary"),
+        recommendations=res.get("recommendations", []),
+    )

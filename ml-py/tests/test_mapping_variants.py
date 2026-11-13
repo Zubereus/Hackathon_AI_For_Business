@@ -159,3 +159,39 @@ def test_price_in_thousands_and_slug_ids() -> None:
     _, rep_en = transform_to_canonical(df_en, map_en["canonical_to_source"])
     assert any("unit_cost missing" in w for w in rep_en["warnings"])
 
+
+def test_operating_expense_mapping_and_aggregation() -> None:
+    """Verify marketing, labor, operating, and fixed overhead columns auto-map and sum across receipts."""
+    raw = pd.DataFrame(
+        {
+            "order_id": ["10001", "10002", "10003"],
+            "Ngày bán": ["2026-01-05", "2026-01-05", "2026-01-06"],
+            "Mã SP": ["P01", "P01", "P01"],
+            "Giá bán": ["200.000", "200.000", "200.000"],
+            "Giá vốn": ["100.000", "100.000", "100.000"],
+            "SL bán": ["5", "3", "6"],
+            "Chi phí Marketing": ["300.000", "200.000", "450.000"],
+            "Nhân công": ["150.000", "100.000", "200.000"],
+            "Chi phí vận hành": ["250.000", "150.000", "300.000"],
+        }
+    )
+
+    profiles = profile_dataframe(raw)
+    mapping_res = resolve_column_mappings(profiles)
+    c2s = mapping_res["canonical_to_source"]
+
+    assert c2s.get("marketing_cost") == "Chi phí Marketing"
+    assert c2s.get("labor_cost") == "Nhân công"
+    assert c2s.get("operating_cost") == "Chi phí vận hành"
+    assert c2s.get("fixed_cost") is None  # order_id must NOT map to fixed_cost
+
+    canonical_df, report = transform_to_canonical(raw, c2s, options={"number_locale": "vi"})
+    assert report["aggregated_from_receipts"] is True
+    assert len(canonical_df) == 2
+
+    day1 = canonical_df.iloc[0]
+    assert day1["quantity"] == 8
+    assert day1["marketing_cost"] == 500_000
+    assert day1["labor_cost"] == 250_000
+    assert day1["operating_cost"] == 400_000
+

@@ -1,0 +1,43 @@
+# Git and local metadata
+.git/
+.gitignore
+.github/
+.vscode/
+.idea/
+
+# Environment secrets (keep .env out of build context)
+.env
+.env.*
+!.env.example
+
+# Python caches and local virtualenvs
+**/.venv/
+**/venv/
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+**/.pytest_cache/
+**/.ruff_cache/
+**/*.egg-info/
+ml-py/workdir/
+
+# Node dependencies and local build artifacts
+**/node_modules/
+web/dist/
+web/coverage/
+
+# Non-runtime docs, archives, slides, and tests
+*.zip
+data/*.zip
+data/raw/*.csv
+assets/
+notebooks/
+phases/
+slides/
+e2e/
+tests/
+test_engine/
+ml-py/tests/
+ml-py/scripts/
+engine-go/bin/
+

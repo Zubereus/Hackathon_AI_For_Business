@@ -308,7 +308,57 @@ def main() -> None:
         assert "of 0 units" not in exp_res["text"], (
             f"Explainer emitted 0 units instead of reading Go qty field: {exp_res['text']}"
         )
-        print(f"[e2e] 7/7 NLQ OK: {exp_res['text']}")
+        print(f"[e2e] 7/8 NLQ OK: {exp_res['text']}")
+
+        # 8. Multi-Phase Schedule ("15 ngay dau giam 30%, 15 ngay sau moi nagyf tang 1%") + Business Context Advice
+        _, sched_parse = http_post_json(
+            f"{GO_URL}/api/nlq/parse",
+            {
+                "question": f"Với {p0['product_id']}, 15 ngày đầu giảm 30%, 15 ngày sau mỗi nagyf tăng 1% thì sao?",
+                "catalog": [
+                    {"product_id": pr["product_id"], "name": pr["product_name"]}
+                    for pr in fit_res["products"]
+                ],
+            },
+        )
+        assert sched_parse["change_type"] == "price_schedule"
+        assert sched_parse["horizon_days"] == 30
+        assert len(sched_parse["schedule"]) == 2
+
+        _, sched_sim = http_post_json(
+            f"{GO_URL}/api/simulate",
+            {
+                "product": {
+                    "current_price_vnd": p0["current_price_vnd"],
+                    "unit_cost_vnd": p0["unit_cost_vnd"],
+                    "baseline_qty_per_period": p0["baseline_qty_per_period"],
+                    "elasticity_samples": p0["elasticity_samples"],
+                },
+                "price_change_pct": sched_parse["change_value"],
+                "n_sims": 5000,
+                "seed": 42,
+                "schedule": sched_parse["schedule"],
+                "business_context": p0.get("business_context"),
+            },
+        )
+        assert len(sched_sim.get("schedule_trace", [])) == 30
+        assert sched_sim.get("advisory") is not None
+
+        _, sched_exp = http_post_json(
+            f"{GO_URL}/api/nlq/explain",
+            {
+                "scenario_result": sched_sim,
+                "business_context": p0.get("business_context"),
+                "language": "vi",
+            },
+        )
+        assert sched_exp.get("action_verdict")
+        assert sched_exp.get("situation_summary")
+        assert len(sched_exp.get("recommendations", [])) >= 1
+        print(
+            f"[e2e] 8/8 Multi-phase Schedule + Advice OK: verdict='{sched_exp['action_verdict']}', "
+            f"recs={len(sched_exp['recommendations'])}, trace_days={len(sched_sim['schedule_trace'])}"
+        )
         print("[e2e] ALL E2E CHECKS PASSED SUCCESSFULLY!")
 
     except Exception:

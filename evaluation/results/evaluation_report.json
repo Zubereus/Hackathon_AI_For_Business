@@ -1,0 +1,282 @@
+{
+  "generated_at": "2026-11-12T17:02:22.764622+00:00",
+  "seed": 42,
+  "dimensions": [
+    "usability",
+    "clarity",
+    "numerical_accuracy",
+    "assumption_transparency",
+    "consistency",
+    "reasoning_quality",
+    "uncertainty_handling",
+    "actionability",
+    "robustness"
+  ],
+  "objective_metrics": {
+    "total_turns": 24,
+    "answered_turns": 18,
+    "fallback_turns": 6,
+    "error_turns": 0,
+    "avg_latency_ms": 15.4,
+    "math_identity_pass_rate": 1.0,
+    "scenario_ordering_pass_rate": 1.0,
+    "number_grounding_pass_rate": 1.0,
+    "bounds_rejection_rate": 1.0,
+    "low_variation_disclosure_rate": 1.0,
+    "non_price_scope_misinterpretation_count": 3,
+    "non_price_scope_total": 4,
+    "ambiguous_helpful_rate": 0.0,
+    "jargon_hits_non_technical": 0
+  },
+  "detected_weaknesses": [
+    {
+      "agent_id": "non_technical_owner",
+      "scenario_id": "nt_profit_drop_why",
+      "turn": 1,
+      "dimension": "usability",
+      "severity": "medium",
+      "description": "Rejected ambiguous_diagnosis query with fallback error ('Chưa nhận ra sản phẩm bạn muốn hỏi trong danh mục. Hãy nêu rõ mã hoặc tên sản phẩm (ví dụ P01, Áo thun basic).') instead of providing interactive guidance or educational answer.",
+      "question": "Tại sao tháng này tôi bán được nhiều hàng hơn nhưng tiền lời lại ít hơn?"
+    },
+    {
+      "agent_id": "non_technical_owner",
+      "scenario_id": "nt_jargon_roi",
+      "turn": 1,
+      "dimension": "usability",
+      "severity": "medium",
+      "description": "Rejected financial_glossary_help query with fallback error ('Chưa nhận ra sản phẩm bạn muốn hỏi trong danh mục. Hãy nêu rõ mã hoặc tên sản phẩm (ví dụ P01, Áo thun basic).') instead of providing interactive guidance or educational answer.",
+      "question": "Tôi không hiểu ROI là gì, giải thích giúp tôi."
+    },
+    {
+      "agent_id": "non_technical_owner",
+      "scenario_id": "nt_restock_or_wait",
+      "turn": 1,
+      "dimension": "usability",
+      "severity": "medium",
+      "description": "Rejected missing_parameters_guidance query with fallback error ('Chưa thấy mức tăng/giảm giá cụ thể (ví dụ +10% hoặc giảm 15%).') instead of providing interactive guidance or educational answer.",
+      "question": "Tôi nên nhập thêm hàng áo sơ mi trắng hay đợi bán hết hàng tồn kho?"
+    },
+    {
+      "agent_id": "non_technical_owner",
+      "scenario_id": "nt_store_health",
+      "turn": 1,
+      "dimension": "usability",
+      "severity": "medium",
+      "description": "Rejected holistic_store_health query with fallback error ('Chưa nhận ra sản phẩm bạn muốn hỏi trong danh mục. Hãy nêu rõ mã hoặc tên sản phẩm (ví dụ P01, Áo thun basic).') instead of providing interactive guidance or educational answer.",
+      "question": "Tháng này cửa hàng của tôi có đang kinh doanh tốt không?"
+    },
+    {
+      "agent_id": "skeptical_owner",
+      "scenario_id": "sk_contradictory_marketing_shock",
+      "turn": 1,
+      "dimension": "robustness",
+      "severity": "high",
+      "description": "Misinterpreted non-price lever (contradictory_non_price_input) as a 20.0% unit selling-price simulation instead of disclosing out-of-scope limits.",
+      "question": "Nếu doanh thu P01 tăng 20% nhưng chi phí marketing tăng 35%, kết luận của bạn có còn đúng không?"
+    },
+    {
+      "agent_id": "strategic_decision_maker",
+      "scenario_id": "st_marketing_budget_lever",
+      "turn": 1,
+      "dimension": "robustness",
+      "severity": "high",
+      "description": "Misinterpreted non-price lever (non_price_marketing_lever) as a 20.0% unit selling-price simulation instead of disclosing out-of-scope limits.",
+      "question": "Nếu tôi tăng ngân sách quảng cáo 20% cho P01, doanh thu và lợi nhuận có thể thay đổi thế nào?"
+    },
+    {
+      "agent_id": "strategic_decision_maker",
+      "scenario_id": "st_compare_3_strategies",
+      "turn": 1,
+      "dimension": "robustness",
+      "severity": "high",
+      "description": "Misinterpreted non-price lever (multi_lever_strategy_comparison) as a 10.0% unit selling-price simulation instead of disclosing out-of-scope limits.",
+      "question": "Hãy so sánh ba chiến lược cho P01: tăng giá bán 10%, giảm chi phí vận hành và tăng ngân sách marketing."
+    }
+  ],
+  "agent_evaluations": {
+    "non_technical_owner": {
+      "agent_id": "non_technical_owner",
+      "dimensions": {
+        "usability": 2.9,
+        "clarity": 9.0,
+        "numerical_accuracy": 10.0,
+        "assumption_transparency": 8.5,
+        "consistency": 9.2,
+        "reasoning_quality": 6.8,
+        "uncertainty_handling": 8.4,
+        "actionability": 8.5,
+        "robustness": 9.2
+      },
+      "persona_weights": {
+        "usability": 0.22,
+        "clarity": 0.22,
+        "actionability": 0.14,
+        "robustness": 0.1,
+        "uncertainty_handling": 0.08,
+        "assumption_transparency": 0.08,
+        "reasoning_quality": 0.06,
+        "consistency": 0.05,
+        "numerical_accuracy": 0.05
+      },
+      "weighted_persona_score": 7.45,
+      "turns_total": 8,
+      "answered_turns": 4,
+      "fallback_turns": 4,
+      "weaknesses": [
+        {
+          "agent_id": "non_technical_owner",
+          "scenario_id": "nt_profit_drop_why",
+          "turn": 1,
+          "dimension": "usability",
+          "severity": "medium",
+          "description": "Rejected ambiguous_diagnosis query with fallback error ('Chưa nhận ra sản phẩm bạn muốn hỏi trong danh mục. Hãy nêu rõ mã hoặc tên sản phẩm (ví dụ P01, Áo thun basic).') instead of providing interactive guidance or educational answer.",
+          "question": "Tại sao tháng này tôi bán được nhiều hàng hơn nhưng tiền lời lại ít hơn?"
+        },
+        {
+          "agent_id": "non_technical_owner",
+          "scenario_id": "nt_jargon_roi",
+          "turn": 1,
+          "dimension": "usability",
+          "severity": "medium",
+          "description": "Rejected financial_glossary_help query with fallback error ('Chưa nhận ra sản phẩm bạn muốn hỏi trong danh mục. Hãy nêu rõ mã hoặc tên sản phẩm (ví dụ P01, Áo thun basic).') instead of providing interactive guidance or educational answer.",
+          "question": "Tôi không hiểu ROI là gì, giải thích giúp tôi."
+        },
+        {
+          "agent_id": "non_technical_owner",
+          "scenario_id": "nt_restock_or_wait",
+          "turn": 1,
+          "dimension": "usability",
+          "severity": "medium",
+          "description": "Rejected missing_parameters_guidance query with fallback error ('Chưa thấy mức tăng/giảm giá cụ thể (ví dụ +10% hoặc giảm 15%).') instead of providing interactive guidance or educational answer.",
+          "question": "Tôi nên nhập thêm hàng áo sơ mi trắng hay đợi bán hết hàng tồn kho?"
+        },
+        {
+          "agent_id": "non_technical_owner",
+          "scenario_id": "nt_store_health",
+          "turn": 1,
+          "dimension": "usability",
+          "severity": "medium",
+          "description": "Rejected holistic_store_health query with fallback error ('Chưa nhận ra sản phẩm bạn muốn hỏi trong danh mục. Hãy nêu rõ mã hoặc tên sản phẩm (ví dụ P01, Áo thun basic).') instead of providing interactive guidance or educational answer.",
+          "question": "Tháng này cửa hàng của tôi có đang kinh doanh tốt không?"
+        }
+      ]
+    },
+    "skeptical_owner": {
+      "agent_id": "skeptical_owner",
+      "dimensions": {
+        "usability": 8.82,
+        "clarity": 9.0,
+        "numerical_accuracy": 10.0,
+        "assumption_transparency": 5.0,
+        "consistency": 9.2,
+        "reasoning_quality": 6.0,
+        "uncertainty_handling": 10.0,
+        "actionability": 8.5,
+        "robustness": 6.8
+      },
+      "persona_weights": {
+        "numerical_accuracy": 0.22,
+        "consistency": 0.16,
+        "assumption_transparency": 0.16,
+        "uncertainty_handling": 0.14,
+        "robustness": 0.12,
+        "reasoning_quality": 0.08,
+        "clarity": 0.05,
+        "actionability": 0.04,
+        "usability": 0.03
+      },
+      "weighted_persona_score": 8.22,
+      "turns_total": 8,
+      "answered_turns": 7,
+      "fallback_turns": 1,
+      "weaknesses": [
+        {
+          "agent_id": "skeptical_owner",
+          "scenario_id": "sk_contradictory_marketing_shock",
+          "turn": 1,
+          "dimension": "robustness",
+          "severity": "high",
+          "description": "Misinterpreted non-price lever (contradictory_non_price_input) as a 20.0% unit selling-price simulation instead of disclosing out-of-scope limits.",
+          "question": "Nếu doanh thu P01 tăng 20% nhưng chi phí marketing tăng 35%, kết luận của bạn có còn đúng không?"
+        }
+      ]
+    },
+    "strategic_decision_maker": {
+      "agent_id": "strategic_decision_maker",
+      "dimensions": {
+        "usability": 8.82,
+        "clarity": 9.0,
+        "numerical_accuracy": 10.0,
+        "assumption_transparency": 5.0,
+        "consistency": 9.2,
+        "reasoning_quality": 6.0,
+        "uncertainty_handling": 8.4,
+        "actionability": 8.5,
+        "robustness": 4.4
+      },
+      "persona_weights": {
+        "reasoning_quality": 0.2,
+        "actionability": 0.18,
+        "assumption_transparency": 0.14,
+        "uncertainty_handling": 0.12,
+        "robustness": 0.12,
+        "numerical_accuracy": 0.08,
+        "consistency": 0.08,
+        "clarity": 0.04,
+        "usability": 0.04
+      },
+      "weighted_persona_score": 7.21,
+      "turns_total": 8,
+      "answered_turns": 7,
+      "fallback_turns": 1,
+      "weaknesses": [
+        {
+          "agent_id": "strategic_decision_maker",
+          "scenario_id": "st_marketing_budget_lever",
+          "turn": 1,
+          "dimension": "robustness",
+          "severity": "high",
+          "description": "Misinterpreted non-price lever (non_price_marketing_lever) as a 20.0% unit selling-price simulation instead of disclosing out-of-scope limits.",
+          "question": "Nếu tôi tăng ngân sách quảng cáo 20% cho P01, doanh thu và lợi nhuận có thể thay đổi thế nào?"
+        },
+        {
+          "agent_id": "strategic_decision_maker",
+          "scenario_id": "st_compare_3_strategies",
+          "turn": 1,
+          "dimension": "robustness",
+          "severity": "high",
+          "description": "Misinterpreted non-price lever (multi_lever_strategy_comparison) as a 10.0% unit selling-price simulation instead of disclosing out-of-scope limits.",
+          "question": "Hãy so sánh ba chiến lược cho P01: tăng giá bán 10%, giảm chi phí vận hành và tăng ngân sách marketing."
+        }
+      ]
+    }
+  },
+  "subjective_judgments": {
+    "source": "deterministic_persona_critic",
+    "non_technical_summary": "Strengths on plain discount simulations (clarity 9.0/10), but weak on ambiguous store-health/glossary/restock prompts (4 fallbacks out of 8 turns) because NLQ enforces numeric price-% inputs.",
+    "skeptical_summary": "Strong math & grounding (accuracy 10.0/10, uncertainty 10.0/10), but vulnerable when users mention non-price percentages like revenue +20% / marketing +35%.",
+    "strategic_summary": "Handles multi-phase seasonal schedules well (e.g. Tết 60d+7d), yet lacks support for non-price levers (ad budgets, opex shocks, 500-unit working capital) unless explicitly rejected.",
+    "top_recommendations": [
+      "Add a non-price intent classifier in /nlq/parse so 'marketing cost +35%', 'ad budget +20%', 'ROI?', and 'working capital for 500 units' return honest scope guidance instead of binding to a unit price change.",
+      "Add conversational guided onboarding/FAQ responses for novice questions like 'ROI là gì?' or 'tại sao bán nhiều mà lời ít?' instead of returning manual_form errors.",
+      "Allow multi-SKU portfolio health summaries so owners asking 'tháng này shop bán tốt không?' receive store-wide margin and trend diagnostics."
+    ]
+  },
+  "fundamental_questions": {
+    "q1_ordinary_owner_usability": {
+      "question": "Can an ordinary business owner actually use the What-if Agent without technical or financial expertise?",
+      "verdict": "PARTIAL YES (works for direct price changes, struggles on open-ended shop questions)",
+      "evidence": "Usability=2.9/10, Clarity=9.0/10. When given explicit % price questions, explanations are readable; however, open-ended questions ('tại sao bán nhiều mà lời ít', 'ROI là gì') triggered 4 fallbacks."
+    },
+    "q2_demanding_owner_trust": {
+      "question": "Can a demanding user trust the application's calculations, assumptions, and conclusions?",
+      "verdict": "HIGH MATHEMATICAL TRUST, MODERATE SEMANTIC SCOPE RISK",
+      "evidence": "Numerical Accuracy=10.0/10 (math_identity=100.0%, grounding=100.0%), Uncertainty Handling=10.0/10. Detected 3 non-price % misinterpretations."
+    },
+    "q3_strategic_decision_maker": {
+      "question": "Can a strategic decision-maker use the application to explore scenarios and make better-informed business decisions?",
+      "verdict": "STRONG ON PRICING & SEASONAL RAMPS, NARROW ON MULTI-LEVER FINANCE",
+      "evidence": "Reasoning=6.0/10, Actionability=8.5/10. Supports 90-day scenarios, seasonal Tết multipliers, and reverse goal search, but does not yet isolate ad-spend or opex levers cleanly."
+    }
+  }
+}

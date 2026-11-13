@@ -1,0 +1,79 @@
+services:
+  ml-py:
+    build:
+      context: .
+      dockerfile: ml-py/Dockerfile
+    container_name: whatif-ml-py
+    environment:
+      APP_ENV: ${APP_ENV:-production}
+      LLM_PROVIDER: ${LLM_PROVIDER:-}
+      LLM_API_KEY: ${LLM_API_KEY:-}
+      LLM_MODEL: ${LLM_MODEL:-}
+      LLM_BASE_URL: ${LLM_BASE_URL:-}
+      AI_API_KEY: ${AI_API_KEY:-}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+    ports:
+      - "8000:8000"
+    volumes:
+      - ml_workdir:/app/ml-py/workdir
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3)",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    restart: unless-stopped
+
+  engine-go:
+    build:
+      context: ./engine-go
+      dockerfile: Dockerfile
+    container_name: whatif-engine-go
+    environment:
+      PORT: "8080"
+      ML_URL: "http://ml-py:8000"
+    ports:
+      - "8080:8080"
+    depends_on:
+      ml-py:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    restart: unless-stopped
+
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE: ${VITE_API_BASE:-http://localhost:8080}
+        VITE_USE_FIXTURES: ${VITE_USE_FIXTURES:-0}
+    container_name: whatif-web
+    ports:
+      - "3000:80"
+      - "5173:80"
+    depends_on:
+      engine-go:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:80/"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    restart: unless-stopped
+
+volumes:
+  ml_workdir:
+

@@ -29,5 +29,6 @@
   "lead_time_days": 3,
   "cover_days": 5,
   "planner_awareness": 0.2,
-  "start_stock_days": 8
+  "start_stock_days": 8,
+  "operating_costs_profile": "standard"
 }

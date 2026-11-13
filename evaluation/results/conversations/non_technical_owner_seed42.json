@@ -1,0 +1,952 @@
+{
+  "agent_id": "non_technical_owner",
+  "seed": 42,
+  "use_llm_users": false,
+  "generated_at": "2026-11-12T17:02:22.601271+00:00",
+  "sessions": [
+    {
+      "agent_id": "non_technical_owner",
+      "agent_display_name": "Non-Technical Small Business Owner",
+      "scenario_id": "nt_profit_drop_why",
+      "dataset_id": "fashion_shop_12",
+      "intent_category": "ambiguous_diagnosis",
+      "ground_truth_notes": "Ambiguous business diagnostic question without explicit SKU or % change.",
+      "active_product_id": "P01",
+      "final_action": "accept",
+      "turns": [
+        {
+          "turn_index": 1,
+          "user_action": "opening_question",
+          "question": "Tại sao tháng này tôi bán được nhiều hàng hơn nhưng tiền lời lại ít hơn?",
+          "agent_thought": "Máy yêu cầu phải có % cụ thể mới chạy, tôi thử hỏi lại đơn giản hơn theo gợi ý.",
+          "response_status": "fallback",
+          "latency_ms": 17.9,
+          "parsed_spec": {
+            "error": "Chưa nhận ra sản phẩm bạn muốn hỏi trong danh mục. Hãy nêu rõ mã hoặc tên sản phẩm (ví dụ P01, Áo thun basic).",
+            "fallback": "manual_form"
+          },
+          "simulation_summary": null,
+          "optimization_summary": null,
+          "explanation": null,
+          "fallback_reason": "Chưa nhận ra sản phẩm bạn muốn hỏi trong danh mục. Hãy nêu rõ mã hoặc tên sản phẩm (ví dụ P01, Áo thun basic).",
+          "error_detail": null,
+          "persona_observations": [
+            "Hệ thống báo không hiểu câu hỏi (Chưa nhận ra sản phẩm bạn muốn hỏi trong danh mục. Hãy nêu rõ mã hoặc tên sản phẩm (ví dụ P01, Áo thun basic).)."
+          ]
+        },
+        {
+          "turn_index": 2,
+          "user_action": "request_clarification",
+          "question": "Vậy nếu tôi giảm giá áo thun basic 5% trong 14 ngày thì sao, lời lỗ thế nào?",
+          "agent_thought": "Tôi đã hiểu nên làm gì cho cửa hàng rồi.",
+          "response_status": "answered",
+          "latency_ms": 39.3,
+          "parsed_spec": {
+            "product_id": "P01",
+            "change_type": "price_pct",
+            "change_value": -5.0,
+            "horizon_days": 14,
+            "start_date": null,
+            "schedule": null,
+            "detected_language": "vi",
+            "question_type": "what_if_scenario",
+            "baseline_period_days": null,
+            "event_context": null,
+            "target_uplift_pct": null,
+            "assumptions_summary": null
+          },
+          "simulation_summary": {
+            "scenarios": {
+              "base": {
+                "price_vnd": 97500,
+                "qty": 154,
+                "revenue": 15015000,
+                "profit": 5775000,
+                "spend": 9240000
+              },
+              "expected": {
+                "price_vnd": 92625,
+                "qty": 154,
+                "revenue": 14264250,
+                "profit": 5024250,
+                "spend": 9240000
+              },
+              "optimistic": {
+                "price_vnd": 92625,
+                "qty": 154,
+                "revenue": 14264250,
+                "profit": 5024250,
+                "spend": 9240000
+              },
+              "pessimistic": {
+                "price_vnd": 92625,
+                "qty": 154,
+                "revenue": 14264250,
+                "profit": 5024250,
+                "spend": 9240000
+              }
+            },
+            "profit_distribution": {
+              "p5": 5024250,
+              "p50": 5024250,
+              "p95": 5024250
+            },
+            "break_even_elasticity": -2.715015071586199,
+            "prob_beat_base": 0,
+            "advisory": {
+              "verdict_code": "STOCK_CONSTRAINED_HOLD_OR_RAISE",
+              "base_margin_pct": 38.46153846153847,
+              "min_margin_pct_in_plan": 35.22267206477733,
+              "expected_profit_delta_vnd": -750750,
+              "expected_profit_delta_pct": -13,
+              "prob_beat_base": 0,
+              "p5_beats_base": false,
+              "stockout_risk": true,
+              "stock_utilization_pct": 1642.8577290357648,
+              "elasticity_regime": "elastic",
+              "risk_flags": [
+                "stockout_risk",
+                "downside_below_base"
+              ]
+            },
+            "schedule_trace_days": 0,
+            "schedule_trace_endpoints": []
+          },
+          "optimization_summary": null,
+          "explanation": {
+            "text": "• Nếu giữ nguyên giá cũ (97.500 VND): bán khoảng 154 món. tiền lãi 5.775.000 VND.\n• Nếu đổi giá sang 92.625 VND: dự kiến bán 154 món. tiền lãi khoảng 5.024.250 VND.\n• Khi tính cả trường hợp thuận lợi và lúc khách ngại giá, 90% khả năng tiền lãi nằm từ 5.024.250 VND đến 5.024.250 VND.\n• Gợi ý chính: Phương án này làm tiền lãi dự kiến giảm xuống 5.024.250 VND (thấp hơn giữ giá cũ 5.775.000 VND) — hãy mở mục \"Tìm giá đạt mục tiêu lãi\" để máy gợi ý mức giá có lời hơn.",
+            "direct_answer": null,
+            "action_verdict": "CẢNH BÁO THIẾU HÀNG — KHÔNG NÊN GIẢM GIÁ SÂU",
+            "verdict_level": "stop",
+            "situation_summary": "Tiền lời hiện chiếm 38.5% trên mỗi đồng bán ra. Sức mua gần đây đang tăng 21.2%. Hàng trong kho hiện đủ bán khoảng 1.9 ngày. Khách phản ứng khá nhạy nếu bạn tăng giá mạnh.",
+            "recommendations": [
+              "Phương án này làm tiền lãi dự kiến giảm xuống 5.024.250 VND (thấp hơn giữ giá cũ 5.775.000 VND) — hãy mở mục \"Tìm giá đạt mục tiêu lãi\" để máy gợi ý mức giá có lời hơn.",
+              "Coi chừng cháy hàng sớm (lượng mua dự kiến bằng 1642.9% số hàng đang có): không nên giảm giá sâu khi kho đang ít; bạn nên giữ nguyên giá hoặc nhập thêm hàng trước.",
+              "Giới hạn an toàn: nếu thấy khách phản ứng mạnh quá mức -2.715% cho mỗi 1% đổi giá trong vài ngày đầu, hãy dừng lại và quay về giá cũ 97.500 VND."
+            ]
+          },
+          "fallback_reason": null,
+          "error_detail": null,
+          "persona_observations": [
+            "Đã nhận được câu trả lời dễ theo dõi cho quyết định giá hằng ngày."
+          ]
+        }
+      ],
+      "raw_responses": [
+        {
+          "turn": 1,
+          "status": "fallback",
+          "parsed_spec": {
+            "error": "Chưa nhận ra sản phẩm bạn muốn hỏi trong danh mục. Hãy nêu rõ mã hoặc tên sản phẩm (ví dụ P01, Áo thun basic).",
+            "fallback": "manual_form"
+          },
+          "simulation": null,
+          "explanation": null,
+          "fallback_reason": "Chưa nhận ra sản phẩm bạn muốn hỏi trong danh mục. Hãy nêu rõ mã hoặc tên sản phẩm (ví dụ P01, Áo thun basic).",
+          "error_detail": null
+        },
+        {
+          "turn": 2,
+          "status": "answered",
+          "parsed_spec": {
+            "product_id": "P01",
+            "change_type": "price_pct",
+            "change_value": -5.0,
+            "horizon_days": 14,
+            "start_date": null,
+            "schedule": null,
+            "detected_language": "vi",
+            "question_type": "what_if_scenario",
+            "baseline_period_days": null,
+            "event_context": null,
+            "target_uplift_pct": null,
+            "assumptions_summary": null
+          },
+          "simulation": {
+            "scenarios": {
+              "base": {
+                "price_vnd": 97500,
+                "qty": 154,
+                "revenue": 15015000,
+                "profit": 5775000,
+                "spend": 9240000
+              },
+              "expected": {
+                "price_vnd": 92625,
+                "qty": 154,
+                "revenue": 14264250,
+                "profit": 5024250,
+                "spend": 9240000
+              },
+              "optimistic": {
+                "price_vnd": 92625,
+                "qty": 154,
+                "revenue": 14264250,
+                "profit": 5024250,
+                "spend": 9240000
+              },
+              "pessimistic": {
+                "price_vnd": 92625,
+                "qty": 154,
+                "revenue": 14264250,
+                "profit": 5024250,
+                "spend": 9240000
+              }
+            },
+            "profit_distribution": {
+              "p5": 5024250,
+              "p50": 5024250,
+              "p95": 5024250
+            },
+            "break_even_elasticity": -2.715015071586199,
+            "prob_beat_base": 0,
+            "advisory": {
+              "verdict_code": "STOCK_CONSTRAINED_HOLD_OR_RAISE",
+              "base_margin_pct": 38.46153846153847,
+              "min_margin_pct_in_plan": 35.22267206477733,
+              "expected_profit_delta_vnd": -750750,
+              "expected_profit_delta_pct": -13,
+              "prob_beat_base": 0,
+              "p5_beats_base": false,
+              "stockout_risk": true,
+              "stock_utilization_pct": 1642.8577290357648,
+              "elasticity_regime": "elastic",
+              "risk_flags": [
+                "stockout_risk",
+                "downside_below_base"
+              ]
+            },
+            "schedule_trace_days": 0,
+            "schedule_trace_endpoints": []
+          },
+          "explanation": {
+            "text": "• Nếu giữ nguyên giá cũ (97.500 VND): bán khoảng 154 món. tiền lãi 5.775.000 VND.\n• Nếu đổi giá sang 92.625 VND: dự kiến bán 154 món. tiền lãi khoảng 5.024.250 VND.\n• Khi tính cả trường hợp thuận lợi và lúc khách ngại giá, 90% khả năng tiền lãi nằm từ 5.024.250 VND đến 5.024.250 VND.\n• Gợi ý chính: Phương án này làm tiền lãi dự kiến giảm xuống 5.024.250 VND (thấp hơn giữ giá cũ 5.775.000 VND) — hãy mở mục \"Tìm giá đạt mục tiêu lãi\" để máy gợi ý mức giá có lời hơn.",
+            "direct_answer": null,
+            "action_verdict": "CẢNH BÁO THIẾU HÀNG — KHÔNG NÊN GIẢM GIÁ SÂU",
+            "verdict_level": "stop",
+            "situation_summary": "Tiền lời hiện chiếm 38.5% trên mỗi đồng bán ra. Sức mua gần đây đang tăng 21.2%. Hàng trong kho hiện đủ bán khoảng 1.9 ngày. Khách phản ứng khá nhạy nếu bạn tăng giá mạnh.",
+            "recommendations": [
+              "Phương án này làm tiền lãi dự kiến giảm xuống 5.024.250 VND (thấp hơn giữ giá cũ 5.775.000 VND) — hãy mở mục \"Tìm giá đạt mục tiêu lãi\" để máy gợi ý mức giá có lời hơn.",
+              "Coi chừng cháy hàng sớm (lượng mua dự kiến bằng 1642.9% số hàng đang có): không nên giảm giá sâu khi kho đang ít; bạn nên giữ nguyên giá hoặc nhập thêm hàng trước.",
+              "Giới hạn an toàn: nếu thấy khách phản ứng mạnh quá mức -2.715% cho mỗi 1% đổi giá trong vài ngày đầu, hãy dừng lại và quay về giá cũ 97.500 VND."
+            ]
+          },
+          "fallback_reason": null,
+          "error_detail": null
+        }
+      ]
+    },
+    {
+      "agent_id": "non_technical_owner",
+      "agent_display_name": "Non-Technical Small Business Owner",
+      "scenario_id": "nt_discount_10pct_simple",
+      "dataset_id": "fashion_shop_12",
+      "intent_category": "simple_whatif_clarity",
+      "ground_truth_notes": "Clear apparel item by Vietnamese name + -10% discount; evaluates plain-language clarity.",
+      "active_product_id": "P01",
+      "final_action": "accept",
+      "turns": [
+        {
+          "turn_index": 1,
+          "user_action": "opening_question",
+          "question": "Nếu tôi giảm giá áo thun basic 10% thì có ảnh hưởng nhiều đến lợi nhuận không?",
+          "agent_thought": "Tôi muốn xem nếu giảm ít hơn một chút thì tiền lời có giữ được tốt hơn không.",
+          "response_status": "answered",
+          "latency_ms": 16.6,
+          "parsed_spec": {
+            "product_id": "P01",
+            "change_type": "price_pct",
+            "change_value": -10.0,
+            "horizon_days": 30,
+            "start_date": null,
+            "schedule": null,
+            "detected_language": "vi",
+            "question_type": "what_if_scenario",
+            "baseline_period_days": null,
+            "event_context": null,
+            "target_uplift_pct": null,
+            "assumptions_summary": null
+          },
+          "simulation_summary": {
+            "scenarios": {
+              "base": {
+                "price_vnd": 97500,
+                "qty": 154,
+                "revenue": 15015000,
+                "profit": 5775000,
+                "spend": 9240000
+              },
+              "expected": {
+                "price_vnd": 87750,
+                "qty": 154,
+                "revenue": 13513500,
+                "profit": 4273500,
+                "spend": 9240000
+              },
+              "optimistic": {
+                "price_vnd": 87750,
+                "qty": 154,
+                "revenue": 13513500,
+                "profit": 4273500,
+                "spend": 9240000
+              },
+              "pessimistic": {
+                "price_vnd": 87750,
+                "qty": 154,
+                "revenue": 13513500,
+                "profit": 4273500,
+                "spend": 9240000
+              }
+            },
+            "profit_distribution": {
+              "p5": 4273500,
+              "p50": 4273500,
+              "p95": 4273500
+            },
+            "break_even_elasticity": -2.8578551547887687,
+            "prob_beat_base": 0,
+            "advisory": {
+              "verdict_code": "STOCK_CONSTRAINED_HOLD_OR_RAISE",
+              "base_margin_pct": 38.46153846153847,
+              "min_margin_pct_in_plan": 31.62393162393162,
+              "expected_profit_delta_vnd": -1501500,
+              "expected_profit_delta_pct": -26,
+              "prob_beat_base": 0,
+              "p5_beats_base": false,
+              "stockout_risk": true,
+              "stock_utilization_pct": 1759.9756249414888,
+              "elasticity_regime": "elastic",
+              "risk_flags": [
+                "stockout_risk",
+                "downside_below_base"
+              ]
+            },
+            "schedule_trace_days": 0,
+            "schedule_trace_endpoints": []
+          },
+          "optimization_summary": null,
+          "explanation": {
+            "text": "• Nếu giữ nguyên giá cũ (97.500 VND): bán khoảng 154 món. tiền lãi 5.775.000 VND.\n• Nếu đổi giá sang 87.750 VND: dự kiến bán 154 món. tiền lãi khoảng 4.273.500 VND.\n• Khi tính cả trường hợp thuận lợi và lúc khách ngại giá, 90% khả năng tiền lãi nằm từ 4.273.500 VND đến 4.273.500 VND.\n• Gợi ý chính: Phương án này làm tiền lãi dự kiến giảm xuống 4.273.500 VND (thấp hơn giữ giá cũ 5.775.000 VND) — hãy mở mục \"Tìm giá đạt mục tiêu lãi\" để máy gợi ý mức giá có lời hơn.",
+            "direct_answer": null,
+            "action_verdict": "CẢNH BÁO THIẾU HÀNG — KHÔNG NÊN GIẢM GIÁ SÂU",
+            "verdict_level": "stop",
+            "situation_summary": "Tiền lời hiện chiếm 38.5% trên mỗi đồng bán ra. Sức mua gần đây đang tăng 21.2%. Hàng trong kho hiện đủ bán khoảng 1.9 ngày. Khách phản ứng khá nhạy nếu bạn tăng giá mạnh.",
+            "recommendations": [
+              "Phương án này làm tiền lãi dự kiến giảm xuống 4.273.500 VND (thấp hơn giữ giá cũ 5.775.000 VND) — hãy mở mục \"Tìm giá đạt mục tiêu lãi\" để máy gợi ý mức giá có lời hơn.",
+              "Coi chừng cháy hàng sớm (lượng mua dự kiến bằng 1760.0% số hàng đang có): không nên giảm giá sâu khi kho đang ít; bạn nên giữ nguyên giá hoặc nhập thêm hàng trước.",
+              "Giới hạn an toàn: nếu thấy khách phản ứng mạnh quá mức -2.858% cho mỗi 1% đổi giá trong vài ngày đầu, hãy dừng lại và quay về giá cũ 97.500 VND."
+            ]
+          },
+          "fallback_reason": null,
+          "error_detail": null,
+          "persona_observations": [
+            "Giải thích khá rõ, đọc được lời khuyên chính."
+          ]
+        },
+        {
+          "turn_index": 2,
+          "user_action": "follow_up",
+          "question": "Nếu tôi không giảm 10% nữa mà chỉ giảm 5% trong 30 ngày với áo thun basic thì sao?",
+          "agent_thought": "Tôi đã hiểu nên làm gì cho cửa hàng rồi.",
+          "response_status": "answered",
+          "latency_ms": 21.1,
+          "parsed_spec": {
+            "product_id": "P01",
+            "change_type": "price_pct",
+            "change_value": -10.0,
+            "horizon_days": 30,
+            "start_date": null,
+            "schedule": null,
+            "detected_language": "vi",
+            "question_type": "what_if_scenario",
+            "baseline_period_days": null,
+            "event_context": null,
+            "target_uplift_pct": null,
+            "assumptions_summary": null
+          },
+          "simulation_summary": {
+            "scenarios": {
+              "base": {
+                "price_vnd": 97500,
+                "qty": 154,
+                "revenue": 15015000,
+                "profit": 5775000,
+                "spend": 9240000
+              },
+              "expected": {
+                "price_vnd": 87750,
+                "qty": 154,
+                "revenue": 13513500,
+                "profit": 4273500,
+                "spend": 9240000
+              },
+              "optimistic": {
+                "price_vnd": 87750,
+                "qty": 154,
+                "revenue": 13513500,
+                "profit": 4273500,
+                "spend": 9240000
+              },
+              "pessimistic": {
+                "price_vnd": 87750,
+                "qty": 154,
+                "revenue": 13513500,
+                "profit": 4273500,
+                "spend": 9240000
+              }
+            },
+            "profit_distribution": {
+              "p5": 4273500,
+              "p50": 4273500,
+              "p95": 4273500
+            },
+            "break_even_elasticity": -2.8578551547887687,
+            "prob_beat_base": 0,
+            "advisory": {
+              "verdict_code": "STOCK_CONSTRAINED_HOLD_OR_RAISE",
+              "base_margin_pct": 38.46153846153847,
+              "min_margin_pct_in_plan": 31.62393162393162,
+              "expected_profit_delta_vnd": -1501500,
+              "expected_profit_delta_pct": -26,
+              "prob_beat_base": 0,
+              "p5_beats_base": false,
+              "stockout_risk": true,
+              "stock_utilization_pct": 1759.9756249414888,
+              "elasticity_regime": "elastic",
+              "risk_flags": [
+                "stockout_risk",
+                "downside_below_base"
+              ]
+            },
+            "schedule_trace_days": 0,
+            "schedule_trace_endpoints": []
+          },
+          "optimization_summary": null,
+          "explanation": {
+            "text": "• Nếu giữ nguyên giá cũ (97.500 VND): bán khoảng 154 món. tiền lãi 5.775.000 VND.\n• Nếu đổi giá sang 87.750 VND: dự kiến bán 154 món. tiền lãi khoảng 4.273.500 VND.\n• Khi tính cả trường hợp thuận lợi và lúc khách ngại giá, 90% khả năng tiền lãi nằm từ 4.273.500 VND đến 4.273.500 VND.\n• Gợi ý chính: Phương án này làm tiền lãi dự kiến giảm xuống 4.273.500 VND (thấp hơn giữ giá cũ 5.775.000 VND) — hãy mở mục \"Tìm giá đạt mục tiêu lãi\" để máy gợi ý mức giá có lời hơn.",
+            "direct_answer": null,
+            "action_verdict": "CẢNH BÁO THIẾU HÀNG — KHÔNG NÊN GIẢM GIÁ SÂU",
+            "verdict_level": "stop",
+            "situation_summary": "Tiền lời hiện chiếm 38.5% trên mỗi đồng bán ra. Sức mua gần đây đang tăng 21.2%. Hàng trong kho hiện đủ bán khoảng 1.9 ngày. Khách phản ứng khá nhạy nếu bạn tăng giá mạnh.",
+            "recommendations": [
+              "Phương án này làm tiền lãi dự kiến giảm xuống 4.273.500 VND (thấp hơn giữ giá cũ 5.775.000 VND) — hãy mở mục \"Tìm giá đạt mục tiêu lãi\" để máy gợi ý mức giá có lời hơn.",
+              "Coi chừng cháy hàng sớm (lượng mua dự kiến bằng 1760.0% số hàng đang có): không nên giảm giá sâu khi kho đang ít; bạn nên giữ nguyên giá hoặc nhập thêm hàng trước.",
+              "Giới hạn an toàn: nếu thấy khách phản ứng mạnh quá mức -2.858% cho mỗi 1% đổi giá trong vài ngày đầu, hãy dừng lại và quay về giá cũ 97.500 VND."
+            ]
+          },
+          "fallback_reason": null,
+          "error_detail": null,
+          "persona_observations": [
+            "Đã nhận được câu trả lời dễ theo dõi cho quyết định giá hằng ngày."
+          ]
+        }
+      ],
+      "raw_responses": [
+        {
+          "turn": 1,
+          "status": "answered",
+          "parsed_spec": {
+            "product_id": "P01",
+            "change_type": "price_pct",
+            "change_value": -10.0,
+            "horizon_days": 30,
+            "start_date": null,
+            "schedule": null,
+            "detected_language": "vi",
+            "question_type": "what_if_scenario",
+            "baseline_period_days": null,
+            "event_context": null,
+            "target_uplift_pct": null,
+            "assumptions_summary": null
+          },
+          "simulation": {
+            "scenarios": {
+              "base": {
+                "price_vnd": 97500,
+                "qty": 154,
+                "revenue": 15015000,
+                "profit": 5775000,
+                "spend": 9240000
+              },
+              "expected": {
+                "price_vnd": 87750,
+                "qty": 154,
+                "revenue": 13513500,
+                "profit": 4273500,
+                "spend": 9240000
+              },
+              "optimistic": {
+                "price_vnd": 87750,
+                "qty": 154,
+                "revenue": 13513500,
+                "profit": 4273500,
+                "spend": 9240000
+              },
+              "pessimistic": {
+                "price_vnd": 87750,
+                "qty": 154,
+                "revenue": 13513500,
+                "profit": 4273500,
+                "spend": 9240000
+              }
+            },
+            "profit_distribution": {
+              "p5": 4273500,
+              "p50": 4273500,
+              "p95": 4273500
+            },
+            "break_even_elasticity": -2.8578551547887687,
+            "prob_beat_base": 0,
+            "advisory": {
+              "verdict_code": "STOCK_CONSTRAINED_HOLD_OR_RAISE",
+              "base_margin_pct": 38.46153846153847,
+              "min_margin_pct_in_plan": 31.62393162393162,
+              "expected_profit_delta_vnd": -1501500,
+              "expected_profit_delta_pct": -26,
+              "prob_beat_base": 0,
+              "p5_beats_base": false,
+              "stockout_risk": true,
+              "stock_utilization_pct": 1759.9756249414888,
+              "elasticity_regime": "elastic",
+              "risk_flags": [
+                "stockout_risk",
+                "downside_below_base"
+              ]
+            },
+            "schedule_trace_days": 0,
+            "schedule_trace_endpoints": []
+          },
+          "explanation": {
+            "text": "• Nếu giữ nguyên giá cũ (97.500 VND): bán khoảng 154 món. tiền lãi 5.775.000 VND.\n• Nếu đổi giá sang 87.750 VND: dự kiến bán 154 món. tiền lãi khoảng 4.273.500 VND.\n• Khi tính cả trường hợp thuận lợi và lúc khách ngại giá, 90% khả năng tiền lãi nằm từ 4.273.500 VND đến 4.273.500 VND.\n• Gợi ý chính: Phương án này làm tiền lãi dự kiến giảm xuống 4.273.500 VND (thấp hơn giữ giá cũ 5.775.000 VND) — hãy mở mục \"Tìm giá đạt mục tiêu lãi\" để máy gợi ý mức giá có lời hơn.",
+            "direct_answer": null,
+            "action_verdict": "CẢNH BÁO THIẾU HÀNG — KHÔNG NÊN GIẢM GIÁ SÂU",
+            "verdict_level": "stop",
+            "situation_summary": "Tiền lời hiện chiếm 38.5% trên mỗi đồng bán ra. Sức mua gần đây đang tăng 21.2%. Hàng trong kho hiện đủ bán khoảng 1.9 ngày. Khách phản ứng khá nhạy nếu bạn tăng giá mạnh.",
+            "recommendations": [
+              "Phương án này làm tiền lãi dự kiến giảm xuống 4.273.500 VND (thấp hơn giữ giá cũ 5.775.000 VND) — hãy mở mục \"Tìm giá đạt mục tiêu lãi\" để máy gợi ý mức giá có lời hơn.",
+              "Coi chừng cháy hàng sớm (lượng mua dự kiến bằng 1760.0% số hàng đang có): không nên giảm giá sâu khi kho đang ít; bạn nên giữ nguyên giá hoặc nhập thêm hàng trước.",
+              "Giới hạn an toàn: nếu thấy khách phản ứng mạnh quá mức -2.858% cho mỗi 1% đổi giá trong vài ngày đầu, hãy dừng lại và quay về giá cũ 97.500 VND."
+            ]
+          },
+          "fallback_reason": null,
+          "error_detail": null
+        },
+        {
+          "turn": 2,
+          "status": "answered",
+          "parsed_spec": {
+            "product_id": "P01",
+            "change_type": "price_pct",
+            "change_value": -10.0,
+            "horizon_days": 30,
+            "start_date": null,
+            "schedule": null,
+            "detected_language": "vi",
+            "question_type": "what_if_scenario",
+            "baseline_period_days": null,
+            "event_context": null,
+            "target_uplift_pct": null,
+            "assumptions_summary": null
+          },
+          "simulation": {
+            "scenarios": {
+              "base": {
+                "price_vnd": 97500,
+                "qty": 154,
+                "revenue": 15015000,
+                "profit": 5775000,
+                "spend": 9240000
+              },
+              "expected": {
+                "price_vnd": 87750,
+                "qty": 154,
+                "revenue": 13513500,
+                "profit": 4273500,
+                "spend": 9240000
+              },
+              "optimistic": {
+                "price_vnd": 87750,
+                "qty": 154,
+                "revenue": 13513500,
+                "profit": 4273500,
+                "spend": 9240000
+              },
+              "pessimistic": {
+                "price_vnd": 87750,
+                "qty": 154,
+                "revenue": 13513500,
+                "profit": 4273500,
+                "spend": 9240000
+              }
+            },
+            "profit_distribution": {
+              "p5": 4273500,
+              "p50": 4273500,
+              "p95": 4273500
+            },
+            "break_even_elasticity": -2.8578551547887687,
+            "prob_beat_base": 0,
+            "advisory": {
+              "verdict_code": "STOCK_CONSTRAINED_HOLD_OR_RAISE",
+              "base_margin_pct": 38.46153846153847,
+              "min_margin_pct_in_plan": 31.62393162393162,
+              "expected_profit_delta_vnd": -1501500,
+              "expected_profit_delta_pct": -26,
+              "prob_beat_base": 0,
+              "p5_beats_base": false,
+              "stockout_risk": true,
+              "stock_utilization_pct": 1759.9756249414888,
+              "elasticity_regime": "elastic",
+              "risk_flags": [
+                "stockout_risk",
+                "downside_below_base"
+              ]
+            },
+            "schedule_trace_days": 0,
+            "schedule_trace_endpoints": []
+          },
+          "explanation": {
+            "text": "• Nếu giữ nguyên giá cũ (97.500 VND): bán khoảng 154 món. tiền lãi 5.775.000 VND.\n• Nếu đổi giá sang 87.750 VND: dự kiến bán 154 món. tiền lãi khoảng 4.273.500 VND.\n• Khi tính cả trường hợp thuận lợi và lúc khách ngại giá, 90% khả năng tiền lãi nằm từ 4.273.500 VND đến 4.273.500 VND.\n• Gợi ý chính: Phương án này làm tiền lãi dự kiến giảm xuống 4.273.500 VND (thấp hơn giữ giá cũ 5.775.000 VND) — hãy mở mục \"Tìm giá đạt mục tiêu lãi\" để máy gợi ý mức giá có lời hơn.",
+            "direct_answer": null,
+            "action_verdict": "CẢNH BÁO THIẾU HÀNG — KHÔNG NÊN GIẢM GIÁ SÂU",
+            "verdict_level": "stop",
+            "situation_summary": "Tiền lời hiện chiếm 38.5% trên mỗi đồng bán ra. Sức mua gần đây đang tăng 21.2%. Hàng trong kho hiện đủ bán khoảng 1.9 ngày. Khách phản ứng khá nhạy nếu bạn tăng giá mạnh.",
+            "recommendations": [
+              "Phương án này làm tiền lãi dự kiến giảm xuống 4.273.500 VND (thấp hơn giữ giá cũ 5.775.000 VND) — hãy mở mục \"Tìm giá đạt mục tiêu lãi\" để máy gợi ý mức giá có lời hơn.",
+              "Coi chừng cháy hàng sớm (lượng mua dự kiến bằng 1760.0% số hàng đang có): không nên giảm giá sâu khi kho đang ít; bạn nên giữ nguyên giá hoặc nhập thêm hàng trước.",
+              "Giới hạn an toàn: nếu thấy khách phản ứng mạnh quá mức -2.858% cho mỗi 1% đổi giá trong vài ngày đầu, hãy dừng lại và quay về giá cũ 97.500 VND."
+            ]
+          },
+          "fallback_reason": null,
+          "error_detail": null
+        }
+      ]
+    },
+    {
+      "agent_id": "non_technical_owner",
+      "agent_display_name": "Non-Technical Small Business Owner",
+      "scenario_id": "nt_jargon_roi",
+      "dataset_id": "fashion_shop_12",
+      "intent_category": "financial_glossary_help",
+      "ground_truth_notes": "Non-calculation glossary / educational question from a novice owner.",
+      "active_product_id": "P01",
+      "final_action": "stop",
+      "turns": [
+        {
+          "turn_index": 1,
+          "user_action": "opening_question",
+          "question": "Tôi không hiểu ROI là gì, giải thích giúp tôi.",
+          "agent_thought": "Ứng dụng chỉ tính đổi giá %, không giải thích được câu hỏi này.",
+          "response_status": "fallback",
+          "latency_ms": 8.0,
+          "parsed_spec": {
+            "error": "Chưa nhận ra sản phẩm bạn muốn hỏi trong danh mục. Hãy nêu rõ mã hoặc tên sản phẩm (ví dụ P01, Áo thun basic).",
+            "fallback": "manual_form"
+          },
+          "simulation_summary": null,
+          "optimization_summary": null,
+          "explanation": null,
+          "fallback_reason": "Chưa nhận ra sản phẩm bạn muốn hỏi trong danh mục. Hãy nêu rõ mã hoặc tên sản phẩm (ví dụ P01, Áo thun basic).",
+          "error_detail": null,
+          "persona_observations": [
+            "Hệ thống báo không hiểu câu hỏi (Chưa nhận ra sản phẩm bạn muốn hỏi trong danh mục. Hãy nêu rõ mã hoặc tên sản phẩm (ví dụ P01, Áo thun basic).).",
+            "Ứng dụng chưa hỗ trợ giải thích thuật ngữ hoặc hỏi đáp tổng quan ngoài đổi giá %."
+          ]
+        }
+      ],
+      "raw_responses": [
+        {
+          "turn": 1,
+          "status": "fallback",
+          "parsed_spec": {
+            "error": "Chưa nhận ra sản phẩm bạn muốn hỏi trong danh mục. Hãy nêu rõ mã hoặc tên sản phẩm (ví dụ P01, Áo thun basic).",
+            "fallback": "manual_form"
+          },
+          "simulation": null,
+          "explanation": null,
+          "fallback_reason": "Chưa nhận ra sản phẩm bạn muốn hỏi trong danh mục. Hãy nêu rõ mã hoặc tên sản phẩm (ví dụ P01, Áo thun basic).",
+          "error_detail": null
+        }
+      ]
+    },
+    {
+      "agent_id": "non_technical_owner",
+      "agent_display_name": "Non-Technical Small Business Owner",
+      "scenario_id": "nt_restock_or_wait",
+      "dataset_id": "fashion_shop_12",
+      "intent_category": "missing_parameters_guidance",
+      "ground_truth_notes": "Missing quantitative inputs; evaluates whether onboarding/fallback guides kindly.",
+      "active_product_id": "P02",
+      "final_action": "accept",
+      "turns": [
+        {
+          "turn_index": 1,
+          "user_action": "opening_question",
+          "question": "Tôi nên nhập thêm hàng áo sơ mi trắng hay đợi bán hết hàng tồn kho?",
+          "agent_thought": "Máy yêu cầu phải có % cụ thể mới chạy, tôi thử hỏi lại đơn giản hơn theo gợi ý.",
+          "response_status": "fallback",
+          "latency_ms": 8.2,
+          "parsed_spec": {
+            "error": "Chưa thấy mức tăng/giảm giá cụ thể (ví dụ +10% hoặc giảm 15%).",
+            "fallback": "manual_form"
+          },
+          "simulation_summary": null,
+          "optimization_summary": null,
+          "explanation": null,
+          "fallback_reason": "Chưa thấy mức tăng/giảm giá cụ thể (ví dụ +10% hoặc giảm 15%).",
+          "error_detail": null,
+          "persona_observations": [
+            "Hệ thống báo không hiểu câu hỏi (Chưa thấy mức tăng/giảm giá cụ thể (ví dụ +10% hoặc giảm 15%).)."
+          ]
+        },
+        {
+          "turn_index": 2,
+          "user_action": "request_clarification",
+          "question": "Vậy nếu tôi giảm giá áo thun basic 5% trong 14 ngày thì sao, lời lỗ thế nào?",
+          "agent_thought": "Tôi đã hiểu nên làm gì cho cửa hàng rồi.",
+          "response_status": "answered",
+          "latency_ms": 16.1,
+          "parsed_spec": {
+            "product_id": "P01",
+            "change_type": "price_pct",
+            "change_value": -5.0,
+            "horizon_days": 14,
+            "start_date": null,
+            "schedule": null,
+            "detected_language": "vi",
+            "question_type": "what_if_scenario",
+            "baseline_period_days": null,
+            "event_context": null,
+            "target_uplift_pct": null,
+            "assumptions_summary": null
+          },
+          "simulation_summary": {
+            "scenarios": {
+              "base": {
+                "price_vnd": 97500,
+                "qty": 154,
+                "revenue": 15015000,
+                "profit": 5775000,
+                "spend": 9240000
+              },
+              "expected": {
+                "price_vnd": 92625,
+                "qty": 154,
+                "revenue": 14264250,
+                "profit": 5024250,
+                "spend": 9240000
+              },
+              "optimistic": {
+                "price_vnd": 92625,
+                "qty": 154,
+                "revenue": 14264250,
+                "profit": 5024250,
+                "spend": 9240000
+              },
+              "pessimistic": {
+                "price_vnd": 92625,
+                "qty": 154,
+                "revenue": 14264250,
+                "profit": 5024250,
+                "spend": 9240000
+              }
+            },
+            "profit_distribution": {
+              "p5": 5024250,
+              "p50": 5024250,
+              "p95": 5024250
+            },
+            "break_even_elasticity": -2.715015071586199,
+            "prob_beat_base": 0,
+            "advisory": {
+              "verdict_code": "STOCK_CONSTRAINED_HOLD_OR_RAISE",
+              "base_margin_pct": 38.46153846153847,
+              "min_margin_pct_in_plan": 35.22267206477733,
+              "expected_profit_delta_vnd": -750750,
+              "expected_profit_delta_pct": -13,
+              "prob_beat_base": 0,
+              "p5_beats_base": false,
+              "stockout_risk": true,
+              "stock_utilization_pct": 1642.8577290357648,
+              "elasticity_regime": "elastic",
+              "risk_flags": [
+                "stockout_risk",
+                "downside_below_base"
+              ]
+            },
+            "schedule_trace_days": 0,
+            "schedule_trace_endpoints": []
+          },
+          "optimization_summary": null,
+          "explanation": {
+            "text": "• Nếu giữ nguyên giá cũ (97.500 VND): bán khoảng 154 món. tiền lãi 5.775.000 VND.\n• Nếu đổi giá sang 92.625 VND: dự kiến bán 154 món. tiền lãi khoảng 5.024.250 VND.\n• Khi tính cả trường hợp thuận lợi và lúc khách ngại giá, 90% khả năng tiền lãi nằm từ 5.024.250 VND đến 5.024.250 VND.\n• Gợi ý chính: Phương án này làm tiền lãi dự kiến giảm xuống 5.024.250 VND (thấp hơn giữ giá cũ 5.775.000 VND) — hãy mở mục \"Tìm giá đạt mục tiêu lãi\" để máy gợi ý mức giá có lời hơn.",
+            "direct_answer": null,
+            "action_verdict": "CẢNH BÁO THIẾU HÀNG — KHÔNG NÊN GIẢM GIÁ SÂU",
+            "verdict_level": "stop",
+            "situation_summary": "Tiền lời hiện chiếm 38.5% trên mỗi đồng bán ra. Sức mua gần đây đang tăng 21.2%. Hàng trong kho hiện đủ bán khoảng 1.9 ngày. Khách phản ứng khá nhạy nếu bạn tăng giá mạnh.",
+            "recommendations": [
+              "Phương án này làm tiền lãi dự kiến giảm xuống 5.024.250 VND (thấp hơn giữ giá cũ 5.775.000 VND) — hãy mở mục \"Tìm giá đạt mục tiêu lãi\" để máy gợi ý mức giá có lời hơn.",
+              "Coi chừng cháy hàng sớm (lượng mua dự kiến bằng 1642.9% số hàng đang có): không nên giảm giá sâu khi kho đang ít; bạn nên giữ nguyên giá hoặc nhập thêm hàng trước.",
+              "Giới hạn an toàn: nếu thấy khách phản ứng mạnh quá mức -2.715% cho mỗi 1% đổi giá trong vài ngày đầu, hãy dừng lại và quay về giá cũ 97.500 VND."
+            ]
+          },
+          "fallback_reason": null,
+          "error_detail": null,
+          "persona_observations": [
+            "Đã nhận được câu trả lời dễ theo dõi cho quyết định giá hằng ngày."
+          ]
+        }
+      ],
+      "raw_responses": [
+        {
+          "turn": 1,
+          "status": "fallback",
+          "parsed_spec": {
+            "error": "Chưa thấy mức tăng/giảm giá cụ thể (ví dụ +10% hoặc giảm 15%).",
+            "fallback": "manual_form"
+          },
+          "simulation": null,
+          "explanation": null,
+          "fallback_reason": "Chưa thấy mức tăng/giảm giá cụ thể (ví dụ +10% hoặc giảm 15%).",
+          "error_detail": null
+        },
+        {
+          "turn": 2,
+          "status": "answered",
+          "parsed_spec": {
+            "product_id": "P01",
+            "change_type": "price_pct",
+            "change_value": -5.0,
+            "horizon_days": 14,
+            "start_date": null,
+            "schedule": null,
+            "detected_language": "vi",
+            "question_type": "what_if_scenario",
+            "baseline_period_days": null,
+            "event_context": null,
+            "target_uplift_pct": null,
+            "assumptions_summary": null
+          },
+          "simulation": {
+            "scenarios": {
+              "base": {
+                "price_vnd": 97500,
+                "qty": 154,
+                "revenue": 15015000,
+                "profit": 5775000,
+                "spend": 9240000
+              },
+              "expected": {
+                "price_vnd": 92625,
+                "qty": 154,
+                "revenue": 14264250,
+                "profit": 5024250,
+                "spend": 9240000
+              },
+              "optimistic": {
+                "price_vnd": 92625,
+                "qty": 154,
+                "revenue": 14264250,
+                "profit": 5024250,
+                "spend": 9240000
+              },
+              "pessimistic": {
+                "price_vnd": 92625,
+                "qty": 154,
+                "revenue": 14264250,
+                "profit": 5024250,
+                "spend": 9240000
+              }
+            },
+            "profit_distribution": {
+              "p5": 5024250,
+              "p50": 5024250,
+              "p95": 5024250
+            },
+            "break_even_elasticity": -2.715015071586199,
+            "prob_beat_base": 0,
+            "advisory": {
+              "verdict_code": "STOCK_CONSTRAINED_HOLD_OR_RAISE",
+              "base_margin_pct": 38.46153846153847,
+              "min_margin_pct_in_plan": 35.22267206477733,
+              "expected_profit_delta_vnd": -750750,
+              "expected_profit_delta_pct": -13,
+              "prob_beat_base": 0,
+              "p5_beats_base": false,
+              "stockout_risk": true,
+              "stock_utilization_pct": 1642.8577290357648,
+              "elasticity_regime": "elastic",
+              "risk_flags": [
+                "stockout_risk",
+                "downside_below_base"
+              ]
+            },
+            "schedule_trace_days": 0,
+            "schedule_trace_endpoints": []
+          },
+          "explanation": {
+            "text": "• Nếu giữ nguyên giá cũ (97.500 VND): bán khoảng 154 món. tiền lãi 5.775.000 VND.\n• Nếu đổi giá sang 92.625 VND: dự kiến bán 154 món. tiền lãi khoảng 5.024.250 VND.\n• Khi tính cả trường hợp thuận lợi và lúc khách ngại giá, 90% khả năng tiền lãi nằm từ 5.024.250 VND đến 5.024.250 VND.\n• Gợi ý chính: Phương án này làm tiền lãi dự kiến giảm xuống 5.024.250 VND (thấp hơn giữ giá cũ 5.775.000 VND) — hãy mở mục \"Tìm giá đạt mục tiêu lãi\" để máy gợi ý mức giá có lời hơn.",
+            "direct_answer": null,
+            "action_verdict": "CẢNH BÁO THIẾU HÀNG — KHÔNG NÊN GIẢM GIÁ SÂU",
+            "verdict_level": "stop",
+            "situation_summary": "Tiền lời hiện chiếm 38.5% trên mỗi đồng bán ra. Sức mua gần đây đang tăng 21.2%. Hàng trong kho hiện đủ bán khoảng 1.9 ngày. Khách phản ứng khá nhạy nếu bạn tăng giá mạnh.",
+            "recommendations": [
+              "Phương án này làm tiền lãi dự kiến giảm xuống 5.024.250 VND (thấp hơn giữ giá cũ 5.775.000 VND) — hãy mở mục \"Tìm giá đạt mục tiêu lãi\" để máy gợi ý mức giá có lời hơn.",
+              "Coi chừng cháy hàng sớm (lượng mua dự kiến bằng 1642.9% số hàng đang có): không nên giảm giá sâu khi kho đang ít; bạn nên giữ nguyên giá hoặc nhập thêm hàng trước.",
+              "Giới hạn an toàn: nếu thấy khách phản ứng mạnh quá mức -2.715% cho mỗi 1% đổi giá trong vài ngày đầu, hãy dừng lại và quay về giá cũ 97.500 VND."
+            ]
+          },
+          "fallback_reason": null,
+          "error_detail": null
+        }
+      ]
+    },
+    {
+      "agent_id": "non_technical_owner",
+      "agent_display_name": "Non-Technical Small Business Owner",
+      "scenario_id": "nt_store_health",
+      "dataset_id": "fashion_shop_12",
+      "intent_category": "holistic_store_health",
+      "ground_truth_notes": "Store-level health check without pricing action.",
+      "active_product_id": "P01",
+      "final_action": "stop",
+      "turns": [
+        {
+          "turn_index": 1,
+          "user_action": "opening_question",
+          "question": "Tháng này cửa hàng của tôi có đang kinh doanh tốt không?",
+          "agent_thought": "Ứng dụng chỉ tính đổi giá %, không giải thích được câu hỏi này.",
+          "response_status": "fallback",
+          "latency_ms": 8.5,
+          "parsed_spec": {
+            "error": "Chưa nhận ra sản phẩm bạn muốn hỏi trong danh mục. Hãy nêu rõ mã hoặc tên sản phẩm (ví dụ P01, Áo thun basic).",
+            "fallback": "manual_form"
+          },
+          "simulation_summary": null,
+          "optimization_summary": null,
+          "explanation": null,
+          "fallback_reason": "Chưa nhận ra sản phẩm bạn muốn hỏi trong danh mục. Hãy nêu rõ mã hoặc tên sản phẩm (ví dụ P01, Áo thun basic).",
+          "error_detail": null,
+          "persona_observations": [
+            "Hệ thống báo không hiểu câu hỏi (Chưa nhận ra sản phẩm bạn muốn hỏi trong danh mục. Hãy nêu rõ mã hoặc tên sản phẩm (ví dụ P01, Áo thun basic).).",
+            "Ứng dụng chưa hỗ trợ giải thích thuật ngữ hoặc hỏi đáp tổng quan ngoài đổi giá %."
+          ]
+        }
+      ],
+      "raw_responses": [
+        {
+          "turn": 1,
+          "status": "fallback",
+          "parsed_spec": {
+            "error": "Chưa nhận ra sản phẩm bạn muốn hỏi trong danh mục. Hãy nêu rõ mã hoặc tên sản phẩm (ví dụ P01, Áo thun basic).",
+            "fallback": "manual_form"
+          },
+          "simulation": null,
+          "explanation": null,
+          "fallback_reason": "Chưa nhận ra sản phẩm bạn muốn hỏi trong danh mục. Hãy nêu rõ mã hoặc tên sản phẩm (ví dụ P01, Áo thun basic).",
+          "error_detail": null
+        }
+      ]
+    }
+  ]
+}

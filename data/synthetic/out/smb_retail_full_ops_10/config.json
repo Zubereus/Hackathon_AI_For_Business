@@ -1,0 +1,34 @@
+{
+  "seed": 151,
+  "start_date": "2024-01-01",
+  "end_date": "2026-10-31",
+  "noise_sigma": 0.1,
+  "outlier_prob": 0.004,
+  "outlier_boost": 2.5,
+  "price_steps": [
+    0.92,
+    0.96,
+    1.0,
+    1.04,
+    1.08
+  ],
+  "price_hold_days": [
+    7,
+    21
+  ],
+  "event_pricing": true,
+  "annual_list_price_growth": 0.03,
+  "promo_start_prob": 0.025,
+  "promo_length_days": [
+    3,
+    7
+  ],
+  "promo_event_boost_prob": 0.35,
+  "promo_lift": 1.15,
+  "trend_per_year": 0.08,
+  "lead_time_days": 3,
+  "cover_days": 5,
+  "planner_awareness": 0.2,
+  "start_stock_days": 8,
+  "operating_costs_profile": "full_ops"
+}

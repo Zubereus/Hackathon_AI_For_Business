@@ -31,6 +31,7 @@ SYNTH_BASE_DIR = os.path.abspath(
     "dataset_name",
     [
         "fashion_shop_12",
+        "smb_retail_full_ops_10",
         "grocery_fmcg_15",
         "electronics_home_10",
         "marketplace_large_40",
@@ -120,4 +121,25 @@ def test_hard_low_price_variation_diagnostic() -> None:
         )
         assert any("low_price_variation" in w for w in res.warnings), (
             f"Product {pid} in hard_low_price_variation_8 did not trigger low_price_variation warning! Warnings: {res.warnings}"
+        )
+
+
+def test_external_operating_costs_extracted_into_elasticity_result() -> None:
+    """Assert datasets with marketing/labor/operating costs populate fixed_cost_vnd & cost_breakdown."""
+    for ds_name in ("fashion_shop_12", "smb_retail_full_ops_10"):
+        sales_csv = os.path.join(SYNTH_BASE_DIR, ds_name, "sales_synthetic_vn.csv")
+        assert os.path.exists(sales_csv), f"Missing sales file: {sales_csv}"
+        df_sales = pd.read_csv(sales_csv)
+        res = fit_product_elasticity(df=df_sales, product_id="P01", n_boot=50, random_state=42)
+        assert res.fixed_cost_vnd > 0
+        assert res.cost_breakdown is not None
+        assert res.cost_breakdown.marketing_vnd > 0
+        assert res.cost_breakdown.labor_vnd > 0
+        assert res.cost_breakdown.operating_vnd > 0
+        assert (
+            res.cost_breakdown.marketing_vnd
+            + res.cost_breakdown.labor_vnd
+            + res.cost_breakdown.operating_vnd
+            + res.cost_breakdown.other_fixed_vnd
+            == res.fixed_cost_vnd
         )

@@ -1,9 +1,10 @@
 import React from 'react';
-import { STRINGS } from '../i18n';
+import { getStrings, Lang } from '../i18n';
 import { DataLabel } from '../types';
 
 interface DataSourceBadgeProps {
   label: DataLabel;
+  lang?: Lang;
   className?: string;
 }
 
@@ -14,8 +15,13 @@ const TONE: Record<DataLabel, string> = {
   USER: 'border-good/50 bg-good-bg text-good',
 };
 
-export const DataSourceBadge: React.FC<DataSourceBadgeProps> = ({ label, className = '' }) => {
-  const cfg = STRINGS.badges[label] ?? STRINGS.badges.SYNTHETIC;
+export const DataSourceBadge: React.FC<DataSourceBadgeProps> = ({
+  label,
+  lang = 'en',
+  className = '',
+}) => {
+  const strings = getStrings(lang);
+  const cfg = strings.badges[label] ?? strings.badges.SYNTHETIC;
   const tone = TONE[label] ?? TONE.SYNTHETIC;
   const isForeignPublic = label === 'PUBLIC_M5' || label === 'PUBLIC_DUNNHUMBY';
 
@@ -26,7 +32,7 @@ export const DataSourceBadge: React.FC<DataSourceBadgeProps> = ({ label, classNa
       className={`tag ${tone} ${className}`}
     >
       <span>{cfg.text}</span>
-      {isForeignPublic && <span className="font-normal opacity-80">converted from USD</span>}
+      {isForeignPublic && <span className="font-normal opacity-80">{strings.foreignUsdTag}</span>}
     </span>
   );
 };
